@@ -13,18 +13,20 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
+        style="@style/BottomNavigationViewStyle"
         android:layout_width="match_parent"
         android:layout_height="90dp"
         android:layout_gravity="bottom"
         android:background="@drawable/bg_bottom_nav"
+        app:itemIconSize="28dp"
         app:itemIconTint="@color/nav_item_color"
+        app:itemTextAppearanceActive="@style/BottomNavActiveText"
+        app:itemTextAppearanceInactive="@style/BottomNavInactiveText"
         app:itemTextColor="@color/nav_item_color"
-        app:menu="@menu/bottom_nav_menu"
-        android:elevation="6dp"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp" />
+        app:itemPaddingBottom="19.5dp"
+        app:itemPaddingTop="22.8dp"
+        app:menu="@menu/bottom_nav_menu" />
+
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

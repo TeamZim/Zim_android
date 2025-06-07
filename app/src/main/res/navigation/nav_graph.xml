@@ -1,21 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:startDestination="@id/ViewFragment">
+    app:startDestination="@id/viewFragment">
 
     <fragment
-        android:id="@+id/ViewFragment"
+        android:id="@+id/viewFragment"
         android:name="com.example.zim_android.Fragment.ViewFragment"
-        android:label="모음" />
+        android:label="모음" >
+        <action
+            android:id="@+id/action_ViewFragment_to_recordFragment"
+            app:destination="@id/recordFragment" />
+        <action
+            android:id="@+id/action_ViewFragment_to_mypageFragment"
+            app:destination="@id/mypageFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/recordFragment"
         android:name="com.example.zim_android.Fragment.RecordFragment"
-        android:label="기록하기" />
+        android:label="기록하기" >
+        <action
+            android:id="@+id/action_recordFragment_to_ViewFragment"
+            app:destination="@id/viewFragment" />
+        <action
+            android:id="@+id/action_recordFragment_to_mypageFragment"
+            app:destination="@id/mypageFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/mypageFragment"
         android:name="com.example.zim_android.Fragment.MypageFragment"
-        android:label="마이페이지" />
+        android:label="마이페이지" >
+        <action
+            android:id="@+id/action_mypageFragment_to_ViewFragment"
+            app:destination="@id/viewFragment" />
+        <action
+            android:id="@+id/action_mypageFragment_to_recordFragment"
+            app:destination="@id/recordFragment" />
+    </fragment>
 
 </navigation>
