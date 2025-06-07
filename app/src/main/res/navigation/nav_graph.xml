@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:startDestination="@id/ViewFragment">
+
+    <fragment
+        android:id="@+id/ViewFragment"
+        android:name="com.example.zim_android.Fragment.ViewFragment"
+        android:label="모음" />
+
+    <fragment
+        android:id="@+id/recordFragment"
+        android:name="com.example.zim_android.Fragment.RecordFragment"
+        android:label="기록하기" />
+
+    <fragment
+        android:id="@+id/mypageFragment"
+        android:name="com.example.zim_android.Fragment.MypageFragment"
+        android:label="마이페이지" />
+
+</navigation>
