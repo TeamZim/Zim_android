@@ -3,6 +3,7 @@
     <style name="Theme.Zim_android" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:fontFamily">@font/maru</item>
         <item name="android:textSize">12sp</item>
+        <item name="android:windowBackground">@drawable/white_background</item>
     </style>
 
     <style name="BottomNavigationViewStyle" parent="Widget.MaterialComponents.BottomNavigationView">
