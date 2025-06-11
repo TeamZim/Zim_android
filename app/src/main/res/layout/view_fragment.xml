@@ -1,12 +1,52 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?android:windowBackground">
 
     <include
         android:id="@+id/common_header"
         layout="@layout/common_header" />
 
+    <LinearLayout
+        android:id="@+id/switch_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="right"
+        app:layout_constraintTop_toBottomOf="@id/common_header"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="15dp"
+        >
+
+        <TextView
+            android:id="@+id/textLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="카드"
+            android:textSize="12sp"
+            android:textColor="#000000"
+            android:fontFamily="@font/maru"/>
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+
+            />
+
+
+        <TextView
+            android:id="@+id/textRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/maru"
+            android:text="지도"
+            android:textSize="12sp"
+            android:textColor="#000000" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
