@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.zim_android"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.zim_android"
@@ -62,4 +62,7 @@ dependencies {
     implementation ("androidx.navigation:navigation-fragment-ktx:2.7.7")
     implementation ("androidx.navigation:navigation-ui-ktx:2.7.7")
     implementation ("com.google.android.material:material:1.11.0")
+
+    // 이미지 로드을 위해 Glide 라이브러리 추가
+    implementation ("com.github.bumptech.glide:glide:4.16.0")
 }
