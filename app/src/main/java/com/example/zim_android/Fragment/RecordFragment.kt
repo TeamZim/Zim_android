@@ -12,8 +12,9 @@ class RecordFragment: Fragment(R.layout.record_fragment){
         super.onViewCreated(view, savedInstanceState)
 
         val headerLayout = view.findViewById<View>(R.id.common_header)
-        val titleTextView = headerLayout.findViewById<TextView>(R.id.tv_title)
+        val titleTextView = view.findViewById<TextView>(R.id.tv_title)
         titleTextView.text = "기록하기"
+
 
     }
 
