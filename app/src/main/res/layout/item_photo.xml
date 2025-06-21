@@ -1,0 +1,13 @@
+<!-- res/layout/item_photo.xml -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp">
+
+    <ImageView
+        android:id="@+id/grid_image"
+        android:layout_width="102dp"
+        android:layout_height="94dp"
+        android:scaleType="centerCrop"
+        android:background="#DDDDDD"/>
+</FrameLayout>

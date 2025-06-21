@@ -28,8 +28,6 @@
 
 
         <!-- 카드 앞면 -->
-
-            <!-- 카드 뒷면 -->
             <LinearLayout
                 android:id="@+id/card_front"
                 android:layout_width="match_parent"
@@ -93,19 +91,44 @@
             </LinearLayout>
 
             <LinearLayout
-    android:id="@+id/card_back"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:background="#FEFEFE"
-    android:visibility="gone">
-    <TextView
-        android:text="뒷면"
-        android:textSize="20sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-</LinearLayout>
+                android:id="@+id/card_back"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="6dp"
+                android:background="#FEFEFE"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/travel_title"
+                    android:layout_width="253dp"
+                    android:layout_height="27dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="48dp"
+                    android:fontFamily="@font/maru"
+                    android:gravity="center_horizontal|top"
+                    android:lineSpacingExtra="3sp"
+                    android:text="여행명은 여기에 쓸거임"
+                    android:translationY="-1.57sp"
+                    android:textSize="17sp"
+                    android:textStyle="bold"/>
+
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/grid_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_gravity="bottom"
+                    android:background="@drawable/photo_grid_fade_bottom"/>
+
+
+            </LinearLayout>
 </FrameLayout>
     </androidx.cardview.widget.CardView>
     </FrameLayout>
