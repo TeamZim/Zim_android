@@ -8,6 +8,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="navgray">#A7A4A0</color>
-    <color name="primary_700">#1F1C17</color>p
+    <color name="unselected">#A7A4A0</color>
+    <color name="primary_700">#1F1C17</color>
+
 </resources>
 
