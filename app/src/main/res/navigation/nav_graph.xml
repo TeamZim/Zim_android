@@ -37,6 +37,17 @@
         <action
             android:id="@+id/action_mypageFragment_to_recordFragment"
             app:destination="@id/recordFragment" />
+        <action
+            android:id="@+id/action_mypageFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.zim_android.Fragment.SettingsFragment"
+        android:label="SettingsFragment" >
+        <action
+            android:id="@+id/action_settingsFragment_to_mypageFragment"
+            app:destination="@id/mypageFragment" />
     </fragment>
 
 </navigation>

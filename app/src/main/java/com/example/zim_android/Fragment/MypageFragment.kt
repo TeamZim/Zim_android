@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.zim_android.R
 import com.example.zim_android.databinding.MypageFragmentBinding
 
@@ -30,6 +31,14 @@ class MypageFragment: Fragment(R.layout.mypage_fragment){
 
         binding.commonHeader.tvTitle.text = "마이페이지"
         binding.commonHeader.settingsBtn.visibility = View.VISIBLE
+        binding.commonHeader.exitBtn.visibility = View.GONE
+
+
+
+        binding.commonHeader.settingsBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_mypageFragment_to_settingsFragment)
+        }
+
 
         // 이모지 넣을 텍스트뷰 가져오기
         // val imageContainer = view.findViewById<TextView>(R.id.country_flag_text_1)

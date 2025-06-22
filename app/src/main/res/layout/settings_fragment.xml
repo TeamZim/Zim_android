@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:windowBackground">
+
+    <include
+        android:id="@+id/common_header"
+        layout="@layout/common_header" />
+
+    <TextView
+        android:id="@+id/logout_text"
+        android:layout_width="340dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="112dp"
+        android:text="로그아웃"
+        android:clickable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textSize="17sp"
+        android:textColor="@color/primary_700"
+        android:fontFamily="@font/maru"
+        android:gravity="center_vertical"
+        />
+
+    <View
+        android:layout_width="340dp"
+        android:layout_height="1dp"
+        android:background="#23241B"
+        app:layout_constraintTop_toBottomOf="@id/logout_text"
+        app:layout_constraintStart_toStartOf="@id/logout_text"
+        app:layout_constraintEnd_toEndOf="@id/logout_text"
+        android:layout_marginTop="2dp" />
+
+
+    <TextView
+        android:id="@+id/delete_account_text"
+        android:layout_width="340dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="17dp"
+        android:clickable="true"
+        android:fontFamily="@font/maru"
+        android:gravity="center_vertical"
+        android:text="회원탈퇴"
+        android:textColor="@color/primary_700"
+        android:textSize="17sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logout_text" />
+
+    <View
+        android:layout_width="340dp"
+        android:layout_height="1dp"
+        android:background="#23241B"
+        app:layout_constraintTop_toBottomOf="@id/delete_account_text"
+        app:layout_constraintStart_toStartOf="@id/delete_account_text"
+        app:layout_constraintEnd_toEndOf="@id/delete_account_text"
+        android:layout_marginTop="2dp" />
+
+
+
+    <TextView
+        android:id="@+id/modify_info_btn"
+        android:layout_width="340dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="17dp"
+        android:clickable="true"
+        android:fontFamily="@font/maru"
+        android:gravity="center_vertical"
+        android:text="개인정보 수정하기"
+        android:textColor="@color/primary_700"
+        android:textSize="17sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/delete_account_text" />
+
+    <View
+        android:layout_width="340dp"
+        android:layout_height="1dp"
+        android:background="#23241B"
+        app:layout_constraintTop_toBottomOf="@id/modify_info_btn"
+        app:layout_constraintStart_toStartOf="@id/modify_info_btn"
+        app:layout_constraintEnd_toEndOf="@id/modify_info_btn"
+        android:layout_marginTop="2dp" />
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
