@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     app:startDestination="@id/viewFragment">
 
     <fragment
@@ -9,24 +10,31 @@
         android:label="모음" >
         <action
             android:id="@+id/action_ViewFragment_to_recordFragment"
-            app:destination="@id/recordFragment" />
+            app:destination="@id/recordFragment_1_1" />
         <action
             android:id="@+id/action_ViewFragment_to_mypageFragment"
             app:destination="@id/mypageFragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/recordFragment"
-        android:name="com.example.zim_android.Fragment.RecordFragment"
-        android:label="기록하기" >
+        android:id="@+id/recordFragment_1_1"
+        android:name="com.example.zim_android.Fragment.RecordFragment_1_1"
+        android:label="기록하기">
         <action
             android:id="@+id/action_recordFragment_to_ViewFragment"
             app:destination="@id/viewFragment" />
         <action
             android:id="@+id/action_recordFragment_to_mypageFragment"
             app:destination="@id/mypageFragment" />
+        <action
+            android:id="@+id/action_recordFragment_1_1_to_recordFragment_1_2"
+            app:destination="@id/recordFragment_1_2" />
     </fragment>
 
+    <fragment
+        android:id="@+id/recordFragment_1_2"
+        android:name="com.example.zim_android.Fragment.RecordFragment_1_2"
+        android:label="기록하기" />
     <fragment
         android:id="@+id/mypageFragment"
         android:name="com.example.zim_android.Fragment.MypageFragment"
@@ -36,7 +44,7 @@
             app:destination="@id/viewFragment" />
         <action
             android:id="@+id/action_mypageFragment_to_recordFragment"
-            app:destination="@id/recordFragment" />
+            app:destination="@id/recordFragment_1_1" />
     </fragment>
 
 </navigation>
