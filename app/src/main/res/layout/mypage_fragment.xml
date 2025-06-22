@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/Birth_title"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?android:windowBackground">
@@ -26,7 +25,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/mypage_nationality_text"
+            android:id="@+id/mypage_nationality_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="35dp"
@@ -128,7 +127,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/korean_name_title" />
 
                 <TextView
-                    android:id="@+id/textView8"
+                    android:id="@+id/Birth_title"
                     android:layout_width="wrap_content"
                     android:layout_height="18dp"
                     android:layout_marginTop="11dp"
@@ -292,7 +291,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
-            android:id="@+id/country_flag_text_1"
+            android:id="@+id/country_flag_line_1"
             android:layout_width="297dp"
             android:layout_height="18dp"
             android:layout_marginStart="10dp"
@@ -308,7 +307,7 @@
 
 
         <TextView
-            android:id="@+id/country_flag_text_2"
+            android:id="@+id/country_flag_line_2"
             android:layout_width="297dp"
             android:layout_height="18dp"
             android:gravity="center"
