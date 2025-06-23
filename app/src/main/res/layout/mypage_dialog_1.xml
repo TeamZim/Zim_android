@@ -61,11 +61,12 @@
 
     <GridView
         android:id="@+id/country_list_gridview"
-        android:layout_width="209dp"
+        android:layout_width="208dp"
         android:layout_height="235dp"
         android:layout_marginTop="16dp"
         android:horizontalSpacing="16dp"
         android:numColumns="2"
+        android:scrollbarThumbVertical="@drawable/mypage_dialog_scrollbar_thumb"
         android:verticalSpacing="8dp"
         app:layout_constraintEnd_toEndOf="@+id/imageView4"
         app:layout_constraintStart_toStartOf="@+id/imageView4"
@@ -75,6 +76,7 @@
         android:id="@+id/imageView7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView4"
         app:layout_constraintEnd_toEndOf="@+id/imageView4"
         app:layout_constraintStart_toStartOf="@+id/imageView4"
