@@ -44,7 +44,7 @@
             app:destination="@id/viewFragment" />
         <action
             android:id="@+id/action_mypageFragment_to_recordFragment"
-            app:destination="@id/recordFragment" />
+            app:destination="@id/recordFragment_1_1" />
         <action
             android:id="@+id/action_mypageFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
