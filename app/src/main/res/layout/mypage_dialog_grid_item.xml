@@ -11,6 +11,7 @@
         android:fontFamily="@font/omyu_pretty"
         android:text="flag"
         android:textSize="16sp"
+        android:textColor="@color/primary_700"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,6 +23,7 @@
         android:fontFamily="@font/omyu_pretty"
         android:text="국가명"
         android:textSize="16sp"
+        android:textColor="@color/primary_700"
         app:layout_constraintBottom_toBottomOf="@+id/flag_text"
         app:layout_constraintStart_toEndOf="@+id/flag_text"
         app:layout_constraintTop_toTopOf="@+id/flag_text" />

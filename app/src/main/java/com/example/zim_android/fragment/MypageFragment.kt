@@ -81,7 +81,23 @@ class MypageFragment: Fragment(R.layout.mypage_fragment){
             CountryItem("🇰🇷", "한국"),
             CountryItem("🇯🇵", "일본"),
             CountryItem("🇺🇸", "미국"),
-            CountryItem("🇫🇷", "프랑스")
+            CountryItem("🇫🇷", "프랑스"),
+            CountryItem("🇩🇪", "독일"),
+            CountryItem("🇨🇳", "중국"),
+            CountryItem("🇬🇧", "영국"),
+            CountryItem("🇮🇹", "이탈리아"),
+            CountryItem("🇪🇸", "스페인"),
+            CountryItem("🇷🇺", "러시아"),
+            CountryItem("🇧🇷", "브라질"),
+            CountryItem("🇨🇦", "캐나다"),
+            CountryItem("🇲🇽", "멕시코"),
+            CountryItem("🇸🇦", "사우디아라비아"),
+            CountryItem("🇹🇭", "태국"),
+            CountryItem("🇮🇳", "인도"),
+            CountryItem("🇻🇳", "베트남"),
+            CountryItem("🇸🇬", "싱가포르"),
+            CountryItem("🇿🇦", "남아프리카공화국"),
+            CountryItem("🇸🇪", "스웨덴")
         )
 
         val adapter = DialogMypage1Adapter(requireContext(), items) // gridview 어댑터를 인스턴스화
