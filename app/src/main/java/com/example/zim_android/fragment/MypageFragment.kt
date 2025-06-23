@@ -1,19 +1,21 @@
-package com.example.zim_android.Fragment
+package com.example.zim_android.fragment
 
+import DialogMypage1Adapter
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.zim_android.R
+import com.example.zim_android.data.model.CountryItem
+import com.example.zim_android.databinding.MypageDialog1Binding
 import com.example.zim_android.databinding.MypageFragmentBinding
 
 class MypageFragment: Fragment(R.layout.mypage_fragment){
 
     // 뷰바인딩 사용
-
     private var _binding: MypageFragmentBinding? = null
     private val binding get() = _binding!!
 
@@ -33,12 +35,13 @@ class MypageFragment: Fragment(R.layout.mypage_fragment){
         binding.commonHeader.settingsBtn.visibility = View.VISIBLE
         binding.commonHeader.exitBtn.visibility = View.GONE
 
-
-
         binding.commonHeader.settingsBtn.setOnClickListener {
             findNavController().navigate(R.id.action_mypageFragment_to_settingsFragment)
         }
 
+        binding.visitedCountryCountLayer.setOnClickListener {
+            showCustomDialog()
+        }
 
         // 이모지 넣을 텍스트뷰 가져오기
         // val imageContainer = view.findViewById<TextView>(R.id.country_flag_text_1)
@@ -60,6 +63,35 @@ class MypageFragment: Fragment(R.layout.mypage_fragment){
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+
+
+    private fun showCustomDialog() {
+        val dialog = Dialog(requireContext()) // 커스텀 다이얼로그 객체 생성
+        val dialogBinding = MypageDialog1Binding.inflate(layoutInflater) // 뷰를 코드로 가지고와서 이제 객체를 얘를 통해 받아오면됨.
+        dialog.setContentView(dialogBinding.root) // 다이얼로그의 UI를 XML과 연결
+
+        // 그리드에 들어갈 더미 데이터 예시
+        val items = listOf(
+            CountryItem("🇰🇷", "한국"),
+            CountryItem("🇯🇵", "일본"),
+            CountryItem("🇺🇸", "미국"),
+            CountryItem("🇫🇷", "프랑스")
+        )
+
+        val adapter = DialogMypage1Adapter(requireContext(), items) // gridview 어댑터를 인스턴스화
+        dialogBinding.countryListGridview.adapter = adapter// 다이얼로그 XML 안의 GridView에 어댑터를 연결
+                       // 그리드가 화면에 아이템들을 렌더링하게 됨
+
+        // 다이얼로그 속성 설정 (크기 등)
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,  // 가로 사이즈
+            ViewGroup.LayoutParams.WRAP_CONTENT   // 세로 사이즈
+        )
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent) // 다이얼로그 뒷 배경 처리
+
+        dialog.show()
     }
 
 }

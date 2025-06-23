@@ -1,11 +1,10 @@
-package com.example.zim_android.Fragment
+package com.example.zim_android.fragment
 
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.zim_android.R
-import com.example.zim_android.ui.theme.CommonHeaderView
 
 class ViewFragment : Fragment(R.layout.view_fragment) {
 

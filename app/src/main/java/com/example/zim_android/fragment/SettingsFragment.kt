@@ -1,4 +1,4 @@
-package com.example.zim_android.Fragment
+package com.example.zim_android.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
