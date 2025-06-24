@@ -40,7 +40,7 @@ class MypageFragment: Fragment(R.layout.mypage_fragment){
         }
 
         binding.visitedCountryCountLayer.setOnClickListener {
-            showCustomDialog()
+            showCountryListDialog()
         }
 
         // 이모지 넣을 텍스트뷰 가져오기
@@ -67,7 +67,7 @@ class MypageFragment: Fragment(R.layout.mypage_fragment){
 
 
 
-    private fun showCustomDialog() {
+    private fun showCountryListDialog() {
         val dialog = Dialog(requireContext()) // 커스텀 다이얼로그 객체 생성
         val dialogBinding = MypageDialog1Binding.inflate(layoutInflater) // 뷰를 코드로 가지고와서 이제 객체를 얘를 통해 받아오면됨.
         dialog.setContentView(dialogBinding.root) // 다이얼로그의 UI를 XML과 연결

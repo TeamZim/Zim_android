@@ -15,15 +15,16 @@ import com.example.zim_android.ui.theme.CardItemDecoration
 import com.example.zim_android.Adapter.CardAdapter
 import com.example.zim_android.Adapter.PhotoGridAdapter
 import com.example.zim_android.databinding.ViewFragmentBinding
+import com.example.zim_android.databinding.ViewCardFragmentBinding
 
-class ViewFragment : Fragment(R.layout.view_fragment) {
+class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
 
-    private var _binding: ViewFragmentBinding? = null
+    private var _binding: ViewCardFragmentBinding? = null
     private val binding get() = _binding!!
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = ViewFragmentBinding.bind(view)
+        _binding = ViewCardFragmentBinding.bind(view)
 
         // 헤더 설정
         binding.commonHeader.tvTitle.text = "모음"
