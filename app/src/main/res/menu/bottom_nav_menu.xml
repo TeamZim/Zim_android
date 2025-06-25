@@ -4,7 +4,7 @@
         android:icon="@drawable/view_gray"
         android:title="모음" />
     <item
-        android:id="@+id/recordFragment"
+        android:id="@+id/recordFragment_1_1"
         android:icon="@drawable/record_gray"
         android:title="기록하기" />
     <item
