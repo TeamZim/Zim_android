@@ -8,5 +8,38 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="navgray">#A7A4A0</color>
+    <color name="unselected">#A7A4A0</color>
+    <color name="primary_100">#F4F0EA</color>
+    <color name="primary_700">#1F1C17</color>
+
+    <color name="blue_sky_50">#fdfefe</color>
+    <color name="blue_sky_100">#f9fafc</color>
+    <color name="blue_sky_200">#f1f4f7</color>
+    <color name="blue_sky_300">#e7ebf1</color>
+    <color name="blue_sky_400">#d9dfe9</color>
+    <color name="blue_sky_500">#c8d1e0</color>
+    <color name="blue_sky_600">#b4c1d5</color>
+    <color name="blue_sky_700">#9daec8</color>
+    <color name="blue_sky_800">#435778</color>
+    <color name="blue_sky_900">#1f2836</color>
+    <color name="blue_sky_950">#121821</color>
+
+
+    <color name="olive_50">#fefefe</color>
+    <color name="olive_100">#fcfdfa</color>
+    <color name="olive_200">#f9f9f4</color>
+    <color name="olive_300">#f4f5eb</color>
+    <color name="olive_400">#eef0e1</color>
+    <color name="olive_500">#e6e9d3</color>
+    <color name="olive_600">#dde1c3</color>
+    <color name="olive_700">#d3d8b1</color>
+    <color name="olive_800">#7e8744</color>
+    <color name="olive_900">#373b1e</color>
+    <color name="olive_950">#202211</color>
+
+
 </resources>
+
+
+
 
