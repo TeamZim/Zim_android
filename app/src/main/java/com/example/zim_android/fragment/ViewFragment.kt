@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.SeekBar
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
@@ -34,15 +35,19 @@ class ViewFragment : Fragment(R.layout.view_fragment) {
         //스위치 전환 색 변환
         binding.switch1.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
+                //지도
                 binding.textLeft.setTextColor(Color.parseColor("#A7A4A0"))
                 binding.textRight.setTextColor(Color.parseColor("#000000"))
                 binding.cardViewpager.visibility = View.GONE
                 binding.mapContainer.visibility = View.VISIBLE
+                binding.progressBar.visibility = View.GONE
             } else {
+                //카드
                 binding.textLeft.setTextColor(Color.parseColor("#000000"))
                 binding.textRight.setTextColor(Color.parseColor("#A7A4A0"))
                 binding.cardViewpager.visibility = View.VISIBLE
                 binding.mapContainer.visibility = View.GONE
+                binding.progressBar.visibility = View.VISIBLE
             }
         }
 
