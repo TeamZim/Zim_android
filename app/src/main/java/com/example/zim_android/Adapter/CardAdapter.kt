@@ -3,6 +3,7 @@ package com.example.zim_android.Adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.zim_android.R
@@ -24,6 +25,9 @@ class CardAdapter(
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val front = itemView.findViewById<View>(R.id.card_front)
         private val back = itemView.findViewById<View>(R.id.card_back)
+        private val flipButton = itemView.findViewById<View>(R.id.flip_button)
+        private val dotsButton = itemView.findViewById<ImageButton>(R.id.dots_button)
+        private val editLayout = itemView.findViewById<View>(R.id.edit_layout)
 
         fun bind(position: Int) {
             val isFlipped = isFlippedList[position]
@@ -31,8 +35,12 @@ class CardAdapter(
             front.visibility = if (isFlipped) View.GONE else View.VISIBLE
             back.visibility = if (isFlipped) View.VISIBLE else View.GONE
 
-            itemView.setOnClickListener {
+            flipButton.setOnClickListener {
                 flipCard(position)
+            }
+
+            dotsButton.setOnClickListener {
+                editLayout.visibility = if (editLayout.visibility == View.VISIBLE) View.GONE else View.VISIBLE
             }
 
             // 뒷면 리사이클러뷰 초기 설정
@@ -60,10 +68,14 @@ class CardAdapter(
         }
     }
 
+
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_card, parent, false)
         return ViewHolder(view)
+
+
     }
 
     override fun getItemCount(): Int = items.size
