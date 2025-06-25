@@ -72,7 +72,7 @@ class MypageFragment: Fragment(R.layout.mypage_fragment){
         val dialogBinding = MypageDialog1Binding.inflate(layoutInflater) // 뷰를 코드로 가지고와서 이제 객체를 얘를 통해 받아오면됨.
         dialog.setContentView(dialogBinding.root) // 다이얼로그의 UI를 XML과 연결
 
-        dialogBinding.dialogExitBtn.setOnClickListener {
+        dialogBinding.dialog1ExitBtn.setOnClickListener {
             dialog.dismiss()
         }
 
