@@ -8,10 +8,13 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.zim_android.R
 import com.example.zim_android.ui.theme.SpaceItemDecoration
+import androidx.recyclerview.widget.RecyclerView
+import com.example.zim_android.R
 
 class CardAdapter(
     private val items: List<String>
 ) : RecyclerView.Adapter<CardAdapter.ViewHolder>() {
+
 
     private val isFlippedList = MutableList(items.size) { false }
 
@@ -22,6 +25,9 @@ class CardAdapter(
         R.drawable.images,
     )
 
+    private val isFlippedList = MutableList(items.size) { false }  // 카드 별 flip 상태
+
+
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val front = itemView.findViewById<View>(R.id.card_front)
         private val back = itemView.findViewById<View>(R.id.card_back)
@@ -31,6 +37,7 @@ class CardAdapter(
 
         fun bind(position: Int) {
             val isFlipped = isFlippedList[position]
+
 
             front.visibility = if (isFlipped) View.GONE else View.VISIBLE
             back.visibility = if (isFlipped) View.VISIBLE else View.GONE
@@ -50,10 +57,18 @@ class CardAdapter(
                 photoRecyclerView.adapter = PhotoGridAdapter(dummyImageList)
                 photoRecyclerView.addItemDecoration(SpaceItemDecoration(13))
             }
+            // 현재 상태 반영
+            front.visibility = if (isFlipped) View.GONE else View.VISIBLE
+            back.visibility = if (isFlipped) View.VISIBLE else View.GONE
+
+            itemView.setOnClickListener {
+                flipCard(position)
+            }
         }
 
         private fun flipCard(position: Int) {
             val isCurrentlyFlipped = isFlippedList[position]
+
             val showView = if (isCurrentlyFlipped) front else back
             val hideView = if (isCurrentlyFlipped) back else front
 
@@ -69,12 +84,18 @@ class CardAdapter(
     }
 
 
+    fun resetFlip(position: Int) {
+        isFlippedList[position] = false
+        notifyItemChanged(position)
+    }
+
+
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_card, parent, false)
         return ViewHolder(view)
-
 
     }
 
@@ -84,8 +105,12 @@ class CardAdapter(
         holder.bind(position)
     }
 
+
     fun resetFlip(position: Int) {
         isFlippedList[position] = false
         notifyItemChanged(position)
     }
 }
+
+}
+
