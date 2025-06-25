@@ -9,14 +9,12 @@ import com.example.zim_android.R
 import com.example.zim_android.ui.theme.SpaceItemDecoration
 
 class CardAdapter(
-
     private val items: List<String>
 ) : RecyclerView.Adapter<CardAdapter.ViewHolder>() {
 
     private val isFlippedList = MutableList(items.size) { false }
 
-
-    // 이미지 데이터 예시 (R.drawable.xxx 리스트 or URL이면 Glide 사용)
+    // 이미지 더미 데이터 (예시)
     private val dummyImageList = listOf(
         R.drawable.images,
         R.drawable.images,
@@ -30,23 +28,20 @@ class CardAdapter(
         fun bind(position: Int) {
             val isFlipped = isFlippedList[position]
 
-            // 앞/뒷면 토글
             front.visibility = if (isFlipped) View.GONE else View.VISIBLE
             back.visibility = if (isFlipped) View.VISIBLE else View.GONE
 
-            // 카드 클릭 시 뒤집기
             itemView.setOnClickListener {
                 flipCard(position)
             }
 
-            // ✅ 뒷면 리사이클러뷰 세팅 (한 번만)
+            // 뒷면 리사이클러뷰 초기 설정
             val photoRecyclerView = itemView.findViewById<RecyclerView>(R.id.grid_image)
             if (photoRecyclerView.adapter == null) {
                 photoRecyclerView.layoutManager = GridLayoutManager(itemView.context, 2)
                 photoRecyclerView.adapter = PhotoGridAdapter(dummyImageList)
                 photoRecyclerView.addItemDecoration(SpaceItemDecoration(13))
             }
-
         }
 
         private fun flipCard(position: Int) {
@@ -75,9 +70,7 @@ class CardAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(position)
-
     }
-
 
     fun resetFlip(position: Int) {
         isFlippedList[position] = false
