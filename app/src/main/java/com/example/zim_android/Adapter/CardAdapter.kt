@@ -16,11 +16,21 @@ class CardAdapter(
     private val isFlippedList = MutableList(items.size) { false }
 
     // 이미지 더미 데이터 (예시)
-    private val dummyImageList = listOf(
+    val dummyImageList = listOf(
+        R.drawable.images,
+        R.drawable.images,
+        R.drawable.images,
+        R.drawable.images,
+        R.drawable.images,
+        R.drawable.images,
+        R.drawable.images,
+        R.drawable.images,
+        R.drawable.images,
         R.drawable.images,
         R.drawable.images,
         R.drawable.images,
     )
+
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val front = itemView.findViewById<View>(R.id.card_front)

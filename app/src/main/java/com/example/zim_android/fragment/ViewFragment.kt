@@ -7,11 +7,13 @@ import android.widget.SeekBar
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.zim_android.R
 import com.example.zim_android.ui.theme.CardItemDecoration
 import com.example.zim_android.Adapter.CardAdapter
+import com.example.zim_android.Adapter.PhotoGridAdapter
 import com.example.zim_android.databinding.ViewFragmentBinding
 
 class ViewFragment : Fragment(R.layout.view_fragment) {
@@ -35,14 +37,14 @@ class ViewFragment : Fragment(R.layout.view_fragment) {
         //스위치 전환 색 변환
         binding.switch1.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                //지도
+                //지도 선택시
                 binding.textLeft.setTextColor(Color.parseColor("#A7A4A0"))
                 binding.textRight.setTextColor(Color.parseColor("#000000"))
                 binding.cardViewpager.visibility = View.GONE
                 binding.mapContainer.visibility = View.VISIBLE
                 binding.progressBar.visibility = View.GONE
             } else {
-                //카드
+                //카드 선택시
                 binding.textLeft.setTextColor(Color.parseColor("#000000"))
                 binding.textRight.setTextColor(Color.parseColor("#A7A4A0"))
                 binding.cardViewpager.visibility = View.VISIBLE
@@ -73,6 +75,16 @@ class ViewFragment : Fragment(R.layout.view_fragment) {
             }
         })
 
+
+        val testPhotos = listOf(
+            R.drawable.images,
+            R.drawable.images,
+            R.drawable.images
+        )
+
+        val photoAdapter = PhotoGridAdapter(testPhotos)
+        //테스트용.. 내가 넣었듬 나중에 뺴야됨
+
         val recyclerView = viewPager.getChildAt(0) as RecyclerView
         recyclerView.clipToPadding = false
         recyclerView.clipChildren = false
@@ -83,6 +95,18 @@ class ViewFragment : Fragment(R.layout.view_fragment) {
             page.scaleY = 0.95f
             page.translationX = -40 * position
         }
+
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val layoutManager = recyclerView.layoutManager
+                if (layoutManager is GridLayoutManager) {
+                    val lastVisible = layoutManager.findLastVisibleItemPosition()
+                    (recyclerView.adapter as? PhotoGridAdapter)?.setLastVisibleIndex(lastVisible)
+                }
+            }
+        })
+
+
 
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
