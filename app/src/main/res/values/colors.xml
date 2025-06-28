@@ -9,8 +9,19 @@
     <color name="white">#FFFFFFFF</color>
     <color name="navgray">#A7A4A0</color>
     <color name="unselected">#A7A4A0</color>
-    <color name="primary_100">#F4F0EA</color>
-    <color name="primary_700">#1F1C17</color>
+
+    <color name="primary_50">#fefefe</color>
+    <color name="primary_100">#fdfcfa</color>
+    <color name="primary_200">#f9f7f4</color>
+    <color name="primary_300">#f5f2eb</color>
+    <color name="primary_400">#f0eae1</color>
+    <color name="primary_500">#e9e1d3</color>
+    <color name="primary_600">#e1d6c3</color>
+    <color name="primary_700">#d8cab1</color>
+    <color name="primary_800">#876e44</color>
+    <color name="primary_900">#3b301e</color>
+    <color name="primary_950">#221c11</color>
+
 
     <color name="blue_sky_50">#fdfefe</color>
     <color name="blue_sky_100">#f9fafc</color>
