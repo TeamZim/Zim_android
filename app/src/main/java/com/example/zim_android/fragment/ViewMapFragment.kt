@@ -1,6 +1,5 @@
 package com.example.zim_android.fragment
 
-import DialogMypage1Adapter
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
@@ -38,7 +37,6 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.commonHeader.tvTitle.text = "지도 모음"
         binding.addRecordBtn.setOnClickListener {
             showAddRecordDialog1()
         }
@@ -172,6 +170,4 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
             dialog2.show()
         }
     }
-
-
 }

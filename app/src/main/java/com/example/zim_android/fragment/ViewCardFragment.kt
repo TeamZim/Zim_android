@@ -4,7 +4,6 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.SeekBar
-import androidx.appcompat.widget.SwitchCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -14,7 +13,6 @@ import com.example.zim_android.R
 import com.example.zim_android.ui.theme.CardItemDecoration
 import com.example.zim_android.Adapter.CardAdapter
 import com.example.zim_android.Adapter.PhotoGridAdapter
-import com.example.zim_android.databinding.ViewFragmentBinding
 import com.example.zim_android.databinding.ViewCardFragmentBinding
 
 class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
@@ -34,6 +32,17 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
             thumbDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.slide_thumb)
             trackDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.custom_track)
         }
+
+        // mapContainer에 ViewMapFragment xml 연결
+        val mapContainerId = binding.mapContainer.id
+        val fragment = childFragmentManager.findFragmentById(mapContainerId)
+        if (fragment == null) {
+            childFragmentManager.beginTransaction()
+                .replace(mapContainerId, ViewMapFragment())
+                .commit()
+        }
+
+
 
         //스위치 전환 색 변환
         binding.switch1.setOnCheckedChangeListener { _, isChecked ->
