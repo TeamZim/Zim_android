@@ -13,21 +13,6 @@
         <action
             android:id="@+id/action_viewCardFragment_to_mypageFragment"
             app:destination="@id/mypageFragment" />
-        <action
-            android:id="@+id/action_viewCardFragment_to_viewMapFragment"
-            app:destination="@id/viewMapFragment" />
-    </fragment>
-
-
-    <fragment
-        android:id="@+id/viewMapFragment"
-        android:name="com.example.zim_android.fragment.ViewMapFragment"
-        android:label="지도 모음">
-
-        <action
-            android:id="@+id/action_viewMapFragment_to_viewCardFragment"
-            app:destination="@id/viewCardFragment" />
-
     </fragment>
 
 
