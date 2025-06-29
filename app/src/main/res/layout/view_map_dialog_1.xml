@@ -163,7 +163,9 @@
         app:layout_constraintBottom_toBottomOf="@+id/dialog_1_frame"
         app:layout_constraintEnd_toEndOf="@+id/dialog_1_frame"
         app:layout_constraintStart_toStartOf="@+id/dialog_1_frame"
-        app:srcCompat="@drawable/view_map_dialog_1_save_btn" />
+        app:srcCompat="@drawable/save_btn_unactivated"
+        android:clickable="false"
+        />
 
 
 
