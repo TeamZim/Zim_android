@@ -1,28 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    app:startDestination="@id/viewFragment">
+    app:startDestination="@id/viewCardFragment">
 
     <fragment
-        android:id="@+id/viewFragment"
-        android:name="com.example.zim_android.fragment.ViewFragment"
-        android:label="모음" >
+        android:id="@+id/viewCardFragment"
+        android:name="com.example.zim_android.fragment.ViewCardFragment"
+        android:label="카드 모음" >
         <action
-            android:id="@+id/action_ViewFragment_to_recordFragment"
+            android:id="@+id/action_viewCardFragment_to_recordFragment_1_1"
             app:destination="@id/recordFragment_1_1" />
         <action
-            android:id="@+id/action_ViewFragment_to_mypageFragment"
+            android:id="@+id/action_viewCardFragment_to_mypageFragment"
             app:destination="@id/mypageFragment" />
+        <action
+            android:id="@+id/action_viewCardFragment_to_viewMapFragment"
+            app:destination="@id/viewMapFragment" />
     </fragment>
+
+
+    <fragment
+        android:id="@+id/viewMapFragment"
+        android:name="com.example.zim_android.fragment.ViewMapFragment"
+        android:label="지도 모음">
+
+        <action
+            android:id="@+id/action_viewMapFragment_to_viewCardFragment"
+            app:destination="@id/viewCardFragment" />
+
+    </fragment>
+
+
 
     <fragment
         android:id="@+id/recordFragment_1_1"
         android:name="com.example.zim_android.fragment.RecordFragment_1_1"
         android:label="기록하기">
         <action
-            android:id="@+id/action_recordFragment_to_ViewFragment"
-            app:destination="@id/viewFragment" />
+            android:id="@+id/action_recordFragment_to_viewCardFragment"
+            app:destination="@id/viewCardFragment" />
         <action
             android:id="@+id/action_recordFragment_to_mypageFragment"
             app:destination="@id/mypageFragment" />
@@ -31,24 +47,30 @@
             app:destination="@id/recordFragment_1_2" />
     </fragment>
 
+
+
     <fragment
         android:id="@+id/recordFragment_1_2"
         android:name="com.example.zim_android.fragment.RecordFragment_1_2"
         android:label="기록하기" />
+
+
     <fragment
         android:id="@+id/mypageFragment"
         android:name="com.example.zim_android.fragment.MypageFragment"
         android:label="마이페이지" >
         <action
-            android:id="@+id/action_mypageFragment_to_ViewFragment"
-            app:destination="@id/viewFragment" />
+            android:id="@+id/action_mypageFragment_to_viewCardFragment"
+            app:destination="@id/viewCardFragment" />
         <action
-            android:id="@+id/action_mypageFragment_to_recordFragment"
+            android:id="@+id/action_mypageFragment_to_recordFragment_1_1"
             app:destination="@id/recordFragment_1_1" />
         <action
             android:id="@+id/action_mypageFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
     </fragment>
+
+
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.zim_android.fragment.SettingsFragment"

@@ -33,5 +33,10 @@
     </style>
 
 
+    <!-- 과거 기록 추가의 드롭다운 테마 설정 -->
+    <style name="AddRecordDropdownPopupTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="android:popupBackground">@drawable/add_record_dropdown_bg</item>
+    </style>
+
 
 </resources>
