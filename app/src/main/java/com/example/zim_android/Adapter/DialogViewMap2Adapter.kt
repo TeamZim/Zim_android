@@ -27,6 +27,7 @@ class DialogViewMap2Adapter(
         binding.checkIcon.visibility =
             if (position == selectedPosition) View.VISIBLE else View.INVISIBLE // 체크 유무 표시
 
+        // 클릭 시 선택 위치 업데이트
         binding.emotionColorImg.setOnClickListener {
             selectedPosition = position
             onItemSelected(item) // 감정 이름 전달
