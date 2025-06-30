@@ -27,11 +27,20 @@ class DialogViewMap2Adapter(
         binding.checkIcon.visibility =
             if (position == selectedPosition) View.VISIBLE else View.INVISIBLE // 체크 유무 표시
 
-        // 클릭 시 선택 위치 업데이트
-        binding.emotionColorImg.setOnClickListener {
+
+        // 텍스트 선택 시 업데이트
+        binding.emotionColorText.setOnClickListener {
             selectedPosition = position
             onItemSelected(item) // 감정 이름 전달
                                  // 여기가 람다 호출 부분!!!!!
+            notifyGridLayoutChanged()
+        }
+
+        // 이미지 선택 시 업데이트
+        binding.emotionColorImg.setOnClickListener {
+            selectedPosition = position
+            onItemSelected(item) // 감정 이름 전달
+            // 여기가 람다 호출 부분!!!!!
             notifyGridLayoutChanged()
         }
 
