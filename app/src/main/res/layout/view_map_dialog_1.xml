@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/dialog_1_frame"
+        android:layout_width="295dp"
+        android:layout_height="356dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/view_map_dialog_1_frame" />
+
+
+    <TextView
+        android:id="@+id/dialog_1_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:fontFamily="@font/nanum_neuris"
+        android:text="과거 여행 추가"
+        android:textColor="@color/primary_700"
+        android:textSize="25sp"
+        app:layout_constraintEnd_toEndOf="@+id/dialog_1_frame"
+        app:layout_constraintStart_toStartOf="@+id/dialog_1_frame"
+        app:layout_constraintTop_toTopOf="@+id/dialog_1_frame" />
+
+    <ImageView
+        android:id="@+id/dialog_1_line"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="11dp"
+        app:layout_constraintEnd_toEndOf="@+id/dialog_1_frame"
+        app:layout_constraintStart_toStartOf="@+id/dialog_1_frame"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_1_title"
+        app:srcCompat="@drawable/dialog_line_1" />
+
+    <ImageView
+        android:id="@+id/dialog_1_exit_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="14dp"
+        app:layout_constraintEnd_toEndOf="@+id/dialog_1_frame"
+        app:layout_constraintTop_toTopOf="@+id/dialog_1_frame"
+        app:srcCompat="@drawable/mypage_dialog_x_btn" />
+
+    <TextView
+        android:id="@+id/dialog_1_country_title"
+        android:layout_width="235dp"
+        android:layout_height="26dp"
+        android:layout_marginTop="23dp"
+        android:text="국가"
+        android:textColor="@color/primary_700"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="@+id/dialog_1_frame"
+        app:layout_constraintStart_toStartOf="@+id/dialog_1_frame"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_1_line" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/dialog_1_textInputLayout"
+        android:layout_width="235dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="2dp"
+        android:ems="10"
+        android:fontFamily="@font/nanum_neuris"
+        android:inputType="text"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/dialog_1_country_title"
+        app:layout_constraintStart_toStartOf="@+id/dialog_1_country_title"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_1_country_title"
+        app:endIconMode="dropdown_menu"
+        app:hintEnabled="false"
+        >
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/dialog_1_country_list_textInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:background="@android:color/transparent"
+            android:dropDownHeight="127dp"
+            android:dropDownWidth="234dp"
+            app:popupTheme="@style/AddRecordDropdownPopupTheme"
+            android:fontFamily="@font/nanum_neuris"
+            android:textSize="16sp"
+            android:hint="국가명을 입력해주세요."
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/dialog_1_emotion_color_title"
+        android:layout_width="235dp"
+        android:layout_height="26dp"
+        android:layout_marginTop="31dp"
+        android:text="감정색"
+        android:textColor="@color/primary_700"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="@+id/dialog_1_frame"
+        app:layout_constraintStart_toStartOf="@+id/dialog_1_frame"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_1_textInputLayout" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/dialog_1_emotion_color_select_layout"
+        android:layout_width="235dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="11dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="@+id/dialog_1_emotion_color_title"
+        app:layout_constraintStart_toStartOf="@+id/dialog_1_emotion_color_title"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_1_emotion_color_title">
+
+        <ImageView
+            android:id="@+id/dialog_1_selected_color_img"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/default_color_img" />
+
+        <TextView
+            android:id="@+id/dialog_1_selected_color_text"
+            android:layout_width="wrap_content"
+            android:layout_height="22dp"
+            android:layout_marginStart="10dp"
+            android:fontFamily="@font/nanum_neuris"
+            android:gravity="center_vertical"
+            android:text="선택 안 함"
+            android:textSize="16sp"
+            app:layout_constraintStart_toEndOf="@+id/dialog_1_selected_color_img"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/select_color_btn"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/add_record_arrow_btn_img" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <View
+        android:layout_width="235dp"
+        android:layout_height="1dp"
+        android:background="#23241B"
+        app:layout_constraintTop_toBottomOf="@id/dialog_1_emotion_color_select_layout"
+        app:layout_constraintStart_toStartOf="@id/dialog_1_emotion_color_select_layout"
+        app:layout_constraintEnd_toEndOf="@id/dialog_1_emotion_color_select_layout"
+        />
+
+
+    <ImageButton
+        android:id="@+id/dialog_1_save_btn"
+        android:layout_width="231dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="25dp"
+        app:layout_constraintBottom_toBottomOf="@+id/dialog_1_frame"
+        app:layout_constraintEnd_toEndOf="@+id/dialog_1_frame"
+        app:layout_constraintStart_toStartOf="@+id/dialog_1_frame"
+        app:srcCompat="@drawable/save_btn_unactivated"
+        android:clickable="false"
+        />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

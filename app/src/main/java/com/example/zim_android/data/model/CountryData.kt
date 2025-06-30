@@ -1,0 +1,41 @@
+package com.example.zim_android.data.model
+
+object CountryData {
+    val countryList = listOf(
+        CountryItem("🇰🇷", "한국"),
+        CountryItem("🇯🇵", "일본"),
+        CountryItem("🇺🇸", "미국"),
+        CountryItem("🇫🇷", "프랑스"),
+        CountryItem("🇩🇪", "독일"),
+        CountryItem("🇨🇳", "중국"),
+        CountryItem("🇬🇧", "영국"),
+        CountryItem("🇮🇹", "이탈리아"),
+        CountryItem("🇪🇸", "스페인"),
+        CountryItem("🇷🇺", "러시아"),
+        CountryItem("🇧🇷", "브라질"),
+        CountryItem("🇨🇦", "캐나다"),
+        CountryItem("🇲🇽", "멕시코"),
+        CountryItem("🇸🇦", "사우디아라비아"),
+        CountryItem("🇹🇭", "태국"),
+        CountryItem("🇮🇳", "인도"),
+        CountryItem("🇻🇳", "베트남"),
+        CountryItem("🇸🇬", "싱가포르"),
+        CountryItem("🇿🇦", "남아프리카공화국"),
+        CountryItem("🇸🇪", "스웨덴"),
+        CountryItem("🇦🇺", "호주"),
+        CountryItem("🇳🇱", "네덜란드"),
+        CountryItem("🇳🇿", "뉴질랜드"),
+        CountryItem("🇳🇴", "노르웨이"),
+        CountryItem("🇫🇮", "핀란드"),
+        CountryItem("🇨🇭", "스위스"),
+        CountryItem("🇵🇹", "포르투갈"),
+        CountryItem("🇵🇱", "폴란드"),
+        CountryItem("🇩🇰", "덴마크"),
+        CountryItem("🇦🇷", "아르헨티나"),
+        CountryItem("🇨🇱", "칠레"),
+        CountryItem("🇪🇬", "이집트"),
+        CountryItem("🇹🇷", "터키"),
+        CountryItem("🇦🇪", "아랍에미리트"),
+        CountryItem("🇮🇩", "인도네시아")
+    )
+}

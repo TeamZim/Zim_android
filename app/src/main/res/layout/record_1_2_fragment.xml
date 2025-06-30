@@ -107,12 +107,11 @@
                 android:hint="여행에 대한 설명을 입력하세요."
                 android:inputType="textMultiLine"
                 android:lines="3"
+                android:maxLength="54"
                 android:maxLines="3"
                 android:minLines="3"
                 android:overScrollMode="ifContentScrolls"
-                android:padding="16dp"
-                android:maxLength="54"
-                />
+                android:padding="16dp" />
             />
         </com.google.android.material.textfield.TextInputLayout>
 
