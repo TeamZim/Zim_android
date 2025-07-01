@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.zim_android.R
@@ -12,6 +13,7 @@ import com.example.zim_android.ui.theme.SpaceItemDecoration
 class CardAdapter(
     private val items: List<String>
 ) : RecyclerView.Adapter<CardAdapter.ViewHolder>() {
+
 
     private val isFlippedList = MutableList(items.size) { false }
 
@@ -51,7 +53,17 @@ class CardAdapter(
 
             dotsButton.setOnClickListener {
                 editLayout.visibility = if (editLayout.visibility == View.VISIBLE) View.GONE else View.VISIBLE
+                // 오버레이 콜백은 여기서 호출하지 않음!!
             }
+
+
+            val editButton = itemView.findViewById<TextView>(R.id.edit_button)
+
+            editButton.setOnClickListener {
+                onEditClickListener?.onEditButtonClicked(adapterPosition)
+            }
+
+
 
             // 뒷면 리사이클러뷰 초기 설정
             val photoRecyclerView = itemView.findViewById<RecyclerView>(R.id.grid_image)
@@ -78,6 +90,27 @@ class CardAdapter(
         }
     }
 
+    interface OnEditClickListener {
+        fun onEditButtonClicked(position: Int)
+    }
+
+    private var onEditClickListener: OnEditClickListener? = null
+
+    fun setOnEditClickListener(listener: OnEditClickListener) {
+        onEditClickListener = listener
+    }
+
+//현재 카드만 밝게
+private var focusedPosition: Int? = null
+
+
+    fun setFocusCard(position: Int?) {
+        focusedPosition = position
+        notifyDataSetChanged()
+    }
+
+
+
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -92,6 +125,13 @@ class CardAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(position)
+
+        // 카드별 밝기 조절
+        if (focusedPosition != null && focusedPosition != position) {
+            holder.itemView.alpha = 0.15f // 어둡게
+        } else {
+            holder.itemView.alpha = 1.0f // 기본 밝기
+        }
     }
 
     fun resetFlip(position: Int) {
