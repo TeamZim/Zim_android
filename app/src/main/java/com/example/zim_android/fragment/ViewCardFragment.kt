@@ -1,6 +1,7 @@
 package com.example.zim_android.fragment
 
 import android.graphics.Color
+import android.graphics.RectF
 import android.os.Bundle
 import android.view.View
 import android.widget.SeekBar
@@ -42,19 +43,15 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
                 .commit()
         }
 
-
-
-        //스위치 전환 색 변환
+        // 스위치 전환 색 변환
         binding.switch1.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                //지도 선택시
                 binding.textLeft.setTextColor(Color.parseColor("#A7A4A0"))
                 binding.textRight.setTextColor(Color.parseColor("#000000"))
                 binding.cardViewpager.visibility = View.GONE
                 binding.mapContainer.visibility = View.VISIBLE
                 binding.progressBar.visibility = View.GONE
             } else {
-                //카드 선택시
                 binding.textLeft.setTextColor(Color.parseColor("#000000"))
                 binding.textRight.setTextColor(Color.parseColor("#A7A4A0"))
                 binding.cardViewpager.visibility = View.VISIBLE
@@ -66,6 +63,7 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
         // ViewPager2 설정
         val dummyCards = listOf("카드1", "카드2", "카드3", "카드4")
         val adapter = CardAdapter(dummyCards)
+
         val viewPager = binding.cardViewpager
         viewPager.adapter = adapter
         viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
@@ -85,15 +83,22 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
             }
         })
 
+        val btnGroup = binding.editButtonGroup
+        val btnCancel = binding.btnCancel
+        val btnSave = binding.btnSave
 
-        val testPhotos = listOf(
-            R.drawable.images,
-            R.drawable.images,
-            R.drawable.images
-        )
+        btnCancel.setOnClickListener {
+            adapter.setFocusCard(null)
+            binding.dimOverlay.visibility = View.GONE
+            btnGroup.visibility = View.GONE
+        }
 
-        val photoAdapter = PhotoGridAdapter(testPhotos)
-        //테스트용.. 내가 넣었듬 나중에 뺴야됨
+        btnSave.setOnClickListener {
+            // 저장 로직 처리 (필요 시 추가)
+            adapter.setFocusCard(null)
+            binding.dimOverlay.visibility = View.GONE
+            btnGroup.visibility = View.GONE
+        }
 
         val recyclerView = viewPager.getChildAt(0) as RecyclerView
         recyclerView.clipToPadding = false
@@ -116,8 +121,6 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
             }
         })
 
-
-
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser) {
@@ -127,6 +130,30 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+
+        adapter.setOnEditClickListener(object : CardAdapter.OnEditClickListener {
+            override fun onEditButtonClicked(position: Int) {
+                adapter.setFocusCard(position)
+                binding.editButtonGroup.visibility = View.VISIBLE
+
+                val recyclerView = binding.cardViewpager.getChildAt(0) as? RecyclerView
+                val holder = recyclerView?.findViewHolderForAdapterPosition(position)
+                val cardView = holder?.itemView ?: return
+
+                val location = IntArray(2)
+                cardView.getLocationOnScreen(location)
+
+                val hole = RectF(
+                    location[0].toFloat(),
+                    location[1].toFloat(),
+                    (location[0] + cardView.width).toFloat(),
+                    (location[1] + cardView.height).toFloat()
+                )
+
+                binding.dimOverlay.setHoleArea(hole)
+                binding.dimOverlay.visibility = View.VISIBLE
+            }
         })
     }
 
