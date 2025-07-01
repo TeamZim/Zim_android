@@ -28,21 +28,14 @@ class DialogViewMap2Adapter(
             if (position == selectedPosition) View.VISIBLE else View.INVISIBLE // 체크 유무 표시
 
 
-        // 텍스트 선택 시 업데이트
-        binding.emotionColorText.setOnClickListener {
+        // 감정색 선택 시
+        binding.emotionColorLayout.setOnClickListener {
             selectedPosition = position
             onItemSelected(item) // 감정 이름 전달
                                  // 여기가 람다 호출 부분!!!!!
             notifyGridLayoutChanged()
         }
 
-        // 이미지 선택 시 업데이트
-        binding.emotionColorImg.setOnClickListener {
-            selectedPosition = position
-            onItemSelected(item) // 감정 이름 전달
-            // 여기가 람다 호출 부분!!!!!
-            notifyGridLayoutChanged()
-        }
 
         return binding.root
     }
