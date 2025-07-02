@@ -1,5 +1,6 @@
 package com.example.zim_android.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.zim_android.R
+import com.example.zim_android.Record_2_1_Activity
 import com.example.zim_android.databinding.Record11FragmentBinding
 
 class RecordFragment_1_1: Fragment(R.layout.record_1_1_fragment){
@@ -54,9 +56,10 @@ class RecordFragment_1_1: Fragment(R.layout.record_1_1_fragment){
             findNavController().navigate(R.id.action_recordFragment_1_1_to_recordFragment_1_2)
         }
 
-//        binding.constraint2.setOnClickListener {
-//            findNavController().navigate(R.id.action_recordFragment_1_1_to_recordFragment_1_2)
-//        }
+        binding.constraint2.setOnClickListener {
+            val intent = Intent(requireContext(), Record_2_1_Activity::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun onDestroyView() {

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/preview_1"
+        android:layout_width="347dp"
+        android:layout_height="319dp"
+        android:layout_marginTop="50dp"
+        android:scaleX="-1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="347dp"
+        android:layout_height="319dp"
+        android:layout_marginTop="50dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@android:color/transparent"
+        />
+
+    <ImageView
+        android:id="@+id/overlay_img"
+        android:layout_width="347dp"
+        android:layout_height="319dp"
+        android:layout_marginTop="50dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@android:color/transparent"
+        />
+
+    <TextView
+        android:id="@+id/countdown_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:textColor="@color/white"
+        android:fontFamily="@font/nanum_neuris"
+        android:textSize="32sp"
+        android:text="countdown"
+        app:layout_constraintBottom_toBottomOf="@+id/overlay_img"
+        app:layout_constraintEnd_toEndOf="@+id/overlay_img"
+        app:layout_constraintStart_toStartOf="@+id/overlay_img"
+        app:layout_constraintTop_toTopOf="@+id/overlay_img"
+        android:visibility="invisible"
+        />
+
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/preview_2"
+        android:layout_width="347dp"
+        android:layout_height="319dp"
+        android:scaleX="-1"
+        app:layout_constraintEnd_toEndOf="@+id/imageView1"
+        app:layout_constraintStart_toStartOf="@+id/imageView1"
+        app:layout_constraintTop_toBottomOf="@+id/imageView1" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="347dp"
+        android:layout_height="319dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintEnd_toEndOf="@+id/imageView1"
+        app:layout_constraintStart_toStartOf="@+id/imageView1"
+        app:layout_constraintTop_toBottomOf="@+id/imageView1"
+        />
+
+    <ImageView
+        android:id="@+id/shutter_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toEndOf="@+id/imageView2"
+        app:layout_constraintStart_toStartOf="@+id/imageView2"
+        app:layout_constraintTop_toBottomOf="@+id/imageView2"
+        app:srcCompat="@drawable/shutter_btn_img_1" />
+
+    <ImageButton
+        android:id="@+id/shutter_btn"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:layout_constraintBottom_toBottomOf="@+id/shutter_img"
+        app:layout_constraintEnd_toEndOf="@+id/shutter_img"
+        app:layout_constraintStart_toStartOf="@+id/shutter_img"
+        app:layout_constraintTop_toTopOf="@+id/shutter_img"
+        app:srcCompat="@drawable/shutter_btn_img_2" />
+
+    <ImageButton
+        android:id="@+id/camera_swap_btn"
+        android:layout_width="37dp"
+        android:layout_height="37dp"
+        android:layout_marginStart="106dp"
+        android:layout_marginTop="21dp"
+        app:layout_constraintStart_toEndOf="@+id/shutter_img"
+        app:layout_constraintTop_toBottomOf="@+id/preview_2"
+        app:srcCompat="@drawable/camera_swap_btn" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
