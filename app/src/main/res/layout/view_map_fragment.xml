@@ -7,6 +7,12 @@
     android:background="?android:windowBackground">
 
 
+    <WebView
+        android:id="@+id/mapWebView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="20dp"/>
+
     <ImageButton
         android:id="@+id/add_record_btn"
         android:layout_width="wrap_content"
