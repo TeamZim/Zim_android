@@ -2,38 +2,37 @@ package com.example.zim_android.fragment
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.widget.EditText
-import android.widget.TextView
-import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.DialogFragment
-import com.example.zim_android.R
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Bundle
+import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.DialogFragment
+import com.example.zim_android.databinding.DialogEditTitleBinding
 
 class TitleEditDialogFragment(
     private val currentTitle: String,
     private val onTitleUpdated: (String) -> Unit
 ) : DialogFragment() {
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_title, null)
-        val editText = dialogView.findViewById<EditText>(R.id.edit_title_1)
-        val charCount = dialogView.findViewById<TextView>(R.id.char_count_title)
+    private var _binding: DialogEditTitleBinding? = null
+    private val binding get() = _binding!!
 
-        editText.setText(currentTitle)
-        editText.setSelection(currentTitle.length)
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        _binding = DialogEditTitleBinding.inflate(layoutInflater)
+
+        binding.editTitle1.setText(currentTitle)
+        binding.editTitle1.setSelection(currentTitle.length)
 
         // 글자 수 표시
-        editText.addTextChangedListener {
-            charCount.text = "${it?.length ?: 0}/15"
+        binding.editTitle1.addTextChangedListener {
+            val length = it?.length ?: 0
+            binding.charCountTitle.text = "$length/15"
         }
 
-        val builder = AlertDialog.Builder(requireContext(), R.style.DialogStyle)
-            .setView(dialogView)
+        val builder = AlertDialog.Builder(requireContext(), com.example.zim_android.R.style.DialogStyle)
+            .setView(binding.root)
             .setPositiveButton("확인") { _, _ ->
-                val newTitle = editText.text.toString()
+                val newTitle = binding.editTitle1.text.toString()
                 onTitleUpdated(newTitle)
             }
             .setNegativeButton("취소", null)
@@ -43,7 +42,12 @@ class TitleEditDialogFragment(
 
     override fun onStart() {
         super.onStart()
-        dialog?.window?.setDimAmount(0.7f) // 어둡게 정도
+        dialog?.window?.setDimAmount(0.7f)
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
