@@ -27,6 +27,9 @@ import android.widget.Toast
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.view.PreviewView
+import com.example.zim_android.Record_3_Activity
+import com.example.zim_android.fragment.RecordFragment_1_1
+import com.example.zim_android.fragment.RecordFragment_1_2
 import java.io.FileOutputStream
 
 class Record_2_1_Activity : AppCompatActivity() {
@@ -198,9 +201,17 @@ class Record_2_1_Activity : AppCompatActivity() {
                         binding.preview2.visibility = View.GONE
 
                         if (imagePath1 != null && imagePath2 != null) {
+                            // !!! ------- 수정해야할 부분 ------- !!!
+                            // 새로운 여행 시작에서 받아온 정보도 같이 넘기기 위해 intent1 사용
+                            val intent_add_new = Intent(this@Record_2_1_Activity, RecordFragment_1_2::class.java)
+                            // 기존 여행에 추가한 경우, 받아올 정보
+                            val intent_add_previout = Intent(this@Record_2_1_Activity, RecordFragment_1_1::class.java)
                             val intent = Intent(this@Record_2_1_Activity, Record_3_Activity::class.java)
                             intent.putExtra("imagePath1", imagePath1)
                             intent.putExtra("imagePath2", imagePath2)
+//                            intent.putExtra("trip_name", intent_add_new.getStringExtra("trip_name"))
+//                            intent.putExtra("trip_description", intent_add_new.getStringExtra("trip_description"))
+//                            intent.putExtra("selected_theme", intent_add_new.getStringExtra("selected_theme"))
                             startActivity(intent)
                             finish()
                         } else {
