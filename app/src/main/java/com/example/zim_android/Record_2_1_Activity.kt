@@ -26,6 +26,7 @@ import android.util.Size
 import android.widget.Toast
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
+import androidx.camera.view.PreviewView
 import java.io.FileOutputStream
 
 class Record_2_1_Activity : AppCompatActivity() {
@@ -126,12 +127,13 @@ class Record_2_1_Activity : AppCompatActivity() {
                 .build()
 
             // 프리뷰 객체 생성 및 xml의 프리뷰 객체와 연결
-            val preview = Preview.Builder().setResolutionSelector(resolutionSelector).build().also {
+            val preview = Preview.Builder().setTargetResolution(targetSize).build().also {
                 it.setSurfaceProvider(binding.preview1.surfaceProvider)
             }
 
+
             // 촬영된 이미지 객체 생성
-            val imageCaptureBuilder = ImageCapture.Builder()
+            val imageCaptureBuilder = ImageCapture.Builder().setTargetResolution(targetSize) //
             imageCapture = imageCaptureBuilder.build()
 
             // 카메라 전면 / 후면 설정
