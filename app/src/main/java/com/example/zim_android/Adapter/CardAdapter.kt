@@ -33,6 +33,20 @@ class CardAdapter(
         R.drawable.images,
     )
 
+    //카드 수정 클릭용
+    interface OnCardEditFieldClickListener {
+        fun onTitleClick(position: Int)
+        fun onDateClick(position: Int)
+        fun onMemoClick(position: Int)
+    }
+
+    private var onCardEditFieldClickListener: OnCardEditFieldClickListener? = null
+
+    fun setOnCardEditFieldClickListener(listener: OnCardEditFieldClickListener) {
+        onCardEditFieldClickListener = listener
+    }
+
+
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val front = itemView.findViewById<View>(R.id.card_front)
@@ -40,6 +54,11 @@ class CardAdapter(
         private val flipButton = itemView.findViewById<View>(R.id.flip_button)
         private val dotsButton = itemView.findViewById<ImageButton>(R.id.dots_button)
         private val editLayout = itemView.findViewById<View>(R.id.edit_layout)
+
+        private val titleText = itemView.findViewById<TextView>(R.id.travel_title)
+        private val dateText = itemView.findViewById<TextView>(R.id.travel_date)
+        private val memoText = itemView.findViewById<TextView>(R.id.travel_test)
+        private val editButton = itemView.findViewById<TextView>(R.id.edit_button)
 
         fun bind(position: Int) {
             val isFlipped = isFlippedList[position]
@@ -53,19 +72,26 @@ class CardAdapter(
 
             dotsButton.setOnClickListener {
                 editLayout.visibility = if (editLayout.visibility == View.VISIBLE) View.GONE else View.VISIBLE
-                // 오버레이 콜백은 여기서 호출하지 않음!!
             }
-
-
-            val editButton = itemView.findViewById<TextView>(R.id.edit_button)
 
             editButton.setOnClickListener {
-                onEditClickListener?.onEditButtonClicked(adapterPosition)
+                onEditClickListener?.onEditButtonClicked(position)
+
+                // 수정 모드 진입 시 각 요소에 클릭 리스너 설정
+                titleText.setOnClickListener {
+                    onCardEditFieldClickListener?.onTitleClick(position)
+                }
+
+                dateText.setOnClickListener {
+                    onCardEditFieldClickListener?.onDateClick(position)
+                }
+
+                memoText.setOnClickListener {
+                    onCardEditFieldClickListener?.onMemoClick(position)
+                }
             }
 
-
-
-            // 뒷면 리사이클러뷰 초기 설정
+            // 뒷면 이미지 그리드 설정
             val photoRecyclerView = itemView.findViewById<RecyclerView>(R.id.grid_image)
             if (photoRecyclerView.adapter == null) {
                 photoRecyclerView.layoutManager = GridLayoutManager(itemView.context, 2)
@@ -89,6 +115,7 @@ class CardAdapter(
             isFlippedList[position] = !isCurrentlyFlipped
         }
     }
+
 
     interface OnEditClickListener {
         fun onEditButtonClicked(position: Int)

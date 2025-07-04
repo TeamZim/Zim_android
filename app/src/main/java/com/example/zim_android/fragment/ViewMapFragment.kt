@@ -46,10 +46,9 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // ✅ 반드시 여기서 먼저 초기화해야 binding 사용 가능
+        //반드시 여기서 먼저 초기화해야 binding 사용 가능
         _binding = ViewMapFragmentBinding.inflate(inflater, container, false)
 
-        // ✅ binding 사용 OK
         binding.mapWebView.settings.javaScriptEnabled = true
         binding.mapWebView.loadUrl("file:///android_asset/world.svg")
 

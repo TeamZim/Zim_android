@@ -3,6 +3,7 @@ package com.example.zim_android.fragment
 import android.graphics.Color
 import android.graphics.RectF
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.SeekBar
 import androidx.core.content.ContextCompat
@@ -151,10 +152,29 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
                     (location[1] + cardView.height).toFloat()
                 )
 
-                binding.dimOverlay.setHoleArea(hole)
-                binding.dimOverlay.visibility = View.VISIBLE
+                binding.dimOverlay.post {
+                    binding.dimOverlay.visibility = View.VISIBLE
+                    Log.d("DEBUG", "✅ dimOverlay set to VISIBLE")
+                }
+
             }
         })
+
+        adapter.setOnCardEditFieldClickListener(object : CardAdapter.OnCardEditFieldClickListener {
+            override fun onTitleClick(position: Int) {
+                Log.d("Edit", "📝 제목 클릭됨 at $position")
+            }
+
+            override fun onDateClick(position: Int) {
+                Log.d("Edit", "📅 날짜 클릭됨 at $position")
+            }
+
+            override fun onMemoClick(position: Int) {
+                Log.d("Edit", "🗒️ 메모 클릭됨 at $position")
+            }
+
+    })
+
     }
 
     override fun onDestroyView() {
