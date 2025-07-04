@@ -23,11 +23,9 @@ import android.os.Handler
 import android.os.Looper
 import androidx.exifinterface.media.ExifInterface
 import android.util.Size
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
-import androidx.camera.view.PreviewView
 import java.io.FileOutputStream
 
 class Record_2_1_Activity : AppCompatActivity() {
@@ -35,11 +33,6 @@ class Record_2_1_Activity : AppCompatActivity() {
     private lateinit var imageCapture: ImageCapture // 카메라 객체
 
     private var captureStep = 1 // 몇 번째 촬영인지 담아두는 변수
-    private lateinit var previewView1: PreviewView
-    private lateinit var previewView2: PreviewView
-    private lateinit var imageView1: ImageView
-    private lateinit var imageView2: ImageView
-
     private var isFrontCamera: Boolean = true //  기본 초기 세팅은 전면
 
     // 찍힌 사진 담는 변수
@@ -55,6 +48,12 @@ class Record_2_1_Activity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = Record21Binding.inflate(layoutInflater) // 레이아웃을 binding에 연결
         setContentView(binding.root) // 화면에 뷰 세팅
+
+        binding.backBtnHeader.tvTitle.text = "기록하기"
+
+        binding.backBtnHeader.backBtn.setOnClickListener {
+            finish()
+        }
 
         // 카메라 권한 요청
         requestCameraPermissionIfNeeded()
@@ -201,6 +200,7 @@ class Record_2_1_Activity : AppCompatActivity() {
                             intent.putExtra("imagePath1", imagePath1)
                             intent.putExtra("imagePath2", imagePath2)
                             startActivity(intent)
+                            finish()
                         } else {
                             Log.d("intent", "intent error")
                         }

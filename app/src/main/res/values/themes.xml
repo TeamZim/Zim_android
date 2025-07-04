@@ -39,4 +39,15 @@
     </style>
 
 
+    <!-- countertext 스타일 적용 -->
+    <style name="CustomTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="counterTextAppearance">@style/CustomCounterText</item> <!-- countertext에만 적용 -->
+    </style>
+
+    <style name="CustomCounterText" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="fontFamily">@font/nanum_neuris</item>
+        <item name="android:textColor">@color/primary_700</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
 </resources>

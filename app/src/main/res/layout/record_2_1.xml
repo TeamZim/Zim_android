@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/back_btn_header"
+        layout="@layout/back_btn_header" />
+
 
     <androidx.camera.view.PreviewView
         android:id="@+id/preview_1"
         android:layout_width="347dp"
         android:layout_height="319dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="68dp"
         android:scaleX="-1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -18,7 +24,7 @@
         android:id="@+id/imageView1"
         android:layout_width="347dp"
         android:layout_height="319dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="68dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -29,13 +35,12 @@
         android:id="@+id/overlay_img"
         android:layout_width="347dp"
         android:layout_height="319dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="68dp"
+        android:background="@android:color/transparent"
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@android:color/transparent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/countdown_text"
@@ -102,5 +107,6 @@
         app:layout_constraintStart_toEndOf="@+id/shutter_img"
         app:layout_constraintTop_toBottomOf="@+id/preview_2"
         app:srcCompat="@drawable/camera_swap_btn" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
