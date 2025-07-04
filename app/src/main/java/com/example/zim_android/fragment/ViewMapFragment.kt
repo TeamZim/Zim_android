@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import com.example.zim_android.Adapter.DialogViewMap2Adapter
@@ -17,6 +19,20 @@ import com.example.zim_android.databinding.ViewMapDialog2Binding
 import com.example.zim_android.databinding.ViewMapFragmentBinding
 
 class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
+
+    // 예시 데이터: countryCode -> colorCode
+    val visitedCountries = mapOf(
+        "Republic of Korea" to "#FF6B6B",  // 한국
+        "Japan" to "#FF2B2B",  // 일본
+        "France" to "#FFD93D", // 프랑스
+        "China" to "#FFFF00"
+    )
+
+
+    private lateinit var webView: WebView
+
+    // 나라별로 저장된 색상
+    private val countryColorMap = mutableMapOf<String, String>()
 
     private var _binding: ViewMapFragmentBinding? = null
     private val binding get() = _binding!!
@@ -30,9 +46,42 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        //반드시 여기서 먼저 초기화해야 binding 사용 가능
         _binding = ViewMapFragmentBinding.inflate(inflater, container, false)
+
+        binding.mapWebView.settings.javaScriptEnabled = true
+        binding.mapWebView.loadUrl("file:///android_asset/world.svg")
+
+        //웹뷰 설정
+        binding.mapWebView.settings.apply {
+            javaScriptEnabled = true
+            allowFileAccess = true
+            builtInZoomControls = true // 확대/축소 필요시
+            displayZoomControls = false
+
+            binding.mapWebView.webViewClient = object : WebViewClient() {
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    super.onPageFinished(view, url)
+
+                    // 페이지 로드 끝나면 JS로 색칠
+                    for ((countryCode, colorCode) in visitedCountries) {
+                        val js = """
+    var elements = document.getElementsByClassName('$countryCode');
+    for (var i = 0; i < elements.length; i++) {
+        elements[i].style.fill = '$colorCode';
+    }
+""".trimIndent()
+                        binding.mapWebView.evaluateJavascript(js, null)
+
+                    }
+                }
+            }
+        }
+
+
         return binding.root
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -46,6 +95,14 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
         super.onDestroyView()
         _binding = null
     }
+
+
+    fun updateCountryColor(countryCode: String, colorCode: String) {
+        countryColorMap[countryCode] = colorCode
+        val js = "document.getElementById('$countryCode').style.fill = '$colorCode';"
+        binding.mapWebView.evaluateJavascript(js, null)  // ✅ 여기 binding으로 변경
+    }
+
 
     //
     private fun showAddRecordDialog1() {
@@ -85,17 +142,20 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
             dialog1Binding.dialog1SaveBtn.isClickable = true
         }
 
-        // 저장
+        // 저장 버튼 클릭 시 (dialog1Binding 기준)
         dialog1Binding.dialog1SaveBtn.setOnClickListener {
-            if (selectedCountry.isNotEmpty()) {
+            if (selectedCountry.isNotEmpty() && selectedEmotionColorCode.isNotEmpty()) {
+                val countryCode = countryNameToCode(selectedCountry)
+                if (countryCode != null) {
+                    updateCountryColor(countryCode, selectedEmotionColorCode)
+                }
                 dialog1.dismiss()
                 dialog1Binding.dialog1SaveBtn.isClickable = false
-                // selectedCountry, selectedEmotion 데이터를 내보내기 ?
-                // 둘 다 "" 로 초기화
                 selectedCountry = ""
                 selectedEmotionColorCode = ""
             }
         }
+
 
         // 감정색 다이얼로그 띄우기
         showAddRecordDialog2(dialog1Binding)
@@ -168,6 +228,57 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
             dialog2.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
             dialog2.show()
+
+
+
+            }
+
+
         }
+
     }
+// 🟨 countryNameToCode 함수: 반드시 클래스 마지막에 붙여줘야 함 (다른 함수 밖, 클래스 안)
+private fun countryNameToCode(name: String): String? {
+    return mapOf(
+        "한국" to "KR",
+        "일본" to "Japan",
+        "미국" to "US",
+        "프랑스" to "FR",
+        "독일" to "DE",
+        "중국" to "CN",
+        "영국" to "GB",
+        "이탈리아" to "IT",
+        "스페인" to "ES",
+        "러시아" to "RU",
+        "브라질" to "BR",
+        "캐나다" to "CA",
+        "멕시코" to "MX",
+        "사우디아라비아" to "SA",
+        "태국" to "TH",
+        "인도" to "IN",
+        "베트남" to "VN",
+        "싱가포르" to "SG",
+        "남아프리카공화국" to "ZA",
+        "스웨덴" to "SE",
+        "호주" to "AU",
+        "네덜란드" to "NL",
+        "뉴질랜드" to "NZ",
+        "노르웨이" to "NO",
+        "핀란드" to "FI",
+        "스위스" to "CH",
+        "포르투갈" to "PT",
+        "폴란드" to "PL",
+        "덴마크" to "DK",
+        "아르헨티나" to "AR",
+        "칠레" to "CL",
+        "이집트" to "EG",
+        "터키" to "TR",
+        "아랍에미리트" to "AE",
+        "인도네시아" to "ID",
+        "Korea" to "KR"
+    )[name]
 }
+
+
+
+
