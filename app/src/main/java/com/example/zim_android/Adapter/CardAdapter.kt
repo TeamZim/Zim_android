@@ -38,6 +38,7 @@ class CardAdapter(
         fun onTitleClick(position: Int)
         fun onDateClick(position: Int)
         fun onMemoClick(position: Int)
+        fun onImageClick(position: Int)
     }
 
     private var onCardEditFieldClickListener: OnCardEditFieldClickListener? = null
@@ -58,6 +59,8 @@ class CardAdapter(
         private val titleText = itemView.findViewById<TextView>(R.id.travel_title)
         private val dateText = itemView.findViewById<TextView>(R.id.travel_date)
         private val memoText = itemView.findViewById<TextView>(R.id.travel_test)
+        private val image = itemView.findViewById<TextView>(R.id.travel_image)
+
         private val editButton = itemView.findViewById<TextView>(R.id.edit_button)
 
         fun bind(position: Int) {
@@ -88,6 +91,10 @@ class CardAdapter(
 
                 memoText.setOnClickListener {
                     onCardEditFieldClickListener?.onMemoClick(position)
+                }
+
+                image.setOnClickListener {
+                    onCardEditFieldClickListener?.onImageClick(position)
                 }
             }
 

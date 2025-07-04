@@ -162,15 +162,19 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
 
         adapter.setOnCardEditFieldClickListener(object : CardAdapter.OnCardEditFieldClickListener {
             override fun onTitleClick(position: Int) {
-                Log.d("Edit", "📝 제목 클릭됨 at $position")
+                Log.d("Edit", "제목 클릭됨 at $position")
             }
 
             override fun onDateClick(position: Int) {
-                Log.d("Edit", "📅 날짜 클릭됨 at $position")
+                Log.d("Edit", "날짜 클릭됨 at $position")
             }
 
             override fun onMemoClick(position: Int) {
-                Log.d("Edit", "🗒️ 메모 클릭됨 at $position")
+                Log.d("Edit", "메모 클릭됨 at $position")
+            }
+
+            override fun onImageClick(position: Int) {
+                Log.d("Edit", "사진 클릭됨 at $position")
             }
 
     })
