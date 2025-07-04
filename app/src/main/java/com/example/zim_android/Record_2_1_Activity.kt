@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import com.example.zim_android.databinding.Record21Binding
 import java.io.File
 import android.Manifest
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -27,7 +28,6 @@ import android.widget.Toast
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.view.PreviewView
-import androidx.transition.Visibility
 import java.io.FileOutputStream
 
 class Record_2_1_Activity : AppCompatActivity() {
@@ -41,6 +41,10 @@ class Record_2_1_Activity : AppCompatActivity() {
     private lateinit var imageView2: ImageView
 
     private var isFrontCamera: Boolean = true //  기본 초기 세팅은 전면
+
+    // 찍힌 사진 담는 변수
+    private var imagePath1: String? = null
+    private var imagePath2: String? = null
 
     // 카운트다운 용 변수
     private var countdownRunnable: Runnable? = null
@@ -177,6 +181,7 @@ class Record_2_1_Activity : AppCompatActivity() {
 
                     // 화면에 표시
                     if (captureStep == 1) {
+                        imagePath1 = file.absolutePath  // 1차 촬영 결과 저장
                         binding.imageView1.setImageBitmap(cropped)
                         binding.preview1.visibility = View.GONE
 
@@ -186,8 +191,26 @@ class Record_2_1_Activity : AppCompatActivity() {
                         captureStep = 2
                         startCamera(step = 2)
                     } else {
+                        imagePath2 = file.absolutePath // 2차 촬영 결과 저장
+
                         binding.imageView2.setImageBitmap(cropped)
                         binding.preview2.visibility = View.GONE
+
+                        if (imagePath1 != null && imagePath2 != null) {
+                            val intent = Intent(this@Record_2_1_Activity, Record_3_Activity::class.java)
+                            intent.putExtra("imagePath1", imagePath1)
+                            intent.putExtra("imagePath2", imagePath2)
+                            startActivity(intent)
+                        } else {
+                            Log.d("intent", "intent error")
+                        }
+
+//                        // Intent에 두 사진 경로 담아서 넘기기
+//                        val intent = Intent(this@Record_2_1_Activity, Record_3_Activity::class.java)
+//                        intent.putExtra("imagePath1", imagePath1)
+//                        intent.putExtra("imagePath2", imagePath2)
+//                        startActivity(intent)
+//                        // finish() // 현재 액티비티 종료해서 뒤로가기 막기
                     }
                 }
 

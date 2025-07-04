@@ -51,14 +51,15 @@ class RecordFragment_1_1: Fragment(R.layout.record_1_1_fragment){
         // tvtitle text 변경
         binding.commonHeader.tvTitle.text = "기록하기"
 
-        // constraint1 버튼 클릭 navigate 전환 이루어짐
+        // 기존 여행에 추가
         binding.constraint1.setOnClickListener {
-            findNavController().navigate(R.id.action_recordFragment_1_1_to_recordFragment_1_2)
-        }
-
-        binding.constraint2.setOnClickListener {
             val intent = Intent(requireContext(), Record_2_1_Activity::class.java)
             startActivity(intent)
+        }
+
+        // 새로운 여행 시작
+        binding.constraint2.setOnClickListener {
+            findNavController().navigate(R.id.action_recordFragment_1_1_to_recordFragment_1_2)
         }
     }
 

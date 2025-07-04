@@ -33,10 +33,17 @@
         <activity
             android:name=".Record_2_1_Activity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.Zim_android"
             >
         </activity>
+
+        <activity
+            android:name=".Record_3_Activity"
+            android:exported="true"
+            android:theme="@style/Theme.Zim_android"
+            >
+        </activity>
+
     </application>
 
 </manifest>
