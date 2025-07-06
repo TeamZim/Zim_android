@@ -178,16 +178,21 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
             }
 
             override fun onMemoClick(position: Int) {
-                Log.d("Edit", "메모 클릭됨 at $position")
+                val dialog = Record_Modify_2(currentTitle = "현재 제목",
+                    onTitleUpdated = { newMemo ->
+                        Log.d("Edit", "새 제목: $newMemo")
+                        Log.d("Edit", "메모 클릭됨 at $position")
+
+                }
+                )
+                dialog.show(parentFragmentManager, "editMemo")
+
             }
 
             override fun onImageClick(position: Int) {
                 Log.d("Edit", "사진 클릭됨 at $position")
             }
 
-            override fun onTextClick(position: Int) {
-                Log.d("Edit", "설명 클릭됨 at $position")
-            }
 
     })
 
