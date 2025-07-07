@@ -6,6 +6,7 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/emotion_color_layout"
         android:layout_width="41dp"
         android:layout_height="51dp"
         android:layout_marginRight="10dp"
