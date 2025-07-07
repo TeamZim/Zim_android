@@ -162,7 +162,7 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
 
         adapter.setOnCardEditFieldClickListener(object : CardAdapter.OnCardEditFieldClickListener {
             override fun onTitleClick(position: Int) {
-                val dialog = TitleEditDialogFragment(
+                val dialog = Record_Modify_1_(
                     currentTitle = "현재 제목",
                     onTitleUpdated = { newTitle ->
                         Log.d("Edit", "새 제목: $newTitle")
@@ -173,19 +173,26 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
             }
 
 
-
-
             override fun onDateClick(position: Int) {
                 Log.d("Edit", "날짜 클릭됨 at $position")
             }
 
             override fun onMemoClick(position: Int) {
-                Log.d("Edit", "메모 클릭됨 at $position")
+                val dialog = Record_Modify_2(currentTitle = "현재 제목",
+                    onTitleUpdated = { newMemo ->
+                        Log.d("Edit", "새 제목: $newMemo")
+                        Log.d("Edit", "메모 클릭됨 at $position")
+
+                }
+                )
+                dialog.show(parentFragmentManager, "editMemo")
+
             }
 
             override fun onImageClick(position: Int) {
                 Log.d("Edit", "사진 클릭됨 at $position")
             }
+
 
     })
 
