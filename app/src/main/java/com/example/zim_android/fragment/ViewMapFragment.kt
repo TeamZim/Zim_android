@@ -4,6 +4,8 @@ import android.app.Dialog
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +17,7 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import com.example.zim_android.Adapter.DialogEmotionSelectAdapter
 import com.example.zim_android.R
+import com.example.zim_android.data.model.CountrySearchResponse
 import com.example.zim_android.data.model.Emotion
 import com.example.zim_android.data.network.ApiProvider
 import com.example.zim_android.databinding.DialogSelectEmotionColorBinding
@@ -34,6 +37,8 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
         "China" to "#FFFF00"
     )
 
+    val api = ApiProvider.api
+    private var countryList: List<CountrySearchResponse> = emptyList()
 
     private lateinit var webView: WebView
 
@@ -121,16 +126,10 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
             dialog1.dismiss()
         }
 
-        // 임시 더미 리스트
-        val countryNames = listOf("Korea", "한국", "일본", "미국", "프랑스", "독일", "중국", "영국", "이탈리아", "스페인", "러시아", "브라질", "캐나다", "멕시코", "사우디아라비아", "태국", "인도", "베트남", "싱가포르", "남아프리카공화국", "스웨덴", "호주", "네덜란드", "뉴질랜드", "노르웨이", "핀란드", "스위스", "포르투갈", "폴란드", "덴마크", "아르헨티나", "칠레", "이집트", "터키", "아랍에미리트", "인도네시아")
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, countryNames)
-        dialog1Binding.dialog1CountryListTextInput.setAdapter(adapter)
-
-        dialog1Binding.dialog1CountryListTextInput.setOnClickListener {
-            // 다이얼로그 안에서는 포커스가 textinput이 아니라 다이얼로그로 가서 키보드가 자동으로 안 올라올 수 있음.
-            val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.showSoftInput(dialog1Binding.dialog1CountryListTextInput, InputMethodManager.SHOW_IMPLICIT)
-        }
+//        // 임시 더미 리스트
+//        val countryNames = listOf("Korea", "한국", "일본", "미국", "프랑스", "독일", "중국", "영국", "이탈리아", "스페인", "러시아", "브라질", "캐나다", "멕시코", "사우디아라비아", "태국", "인도", "베트남", "싱가포르", "남아프리카공화국", "스웨덴", "호주", "네덜란드", "뉴질랜드", "노르웨이", "핀란드", "스위스", "포르투갈", "폴란드", "덴마크", "아르헨티나", "칠레", "이집트", "터키", "아랍에미리트", "인도네시아")
+//        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, countryNames)
+//        dialog1Binding.dialog1CountryListTextInput.setAdapter(adapter)
 
         // 사용자가 드롭다운에서 나라를 선택한 경우
         dialog1Binding.dialog1CountryListTextInput.setOnItemClickListener { parent, _, position, _ -> // _는 view, id인데 사용 안해서 생략함.
@@ -147,6 +146,46 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
             dialog1Binding.dialog1SaveBtn.setImageResource(R.drawable.save_btn_active)
             dialog1Binding.dialog1SaveBtn.isClickable = true
         }
+
+        dialog1Binding.dialog1CountryListTextInput.setOnClickListener {
+            // 다이얼로그 안에서는 포커스가 textinput이 아니라 다이얼로그로 가서 키보드가 자동으로 안 올라올 수 있음.
+            val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(dialog1Binding.dialog1CountryListTextInput, InputMethodManager.SHOW_IMPLICIT)
+        }
+
+
+        val inputField = dialog1Binding.dialog1CountryListTextInput
+        val dropdownAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line)
+        inputField.setAdapter(dropdownAdapter)
+
+        // 검색 기능
+        inputField.threshold = 1 // 1자 입력 시부터 검색 시작
+        inputField.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val keyword = s.toString()
+
+                if (keyword.isNotEmpty()) {
+                    api.searchCountry(keyword).enqueue(object : Callback<List<CountrySearchResponse>> {
+                        override fun onResponse(call: Call<List<CountrySearchResponse>>, response: Response<List<CountrySearchResponse>>) {
+                            if (response.isSuccessful) {
+                                val result = response.body() ?: emptyList()
+                                countryList = result // 전역 변수에 저장
+                                val countryNames = result.map { "${it.countryName}" }
+                                dropdownAdapter.clear()
+                                dropdownAdapter.addAll(countryNames)
+                                dropdownAdapter.notifyDataSetChanged()
+                            }
+                        }
+                        override fun onFailure(call: Call<List<CountrySearchResponse>>, t: Throwable) {
+                            Log.e("국가 검색 실패", t.message.toString())
+                        }
+                    })
+                }
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
 
         // 저장 버튼 클릭 시 (dialog1Binding 기준)
         dialog1Binding.dialog1SaveBtn.setOnClickListener {
@@ -192,25 +231,23 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
             }
 
 
-
-            val api = ApiProvider.api
-
             api.getEmotions().enqueue(object : Callback<List<Emotion>> {
                 override fun onResponse(call: Call<List<Emotion>>, response: Response<List<Emotion>>) {
                     if (response.isSuccessful) {
                         val emotionList = response.body() ?: emptyList()
-                        // 여기서 어댑터에 연결
+
+                        // 여어댑터에 연결
                         val emotionSelectAdapter = DialogEmotionSelectAdapter(
                             context = requireContext(),
                             items = emotionList,
                             onItemSelected = { selectedEmotion ->
-                                // 감정 선택 시 처리
+                                // 감정 선택 시 처리 부분
                                 // 저장 버튼 활성화 및 클릭 가능하게하기
                                 dialog2Binding.dialog2SaveBtn.setImageResource(R.drawable.save_btn_active)
                                 dialog2Binding.dialog2SaveBtn.isClickable = true
                             }
                         )
-                        // RecyclerView 혹은 GridView 등에 setAdapter(adapter) 등으로 연결
+                        // RecyclerView 혹은 GridView에 setAdapter(adapter) 등으로 연결
                         dialog2Binding.dialog2SaveBtn.setOnClickListener {
                             val selectedItem = emotionSelectAdapter.getSelectedItem()
                             if (selectedItem != null) {
