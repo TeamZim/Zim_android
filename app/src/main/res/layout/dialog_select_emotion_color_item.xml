@@ -21,7 +21,7 @@
             android:layout_marginStart="6dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/default_color_img" />
+            app:srcCompat="@drawable/emotion_color_base_circle" />
 
         <ImageView
             android:id="@+id/check_icon"

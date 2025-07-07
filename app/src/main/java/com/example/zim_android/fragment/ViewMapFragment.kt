@@ -2,7 +2,9 @@ package com.example.zim_android.fragment
 
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,12 +13,16 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
-import com.example.zim_android.Adapter.DialogViewMap2Adapter
+import com.example.zim_android.Adapter.DialogEmotionSelectAdapter
 import com.example.zim_android.R
-import com.example.zim_android.data.model.EmotionColorData
+import com.example.zim_android.data.model.Emotion
+import com.example.zim_android.data.network.ApiProvider
+import com.example.zim_android.databinding.DialogSelectEmotionColorBinding
 import com.example.zim_android.databinding.ViewMapDialog1Binding
-import com.example.zim_android.databinding.ViewMapDialog2Binding
 import com.example.zim_android.databinding.ViewMapFragmentBinding
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
 
@@ -100,11 +106,11 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
     fun updateCountryColor(countryCode: String, colorCode: String) {
         countryColorMap[countryCode] = colorCode
         val js = "document.getElementById('$countryCode').style.fill = '$colorCode';"
-        binding.mapWebView.evaluateJavascript(js, null)  // ✅ 여기 binding으로 변경
+        binding.mapWebView.evaluateJavascript(js, null)  // 여기 binding으로 변경
     }
 
 
-    //
+    // 과거 여행 추가 다이얼로그 띄우기
     private fun showAddRecordDialog1() {
         val dialog1 = Dialog(requireContext())
         val dialog1Binding = ViewMapDialog1Binding.inflate(layoutInflater)
@@ -169,12 +175,15 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
         dialog1.show()
     }
 
+
+
+    // 감정색 선택 다이얼로그 띄우는 부분
     private fun showAddRecordDialog2(dialog1Binding: ViewMapDialog1Binding) {
         // 감정색 다이얼로그 작업
         dialog1Binding.selectColorBtn.setOnClickListener {
             // 두 번째 다이얼로그 가지고 오기
             val dialog2 = Dialog(requireContext())
-            val dialog2Binding = ViewMapDialog2Binding.inflate(layoutInflater)
+            val dialog2Binding = DialogSelectEmotionColorBinding.inflate(layoutInflater)
             dialog2.setContentView(dialog2Binding.root)
 
             // < 버튼 클릭시 다이얼로그 내리기
@@ -183,43 +192,59 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
             }
 
 
-            // 어댑터 연결
-            // 사용자가 감정색을 선택한 경우
-            val emotionDialogAdapter = DialogViewMap2Adapter(requireContext(), EmotionColorData.emotionColorList){ // 이 다음부터가 람다 인자를 보내는 부분
-                    selectedItem ->
-                // 저장 버튼 활성화 및 클릭 가능하게하기
-                dialog2Binding.dialog2SaveBtn.setImageResource(R.drawable.save_btn_active)
-                dialog2Binding.dialog2SaveBtn.isClickable = true
-            }
 
-            // 저장 버튼 클릭 시
-            dialog2Binding.dialog2SaveBtn.setOnClickListener {
-                // 감정 이미지와 텍스트 설정
-                val selectedItem = emotionDialogAdapter.getSelectedItem()
-                if (selectedItem != null) {
-                    dialog1Binding.dialog1SelectedColorImg.setImageResource(selectedItem.imageResId)
-                    dialog1Binding.dialog1SelectedColorText.text = selectedItem.name
-                    // 감정색명 저장
-                    selectedEmotionColorCode = selectedItem.colorCode
-                    dialog2.dismiss()
-                    dialog2Binding.dialog2SaveBtn.isClickable = false
+            val api = ApiProvider.api
+
+            api.getEmotions().enqueue(object : Callback<List<Emotion>> {
+                override fun onResponse(call: Call<List<Emotion>>, response: Response<List<Emotion>>) {
+                    if (response.isSuccessful) {
+                        val emotionList = response.body() ?: emptyList()
+                        // 여기서 어댑터에 연결
+                        val emotionSelectAdapter = DialogEmotionSelectAdapter(
+                            context = requireContext(),
+                            items = emotionList,
+                            onItemSelected = { selectedEmotion ->
+                                // 감정 선택 시 처리
+                                // 저장 버튼 활성화 및 클릭 가능하게하기
+                                dialog2Binding.dialog2SaveBtn.setImageResource(R.drawable.save_btn_active)
+                                dialog2Binding.dialog2SaveBtn.isClickable = true
+                            }
+                        )
+                        // RecyclerView 혹은 GridView 등에 setAdapter(adapter) 등으로 연결
+                        dialog2Binding.dialog2SaveBtn.setOnClickListener {
+                            val selectedItem = emotionSelectAdapter.getSelectedItem()
+                            if (selectedItem != null) {
+                                dialog1Binding.dialog1SelectedColorImg.setImageResource(R.drawable.emotion_color_base_circle)
+                                dialog1Binding.dialog1SelectedColorImg.setColorFilter(Color.parseColor(selectedItem.colorCode))
+                                dialog1Binding.dialog1SelectedColorText.text = selectedItem.name
+                                // 감정색명 저장
+                                selectedEmotionColorCode = selectedItem.colorCode
+                                dialog2.dismiss()
+                                dialog2Binding.dialog2SaveBtn.isClickable = false
+                            }
+                        }
+
+                        // 그리드 레이아웃에 아이템 추가
+                        for (i in 0 until emotionSelectAdapter.getCount()) {
+                            val view = emotionSelectAdapter.getView(i)
+                            dialog2Binding.colorListGrid.addView(view)
+                        }
+
+                        emotionSelectAdapter.setOnGridUpdateCallback{
+                            dialog2Binding.colorListGrid.removeAllViews()
+                            for (i in 0 until emotionSelectAdapter.getCount()) {
+                                val view = emotionSelectAdapter.getView(i)
+                                dialog2Binding.colorListGrid.addView(view)
+                            }
+                        } // 초기화 한 번 호출
+
+                        }
                 }
-            }
 
-            for (i in 0 until emotionDialogAdapter.getCount()) {
-                val view = emotionDialogAdapter.getView(i)
-                dialog2Binding.colorListGrid.addView(view) // 그리드 레이아웃에 아이템 추가
-            }
-
-            emotionDialogAdapter.setOnGridUpdateCallback{
-                dialog2Binding.colorListGrid.removeAllViews()
-                for (i in 0 until emotionDialogAdapter.getCount()) {
-                    val view = emotionDialogAdapter.getView(i)
-                    dialog2Binding.colorListGrid.addView(view)
+                override fun onFailure(call: Call<List<Emotion>>, t: Throwable) {
+                    Log.e("감정 불러오기 실패", t.message.toString())
                 }
-            } // 초기화 한 번 호출
-            // 함수 안 내용은 호출할 때 정의하는 것
-
+            })
 
             dialog2.window?.setLayout(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -229,14 +254,14 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
 
             dialog2.show()
 
-
-
             }
-
 
         }
 
+
+
     }
+
 // 🟨 countryNameToCode 함수: 반드시 클래스 마지막에 붙여줘야 함 (다른 함수 밖, 클래스 안)
 private fun countryNameToCode(name: String): String? {
     return mapOf(

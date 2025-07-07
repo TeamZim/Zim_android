@@ -135,7 +135,6 @@ interface ApiService {
 
 
 
-
     // 날씨 관리 API
     // 날씨 목록 조회
     @GET("/api/weathers")
