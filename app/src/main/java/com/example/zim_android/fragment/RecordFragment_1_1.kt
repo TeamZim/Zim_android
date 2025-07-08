@@ -9,16 +9,19 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.zim_android.R
 import com.example.zim_android.Record_2_1_Activity
+import com.example.zim_android.data.network.DiaryTempStore
+import com.example.zim_android.data.network.UserSession.currentTripId
+import com.example.zim_android.data.network.UserSession.userId
 import com.example.zim_android.databinding.Record11FragmentBinding
 
-class RecordFragment_1_1: Fragment(R.layout.record_1_1_fragment){
+class RecordFragment_1_1: Fragment(R.layout.record_1_1_fragment) {
 
     // 프래그먼트의 뷰 바인딩 객체를 담는 변수
     // 언더바 _는 외부에서 직접 접근하지 말고 내부에서만 쓸게요 라는 개발자의 의도 표현
     private var _binding: Record11FragmentBinding? = null
+
     // _binding을 non-null로 안전하게 꺼내 쓰기 위한 프로퍼티
     private val binding get() = _binding!!
-
 
     // 뷰를 생성해서 반환하는 함
     // 꼭 view를 return 해야함.
@@ -53,6 +56,11 @@ class RecordFragment_1_1: Fragment(R.layout.record_1_1_fragment){
 
         // 기존 여행에 추가
         binding.constraint1.setOnClickListener {
+            // 일기 생성 정보 추가
+            DiaryTempStore.apply {
+                userId = userId  // UserSession에 저장된 현재 userId 사용
+                tripId = currentTripId  // UserSession에 저장된 현재 tripid 사용
+            }
             val intent = Intent(requireContext(), Record_2_1_Activity::class.java)
             startActivity(intent)
         }
@@ -60,6 +68,8 @@ class RecordFragment_1_1: Fragment(R.layout.record_1_1_fragment){
         // 새로운 여행 시작
         binding.constraint2.setOnClickListener {
             findNavController().navigate(R.id.action_recordFragment_1_1_to_recordFragment_1_2)
+            // 일기 생성 정보 추가
+            DiaryTempStore.userId = userId
         }
     }
 
@@ -67,5 +77,5 @@ class RecordFragment_1_1: Fragment(R.layout.record_1_1_fragment){
         super.onDestroyView()
         _binding = null
     }
-
 }
+
