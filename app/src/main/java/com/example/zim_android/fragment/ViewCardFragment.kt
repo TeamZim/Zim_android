@@ -19,10 +19,8 @@ import com.example.zim_android.Adapter.DialogPhotoSelectAdapter
 import com.example.zim_android.Adapter.PhotoGridAdapter
 import com.example.zim_android.data.model.TripImageResponse
 import com.example.zim_android.data.network.ApiProvider
-import com.example.zim_android.data.network.ApiProvider.api
 import com.example.zim_android.data.network.UserSession
 import com.example.zim_android.databinding.DialogSelectPhotoBinding
-import com.example.zim_android.databinding.MypageDialog1Binding
 import com.example.zim_android.databinding.ViewCardFragmentBinding
 import retrofit2.Call
 import retrofit2.Callback
