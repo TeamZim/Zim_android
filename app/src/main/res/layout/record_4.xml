@@ -268,17 +268,18 @@
                 android:textSize="26sp" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:id="@+id/emotion_button"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center">
 
                 <ImageView
                     android:id="@+id/emotion_circle"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
                     android:src="@drawable/non_selected"
-                    android:layout_marginEnd="6dp" />
+                    android:layout_marginEnd="10dp" />
 
                 <TextView
                     android:id="@+id/emotion_text"
@@ -288,6 +289,14 @@
                     android:gravity="center_vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:layout_width="8dp"
+                    android:layout_height="14dp"
+                    android:layout_gravity="bottom"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="5dp"
+                    android:src="@drawable/add_record_arrow_btn_img" />
             </LinearLayout>
 
             <View
@@ -297,16 +306,10 @@
                 android:layout_marginTop="4dp" />
 
 
+
+
         </LinearLayout>
 
-        <ImageView
-            android:layout_width="6dp"
-            android:layout_height="14dp"
-            android:layout_gravity="bottom"
-            android:layout_marginStart="4dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginEnd="4dp"
-            android:src="@drawable/add_record_arrow_btn_img" />
 
 
         <!-- 날씨 선택 -->
@@ -327,15 +330,16 @@
                 android:textSize="26sp" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:id="@+id/weather_button"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center">
 
                 <ImageView
                     android:id="@+id/weather_circle"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
                     android:src="@drawable/non_selected"
                     android:layout_marginEnd="6dp" />
 
@@ -347,6 +351,15 @@
                     android:gravity="center_vertical"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:layout_width="8dp"
+                    android:layout_height="14dp"
+                    android:layout_gravity="bottom"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/add_record_arrow_btn_img" />
             </LinearLayout>
 
             <View
@@ -356,14 +369,7 @@
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
-        <ImageView
-            android:layout_width="6dp"
-            android:layout_height="14dp"
-            android:layout_gravity="bottom"
-            android:layout_marginStart="4dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginEnd="4dp"
-            android:src="@drawable/add_record_arrow_btn_img" />
+
 
         <!-- 녹음 선택 -->
         <LinearLayout
