@@ -73,6 +73,25 @@ class Record_3_Activity: AppCompatActivity() {
 
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
         }
+
+        binding.nextBtn.setOnClickListener {
+            val intent = Intent(this, Record_4_Activity::class.java)
+            intent.putExtra("imagePath1", imagePath1)
+            intent.putExtra("imagePath2", imagePath2)
+            intent.putExtra("representIndex", selectedRepresentativeIndex)
+            startActivity(intent)
+        }
+
+
+        // 일기로 넘기기
+        // 일기 저장을 해야 사진이 저장되도록하기 위해 여기서는 경로만 보냄
+//        val intent = Intent(this@Record_3_Activity, 일기화면::class.java)
+//        intent.putExtra("imagePath1", imagePath1)
+//        intent.putExtra("imagePath2", imagePath2)
+//        intent.putExtra("is_represent_1", ~) // 이미지를 내보낼 때 데이터 클래스 만들어야할 것 같음.
+//        startActivity(intent)
+
+
     }
 
 
