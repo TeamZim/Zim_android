@@ -9,7 +9,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import com.example.zim_android.databinding.RecordModify1Binding
 
-class Record_Modify_1_(
+class Record_Modify_1(
     private val currentTitle: String,
     private val onTitleUpdated: (String) -> Unit
 ) : DialogFragment() {
