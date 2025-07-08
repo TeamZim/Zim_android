@@ -1,6 +1,6 @@
 package com.example.zim_android.data.model
 
-data  class UserResponse (
+data class UserResponse (
     val userId: Int,
     val kakaoId: String,
     val profileImageUrl: String,
