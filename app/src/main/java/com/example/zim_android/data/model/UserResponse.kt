@@ -12,4 +12,4 @@ data class UserResponse (
     val diaryCount: Int,
     val visitedCountryCount: Int,
     val flags: String?
-    )
+)

@@ -15,6 +15,7 @@ import com.example.zim_android.Adapter.CardAdapter
 import com.example.zim_android.data.model.TripResponse
 import com.example.zim_android.data.model.TripImageResponse
 import com.example.zim_android.data.network.ApiProvider
+import com.example.zim_android.data.network.ApiProvider.api
 import com.example.zim_android.data.network.UserSession
 import com.example.zim_android.databinding.ViewCardFragmentBinding
 import retrofit2.Call
