@@ -24,13 +24,21 @@ import android.os.Looper
 import androidx.exifinterface.media.ExifInterface
 import android.util.Size
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.camera.core.resolutionselector.ResolutionSelector
 import androidx.camera.core.resolutionselector.ResolutionStrategy
-import androidx.camera.view.PreviewView
-import com.example.zim_android.Record_3_Activity
-import com.example.zim_android.fragment.RecordFragment_1_1
-import com.example.zim_android.fragment.RecordFragment_1_2
+import com.example.zim_android.data.model.DiaryImageRequest
+import com.example.zim_android.data.network.DiaryTempStore
+import com.example.zim_android.data.network.GeoApiClient
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.FileOutputStream
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 
 class Record_2_1_Activity : AppCompatActivity() {
     private lateinit var binding: Record21Binding
@@ -45,7 +53,22 @@ class Record_2_1_Activity : AppCompatActivity() {
 
     // 카운트다운 용 변수
     private var countdownRunnable: Runnable? = null
-    private val countdownHandler = Handler(Looper.getMainLooper())
+    private var countdownHandler = Handler(Looper.getMainLooper())
+
+    // 현재 위치 받아오는 변수
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    // 나라, 도시, 날짜, 시간 담는 변수
+    private var country: String = ""
+    private var cityName: String = ""
+    private var dateTime: String = ""
+
+    private val REQUIRED_PERMISSIONS = arrayOf(
+        Manifest.permission.CAMERA,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    )
+
+    private val REQUEST_CODE_PERMISSIONS = 10
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,8 +82,11 @@ class Record_2_1_Activity : AppCompatActivity() {
             finish()
         }
 
-        // 카메라 권한 요청
-        requestCameraPermissionIfNeeded()
+        // 위치 받아오는 변수 초기화
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        // 권한 요청
+        requestAllPermissions()
 
         // 촬영 버튼 클릭
         binding.shutterBtn.setOnClickListener {
@@ -77,22 +103,23 @@ class Record_2_1_Activity : AppCompatActivity() {
         binding.preview1.scaleX = -1f // 전면으로 시작하니 preview1의 전면만 우선 설정
     }
 
-    // 권한 있는지 확인하고 요청하는 함수
-    // 얘는 나중에 온보딩쪽으로 넘어갈 수도 있음.
-    private fun requestCameraPermissionIfNeeded() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) // manifest의 권한 확인
-            == PackageManager.PERMISSION_GRANTED // 허용 시 바로 카메라 시작
-        ) {
-            startCamera()
-        } else { // 거부 시 권한 요청
+
+    private fun requestAllPermissions() {
+        val permissionsToRequest = REQUIRED_PERMISSIONS.filter {
+            ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+        }
+
+        if (permissionsToRequest.isNotEmpty()) {
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(Manifest.permission.CAMERA),
+                permissionsToRequest.toTypedArray(),
                 REQUEST_CODE_PERMISSIONS
             )
+        } else {
+            // 모두 허용된 상태
+            startCamera()
         }
     }
-
 
     // 권한 요청 결과 처리하는 콜백 함수
     override fun onRequestPermissionsResult(
@@ -101,11 +128,92 @@ class Record_2_1_Activity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startCamera() // 카메라 승인
-            } else { // 거부 시 토스트 띄우기
-                Toast.makeText(this, "카메라 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+            val denied = grantResults.any { it != PackageManager.PERMISSION_GRANTED }
+
+            if (denied) {
+                showPermissionPopup()
+            } else {
+                startCamera()
+            }
+        }
+    }
+
+    private fun showPermissionPopup() {
+        AlertDialog.Builder(this)
+            .setTitle("권한 요청")
+            .setMessage("권한 없이는 기능을 이용할 수 없습니다.")
+            .setCancelable(false)
+            .setNegativeButton("이전으로") { _, _ ->
+                finish() // 이전 화면으로 종료
+            }
+            .setPositiveButton("권한 허용하기") { _, _ ->
+                requestAllPermissions() // 다시 요청
+            }
+            .show()
+    }
+
+
+    // 위치 받아오기
+    private fun getLastLocation() {
+        // 권한 확인 추가
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+            // 권한이 없을 경우
+            Toast.makeText(this, "위치 권한이 없습니다", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                val latitude = location.latitude
+                val longitude = location.longitude
+
+                Log.d("GeoLocation", "latitude=$latitude, longitude=$longitude")
+
+                getAddressFromLocation(latitude, longitude)
+            } else {
+                Toast.makeText(this, "위치를 가져올 수 없습니다", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+
+    // 역지오코딩
+    private fun getAddressFromLocation(latitude: Double, longitude: Double) {
+        val latlng = "$latitude,$longitude"
+        val apiKey = "AIzaSyBR_gHXO2peBxpR2hyxxSKaFNDA_3CjeAI" // google cloud 에서 받은 api key
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = GeoApiClient.retrofit.getAddressFromLocation(latlng, apiKey)
+                if (response.isSuccessful) {
+                    val components = response.body()?.results?.firstOrNull()?.address_components
+
+                    Log.d("GeoLocationRaw", "response: ${response.body()}")
+
+                    // 나라 및 도시 받아오기
+                    country = components?.firstOrNull { "country" in it.types }?.long_name ?: "Unknown"
+                    cityName = components?.firstOrNull {
+                        "locality" in it.types || "administrative_area_level_1" in it.types
+                    }?.long_name ?: "Unknown"
+
+                    withContext(Dispatchers.Main) {
+                        DiaryTempStore.apply {
+                            countryCode = country
+                            city = cityName
+                        }
+
+                        Log.d("GeoLocation", "나라: $country, 도시: $cityName")
+                    }
+                } else {
+                    Log.e("GeoLocation", "API 실패: ${response.errorBody()?.string()}")
+                }
+            } catch (e: Exception) {
+                Log.e("GeoLocation", "예외 발생: ${e.localizedMessage}")
             }
         }
     }
@@ -133,7 +241,6 @@ class Record_2_1_Activity : AppCompatActivity() {
             val preview = Preview.Builder().setTargetResolution(targetSize).build().also {
                 it.setSurfaceProvider(binding.preview1.surfaceProvider)
             }
-
 
             // 촬영된 이미지 객체 생성
             val imageCaptureBuilder = ImageCapture.Builder().setTargetResolution(targetSize) //
@@ -189,6 +296,13 @@ class Record_2_1_Activity : AppCompatActivity() {
                         binding.imageView1.setImageBitmap(cropped)
                         binding.preview1.visibility = View.GONE
 
+                        // 위치 받아오기
+                        getLastLocation()
+
+                        // 시간 받고 DiaryTempStore에 담기
+                        dateTime = DateTimeFormatter.ISO_INSTANT.format(Instant.now())
+                        DiaryTempStore.dateTime = dateTime
+
                         isFrontCamera = !isFrontCamera // 카메라 전환
                         binding.preview2.scaleX = if (isFrontCamera) -1f else 1f // 좌우대칭도 맞춰주기
 
@@ -201,29 +315,28 @@ class Record_2_1_Activity : AppCompatActivity() {
                         binding.preview2.visibility = View.GONE
 
                         if (imagePath1 != null && imagePath2 != null) {
-                            // !!! ------- 수정해야할 부분 ------- !!!
-                            // 새로운 여행 시작에서 받아온 정보도 같이 넘기기 위해 intent1 사용
-                            val intent_add_new = Intent(this@Record_2_1_Activity, RecordFragment_1_2::class.java)
-                            // 기존 여행에 추가한 경우, 받아올 정보
-                            val intent_add_previout = Intent(this@Record_2_1_Activity, RecordFragment_1_1::class.java)
+
+                            // DiaryImageRequest에 이미지 리스트 넣기
+                            val imageList = listOf(
+                                DiaryImageRequest(
+                                    imageUrl = (imagePath1 ?: imagePath1).toString(),
+                                    cameraType = if (!isFrontCamera) "FRONT" else "BACK",
+                                    representative = true // 우선 임시로 첫 번째 사진을 대표로 설정, record_3에서 수정할 것임.
+                                ),
+                                DiaryImageRequest(
+                                    imageUrl = (imagePath2 ?: imagePath2).toString(),
+                                    cameraType = if (isFrontCamera) "FRONT" else "BACK",
+                                    representative = false
+                                )
+                            )
+                            DiaryTempStore.images = imageList
+
                             val intent = Intent(this@Record_2_1_Activity, Record_3_Activity::class.java)
-                            intent.putExtra("imagePath1", imagePath1)
-                            intent.putExtra("imagePath2", imagePath2)
-//                            intent.putExtra("trip_name", intent_add_new.getStringExtra("trip_name"))
-//                            intent.putExtra("trip_description", intent_add_new.getStringExtra("trip_description"))
-//                            intent.putExtra("selected_theme", intent_add_new.getStringExtra("selected_theme"))
                             startActivity(intent)
                             finish()
                         } else {
                             Log.d("intent", "intent error")
                         }
-
-//                        // Intent에 두 사진 경로 담아서 넘기기
-//                        val intent = Intent(this@Record_2_1_Activity, Record_3_Activity::class.java)
-//                        intent.putExtra("imagePath1", imagePath1)
-//                        intent.putExtra("imagePath2", imagePath2)
-//                        startActivity(intent)
-//                        // finish() // 현재 액티비티 종료해서 뒤로가기 막기
                     }
                 }
 
