@@ -59,7 +59,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/dialog_1_frame"
         app:layout_constraintEnd_toEndOf="@+id/dialog_1_frame"
         app:layout_constraintStart_toStartOf="@+id/dialog_1_frame"
-        app:srcCompat="@drawable/save_btn_unactivated"
+        app:srcCompat="@drawable/save_btn_unactive"
         android:clickable="false"
         />
 
