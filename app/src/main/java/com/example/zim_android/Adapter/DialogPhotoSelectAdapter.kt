@@ -5,14 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.ImageView
 import com.bumptech.glide.Glide
-import com.example.zim_android.data.model.PhotoItem
+import com.example.zim_android.data.model.TripImageResponse
 import com.example.zim_android.databinding.DialogSelectPhotoGridItemBinding
 
 class DialogPhotoSelectAdapter (
     private val context: Context,
-    private val items: List<PhotoItem> // 데이터 클래스
+    private val items: List<TripImageResponse>, // 데이터 클래스
+    private val onItemClick: (TripImageResponse) -> Unit
 ) : BaseAdapter() {
 
     override fun getCount(): Int = items.size
@@ -34,6 +34,10 @@ class DialogPhotoSelectAdapter (
         Glide.with(context)
             .load(item.imageUrl)
             .into(binding.imageView)
+
+        binding.root.setOnClickListener{
+            onItemClick(item) // 콜백 실행
+        }
 
         return binding.root
     }

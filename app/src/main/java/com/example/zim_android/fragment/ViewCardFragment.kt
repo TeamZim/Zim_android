@@ -1,5 +1,6 @@
 package com.example.zim_android.fragment
 
+import android.app.Dialog
 import android.graphics.Color
 import android.graphics.RectF
 import android.os.Bundle
@@ -14,13 +15,24 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.zim_android.R
 import com.example.zim_android.ui.theme.CardItemDecoration
 import com.example.zim_android.Adapter.CardAdapter
+import com.example.zim_android.Adapter.DialogPhotoSelectAdapter
 import com.example.zim_android.Adapter.PhotoGridAdapter
+import com.example.zim_android.data.model.TripImageResponse
+import com.example.zim_android.data.network.ApiProvider
+import com.example.zim_android.data.network.UserSession
+import com.example.zim_android.databinding.DialogSelectPhotoBinding
 import com.example.zim_android.databinding.ViewCardFragmentBinding
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
 
 class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
 
     private var _binding: ViewCardFragmentBinding? = null
     private val binding get() = _binding!!
+
+    val tripId: Int = UserSession.currentTripId?.toInt()!!
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -189,8 +201,51 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
 
             }
 
+
             override fun onImageClick(position: Int) {
+                val photoSelectDialog = Dialog(requireContext()) // 커스텀 다이얼로그 객체 생성
+                val photoSelectDialogBinding = DialogSelectPhotoBinding.inflate(layoutInflater) // 뷰를 코드로 가지고와서 이제 객체를 얘를 통해 받아오면됨.
+                photoSelectDialog.setContentView(photoSelectDialogBinding.root) // 다이얼로그의 UI를 XML과 연결
+
+                photoSelectDialogBinding.exitBtn.setOnClickListener {
+                    photoSelectDialog.dismiss()
+                }
+
+                // 사진이 선택된 경우 처리해야함.
+                // + 저장 버튼 활성화하기
+                photoSelectDialogBinding.saveBtn.setOnClickListener {
+                    //
+                }
+
+                ApiProvider.api.getTripRepresentativeImages(tripId)
+                    .enqueue(object : Callback<List<TripImageResponse>> {
+                        override fun onResponse(
+                            call: Call<List<TripImageResponse>>,
+                            response: Response<List<TripImageResponse>>
+                        ) {
+                            if (response.isSuccessful) {
+                                val imageList = response.body() ?: emptyList()
+                                val photoSelectAdapter = DialogPhotoSelectAdapter(requireContext(), imageList){
+                                    selectedItem ->
+                                    val selectedImg: String = selectedItem.imageUrl
+                                }
+                                // 이 부분에서 updateTrip 추가
+                                // api.updateTrip()
+                                photoSelectDialogBinding.gridView.adapter = photoSelectAdapter
+                            } else {
+                                Log.e("API", "응답 실패: ${response.code()}")
+                            }
+                        }
+
+                        override fun onFailure(call: Call<List<TripImageResponse>>, t: Throwable) {
+                            Log.e("API", "네트워크 오류: ${t.message}")
+                        }
+                    })
                 Log.d("Edit", "사진 클릭됨 at $position")
+
+
+
+                photoSelectDialog.show()
             }
 
 
