@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.zim_android.data.network.DiaryTempStore
+import com.example.zim_android.View.Record_4_Activity
 import com.example.zim_android.databinding.Record3Binding
 
 class Record_3_Activity: AppCompatActivity() {
@@ -68,6 +69,8 @@ class Record_3_Activity: AppCompatActivity() {
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
         }
     }
+
+
 
     private fun updateRepresentIndicators() {
         val selectedImg = R.drawable.selected_img_btn

@@ -176,7 +176,7 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
 
         adapter.setOnCardEditFieldClickListener(object : CardAdapter.OnCardEditFieldClickListener {
             override fun onTitleClick(position: Int) {
-                val dialog = Record_Modify_1_(
+                val dialog = Record_Modify_1(
                     currentTitle = "현재 제목",
                     onTitleUpdated = { newTitle ->
                         Log.d("Edit", "새 제목: $newTitle")

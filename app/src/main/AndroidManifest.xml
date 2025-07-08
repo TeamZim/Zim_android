@@ -48,6 +48,8 @@
             >
         </activity>
 
+        <activity android:name=".View.Record_4_Activity" />
+
     </application>
 
 </manifest>
