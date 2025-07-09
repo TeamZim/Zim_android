@@ -6,8 +6,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.zim_android.R
-import com.example.zim_android.databinding.ItemCardBinding
 import com.example.zim_android.data.model.TripImageResponse
+import com.example.zim_android.databinding.ItemCardBinding
 import com.example.zim_android.databinding.ItemPhotoGridBinding
 
 class PhotoGridAdapter(private val photos: List<Int>,
