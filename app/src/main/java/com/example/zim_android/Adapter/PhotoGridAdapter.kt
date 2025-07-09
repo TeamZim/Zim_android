@@ -1,26 +1,37 @@
 package com.example.zim_android.Adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.zim_android.R
+import com.example.zim_android.databinding.ItemCardBinding
 import com.example.zim_android.databinding.ItemPhotoGridBinding
 
-class PhotoGridAdapter(private val photos: List<Int>) :
+class PhotoGridAdapter(private val photos: List<Int>,
+                       private val onItemClick: (Int) -> Unit // position 또는 id 전달 - api 연결하며 수정
+    ) :
     RecyclerView.Adapter<PhotoGridAdapter.PhotoViewHolder>() {
 
-
     private var lastVisibleIndex: Int = -1
+
+    inner class PhotoViewHolder(val binding: ItemPhotoGridBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(position: Int) {
+            binding.gridImage.setImageResource(photos[position])
+
+            binding.gridImage.setOnClickListener {
+                onItemClick(position)
+            }
+            binding.gridImage.alpha = if (position == lastVisibleIndex) 0.3f else 1.0f
+        }
+    }
+
 
     fun setLastVisibleIndex(index: Int) {
         lastVisibleIndex = index
         notifyDataSetChanged()
     }
-
-    inner class PhotoViewHolder(val binding: ItemPhotoGridBinding) :
-        RecyclerView.ViewHolder(binding.root)
-
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
@@ -33,9 +44,7 @@ class PhotoGridAdapter(private val photos: List<Int>) :
     }
 
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
-        val imageView = holder.binding.gridImage
-        imageView.setImageResource(photos[position])
-        imageView.alpha = if (position == lastVisibleIndex) 0.3f else 1.0f
+        holder.bind(position)
     }
 
 

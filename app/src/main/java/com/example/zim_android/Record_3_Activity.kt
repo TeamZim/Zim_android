@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.example.zim_android.View.Record_4_Activity
-import com.example.zim_android.View.Record_4_Activity
 import com.example.zim_android.data.network.DiaryTempStore
 import com.example.zim_android.databinding.Record3Binding
 

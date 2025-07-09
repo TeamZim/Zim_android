@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.SeekBar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -243,13 +244,17 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
                     })
                 Log.d("Edit", "사진 클릭됨 at $position")
 
-
-
                 photoSelectDialog.show()
             }
+        })
 
 
-    })
+        adapter.setOnPhotoClickListener(object : CardAdapter.OnPhotoClickListener {
+            override fun onPhotoClick(cardPosition: Int, imagePosition: Int) {
+                Log.d("ImageClick", "cardPos=$cardPosition, imagePos=$imagePosition")
+                findNavController().navigate(R.id.action_viewCardFragment_to_diaryFragment)
+            }
+        })
 
     }
 
