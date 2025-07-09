@@ -2,38 +2,50 @@ package com.example.zim_android.View
 
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
-import android.graphics.Color
+import android.media.MediaPlayer
+import android.media.MediaRecorder
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowInsetsAnimation
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.camera.core.ImageProcessor
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.widget.addTextChangedListener
-import com.example.zim_android.Adapter.DialogEmotionSelectAdapter
 import com.example.zim_android.R
-import com.example.zim_android.data.model.Emotion
-import com.example.zim_android.data.network.ApiProvider.api
 import com.example.zim_android.databinding.DialogSelectEmotionColorBinding
 import com.example.zim_android.databinding.DialogSelectWeatherBinding
 import com.example.zim_android.databinding.Record4Binding
-import com.example.zim_android.databinding.ViewMapDialog1Binding
+import com.example.zim_android.fragment.Record_4_1
+import java.io.File
+
+
+
 
 class Record_4_Activity : AppCompatActivity() {
 
     private lateinit var binding: Record4Binding
 
+    companion object {
+        const val REQUEST_DIARY_INPUT = 1001
+        const val RESULT_DIARY_TEXT = "diary_text"
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = Record4Binding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        //녹음 권한 설정
+        if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(android.Manifest.permission.RECORD_AUDIO), 200)
+        }
+
 
         // 헤더 설정
         binding.backBtnHeader.tvTitle.text = "기록하기"
@@ -79,6 +91,20 @@ class Record_4_Activity : AppCompatActivity() {
         binding.weatherButton.setOnClickListener {
             showWeatherDialog(this)
         }
+
+        setupRecordingUI()
+
+
+
+        binding.diaryInput.setOnClickListener {
+            Record_4_1(
+                currentText = binding.diaryInput.text.toString(), // 이전 내용
+                onTextConfirmed = { updated ->
+                    binding.diaryInput.setText(updated) // 결과 반영
+                }
+            ).show(supportFragmentManager, "RecordTextDialog")
+        }
+
 
 
 
@@ -135,6 +161,106 @@ class Record_4_Activity : AppCompatActivity() {
         dialog.show()
     }
 
+    private var isRecording = false
+    private var isPlaying = false
+    private var hasRecording = false
+    private var mediaRecorder: MediaRecorder? = null
+    private var audioFilePath: String = ""
+
+    private fun setupRecordingUI() {
+        val recordCircle = binding.recordCircle         // 녹음 버튼
+        val recordText = binding.recordText             // 텍스트 ("-", "녹음중" 등)
+        val playBtn = binding.btnPlay                   // ▶️ 버튼
+        val deleteBtn = binding.btnDelete               // ❌ 버튼
+
+        // 초기화 상태
+        playBtn.visibility = View.GONE
+        deleteBtn.visibility = View.GONE
+
+        recordCircle.setOnClickListener {
+            when {
+                !isRecording && !hasRecording -> {
+                    isRecording = true
+                    recordCircle.setImageResource(R.drawable.record_ing_button)
+                    recordText.text = "녹음중"
+                    playBtn.visibility = View.GONE
+                    deleteBtn.visibility = View.GONE
+                    startRecording() // ✅ 녹음 시작
+                }
+
+                isRecording -> {
+                    isRecording = false
+                    hasRecording = true
+                    recordCircle.setImageResource(R.drawable.record_button)
+                    recordText.visibility = View.GONE
+                    playBtn.visibility = View.VISIBLE
+                    deleteBtn.visibility = View.VISIBLE
+                    stopRecording() // ✅ 녹음 종료
+                }
+            }
+        }
+
+        playBtn.setOnClickListener {
+            isPlaying = !isPlaying
+            if (isPlaying) {
+                playBtn.setImageResource(R.drawable.record_pause)
+                playRecording() // ✅ 재생 시작
+            } else {
+                playBtn.setImageResource(R.drawable.record_play)
+                // MediaPlayer는 중단 로직 따로 필요 (확장 가능)
+            }
+        }
+
+
+        deleteBtn.setOnClickListener {
+            // ❌ 녹음 삭제
+            isPlaying = false
+            hasRecording = false
+            recordText.visibility = View.GONE
+            recordCircle.setImageResource(R.drawable.record_button)
+            playBtn.visibility = View.GONE
+            deleteBtn.visibility = View.GONE
+            // TODO: 녹음 파일 삭제 처리
+        }
+    }
+
+    private fun startRecording() {
+        val outputDir = cacheDir // 내부 저장소 (권한 필요 없음)
+        val audioFile = File.createTempFile("record_", ".m4a", outputDir)
+        audioFilePath = audioFile.absolutePath
+
+        mediaRecorder = MediaRecorder().apply {
+            setAudioSource(MediaRecorder.AudioSource.MIC)
+            setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+            setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+            setOutputFile(audioFilePath)
+            prepare()
+            start()
+        }
+        Log.d("녹음", "시작됨: $audioFilePath")
+    }
+
+    private fun stopRecording() {
+        mediaRecorder?.apply {
+            stop()
+            release()
+        }
+        mediaRecorder = null
+        Log.d("녹음", "종료됨: $audioFilePath")
+    }
+
+    private fun playRecording() {
+        val mediaPlayer = MediaPlayer().apply {
+            setDataSource(audioFilePath)
+            prepare()
+            start()
+        }
+        Log.d("재생", "재생 시작됨")
+    }
+
+
+
+
 
 }
 
@@ -161,6 +287,9 @@ private fun showEmotionColorDialog(context: Context) {
     )
     dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
     dialog.show()
+
+
+
 }
 
 
@@ -176,5 +305,6 @@ private fun getUnselectedRes(viewId: Int?): Int {
         else -> R.drawable.weather_sunny_unsel
     }
 }
+
 
 
