@@ -1,6 +1,7 @@
 package com.example.zim_android.data.network
 
 import com.example.zim_android.data.model.*
+import com.example.zim_android.fragment.ViewMapFragment
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -115,9 +116,8 @@ interface ApiService {
         @Body request: AddVisitedCountryRequest
     ): Call<Void>
 
-    // 방문 국가 목록 조회
     @GET("/api/countries/{userId}")
-    fun getVisitedCountries(@Path("userId") userId: Int): Call<List<VisitedCountryResponse>>
+    fun getVisitedCountries(@Path("userId") userId: Int): Call<ViewMapFragment.VisitedCountryListResponse>
 
     // 방문 국가 삭제
     @DELETE("/api/countries/{userId}")

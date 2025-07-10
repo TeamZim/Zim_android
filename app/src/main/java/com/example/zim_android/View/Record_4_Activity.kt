@@ -35,11 +35,15 @@ class Record_4_Activity : AppCompatActivity() {
         const val RESULT_DIARY_TEXT = "diary_text"
     }
 
+    
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = Record4Binding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
 
         //녹음 권한 설정
         if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
