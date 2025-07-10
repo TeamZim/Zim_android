@@ -3,10 +3,11 @@ package com.example.zim_android.Adapter
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.zim_android.R
 import com.example.zim_android.databinding.ItemCardBinding
+import com.example.zim_android.data.model.TripImageResponse
 import com.example.zim_android.databinding.ItemPhotoGridBinding
 
 class PhotoGridAdapter(private val photos: List<Int>,
@@ -46,7 +47,6 @@ class PhotoGridAdapter(private val photos: List<Int>,
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
         holder.bind(position)
     }
-
 
     override fun getItemCount(): Int = photos.size
 }
