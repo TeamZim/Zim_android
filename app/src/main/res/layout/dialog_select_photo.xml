@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="295dp"
+        android:layout_height="530dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/dialog_photo_select_frame" />
+
+    <TextView
+        android:id="@+id/dialog_2_title"
+        android:layout_width="231dp"
+        android:layout_height="26dp"
+        android:layout_marginTop="30dp"
+        android:text="여행 대표 이미지 선택"
+        android:fontFamily="@font/nanum_neuris"
+        android:textSize="24sp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toStartOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="@+id/imageView" />
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="231dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="11dp"
+        android:background="#23241B"
+        app:layout_constraintEnd_toEndOf="@id/dialog_2_title"
+        app:layout_constraintStart_toStartOf="@id/dialog_2_title"
+        app:layout_constraintTop_toBottomOf="@id/dialog_2_title" />
+
+    <ImageView
+        android:id="@+id/exit_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="12dp"
+        app:layout_constraintEnd_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="@+id/imageView"
+        app:srcCompat="@drawable/exit_btn" />
+
+    <GridView
+        android:id="@+id/grid_view"
+        android:layout_width="240dp"
+        android:layout_height="361dp"
+        android:layout_marginStart="31dp"
+        android:layout_marginTop="24dp"
+        android:numColumns="2"
+        app:layout_constraintStart_toStartOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/view" />
+
+    <ImageView
+        android:id="@+id/save_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="21dp"
+        android:clickable="false"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintEnd_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toStartOf="@+id/imageView"
+        app:srcCompat="@drawable/save_btn_unactive"
+        />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

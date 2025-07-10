@@ -1,19 +1,34 @@
 package com.example.zim_android.fragment
 
+import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.zim_android.R
+import com.example.zim_android.Record_2_1_Activity
+import com.example.zim_android.data.model.TripCreateRequest
+import com.example.zim_android.data.network.ApiProvider.api
+import com.example.zim_android.data.network.DiaryTempStore
+import com.example.zim_android.data.network.UserSession
 import com.example.zim_android.databinding.Record12FragmentBinding
+import org.w3c.dom.Text
 
 class RecordFragment_1_2: Fragment(R.layout.record_1_2_fragment){
 
     private var _binding: Record12FragmentBinding? = null
     private val binding get() = _binding!!
 
-    private var selectedThemeIndex = 1
+    private var selectedThemeIndex = 0
+    private var selectedThemeName: String? = null
+
+    val currentTripId = 1 // 임시로 1로 지정
 
 
     override fun onCreateView(
@@ -24,14 +39,60 @@ class RecordFragment_1_2: Fragment(R.layout.record_1_2_fragment){
         return binding.root
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.commonHeader.tvTitle.text = "기록하기"
 
-        binding.themeLayout1.setOnClickListener { updateThemeSelection(1) }
-        binding.themeLayout2.setOnClickListener { updateThemeSelection(2) }
-        binding.themeLayout3.setOnClickListener { updateThemeSelection(3) }
+        // root에 포커스 해제 설정
+        binding.root.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                clearFocusAndHideKeyboard()
+            }
+            false
+        }
+
+        // 테마 선택
+        binding.themeLayout1.setOnClickListener {
+            updateThemeSelection(0)
+            clearFocusAndHideKeyboard() }
+        binding.themeLayout2.setOnClickListener {
+            updateThemeSelection(1)
+            clearFocusAndHideKeyboard() }
+        binding.themeLayout3.setOnClickListener {
+            updateThemeSelection(2)
+            clearFocusAndHideKeyboard() }
+
+        // 이전 화면으로 돌아가기
+        binding.backBtn.setOnClickListener {
+            DiaryTempStore.clear() // 저장되어있던 임시 일기 정보들 초기화
+            findNavController().navigate(R.id.action_recordFragment_1_2_to_recordFragment_1_1)
+        }
+
+        // 다음 버튼 클릭
+        binding.saveBtn.setOnClickListener {
+            val intent = Intent(requireContext(), Record_2_1_Activity::class.java)
+            // UserSession의 currentTripId 업데이트
+            UserSession.currentTripId = currentTripId
+
+            // 일기 생성 정보 추가
+            DiaryTempStore.tripId = UserSession.currentTripId // UserSession에 저장된 현재 userId 사용
+
+            // 여행(카드) 추가
+            val request = TripCreateRequest(
+                tripName = binding.tripTitle.text.toString(),
+                description = binding.tripDescription.text.toString(),
+                themeId = selectedThemeIndex,
+                userId = UserSession.userId ?: error("User ID is null")
+            )
+            api.createTrip(request)
+
+            Log.d("request.toString()", request.toString())
+            // 만약 카메라로 사진 안 찍고 여행시작 버튼만 눌러도 여행 추가라면 여기에 카드 추가 구현해야함.
+
+            startActivity(intent)
+        }
 
     }
 
@@ -43,15 +104,28 @@ class RecordFragment_1_2: Fragment(R.layout.record_1_2_fragment){
     // 여행 테마 설정 이미지 바꾸기
     fun updateThemeSelection(index: Int) {
         selectedThemeIndex = index
+        when (index) {
+            0 -> selectedThemeName = "basic_theme"
+            1 -> selectedThemeName = "summer_theme"
+            2 -> selectedThemeName = "winter_theme"
+        }
 
         binding.themeBtn1.setImageResource(
-            if (index == 1) R.drawable.selected_rectangle else R.drawable.unselected_rectangle
+            if (index == 0) R.drawable.selected_rectangle else R.drawable.unselected_rectangle
         )
         binding.themeBtn2.setImageResource(
-            if (index == 2) R.drawable.selected_rectangle else R.drawable.unselected_rectangle
+            if (index == 1) R.drawable.selected_rectangle else R.drawable.unselected_rectangle
         )
         binding.themeBtn3.setImageResource(
-            if (index == 3) R.drawable.selected_rectangle else R.drawable.unselected_rectangle
+            if (index == 2) R.drawable.selected_rectangle else R.drawable.unselected_rectangle
         )
+    }
+
+    // 포커스 헤재하는 함수
+    private fun clearFocusAndHideKeyboard() {
+        val focused = requireActivity().currentFocus
+        focused?.clearFocus()
+        val imm = requireContext().getSystemService(InputMethodManager::class.java)
+        imm.hideSoftInputFromWindow(focused?.windowToken, 0)
     }
 }
