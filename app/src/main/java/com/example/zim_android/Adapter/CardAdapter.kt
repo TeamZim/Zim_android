@@ -3,12 +3,14 @@ package com.example.zim_android.Adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.zim_android.databinding.ItemCardBinding
 import com.example.zim_android.data.model.TripResponse
 import com.example.zim_android.data.model.TripImageResponse
+import com.example.zim_android.fragment.ViewCardFragmentDirections
 import com.example.zim_android.ui.theme.SpaceItemDecoration
 class CardAdapter(
     private val items: List<TripResponse>,
@@ -43,6 +45,8 @@ class CardAdapter(
         focusedPosition = position
         notifyDataSetChanged()
     }
+
+
 
     inner class ViewHolder(private val binding: ItemCardBinding) : RecyclerView.ViewHolder(binding.root) {
 
@@ -91,10 +95,12 @@ class CardAdapter(
 
             val recyclerView = binding.gridImage
             recyclerView.layoutManager = GridLayoutManager(binding.root.context, 2)
-            val images = imageMap[trip.id.toLong()] ?: emptyList()
-
-
-            recyclerView.adapter = PhotoGridAdapter(images)
+            val images = tripImages[trip.id] ?: emptyList()
+            recyclerView.adapter = PhotoGridAdapter(images) {
+                    diaryId ->
+                val action = ViewCardFragmentDirections.actionViewCardFragmentToDiaryFragment(diaryId)
+                binding.root.findNavController().navigate(action)
+            }
             recyclerView.addItemDecoration(SpaceItemDecoration(13))
         }
 

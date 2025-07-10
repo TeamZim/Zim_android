@@ -7,8 +7,10 @@ import com.bumptech.glide.Glide
 import com.example.zim_android.data.model.TripImageResponse
 import com.example.zim_android.databinding.ItemPhotoGridBinding
 
-class PhotoGridAdapter(private val photos: List<TripImageResponse>) :
-    RecyclerView.Adapter<PhotoGridAdapter.PhotoViewHolder>() {
+class PhotoGridAdapter(
+    private val photos: List<TripImageResponse>,
+    private val onClick: (Int) -> Unit
+) : RecyclerView.Adapter<PhotoGridAdapter.PhotoViewHolder>() {
 
     private var lastVisibleIndex: Int = -1
 
@@ -36,6 +38,10 @@ class PhotoGridAdapter(private val photos: List<TripImageResponse>) :
         Glide.with(holder.itemView.context)
             .load(photos[position].imageUrl)
             .into(imageView)
+
+        holder.itemView.setOnClickListener {
+            onClick(photos[position].diaryId)
+        }
 
         // 선택된 인덱스일 경우 알파값 변경
         imageView.alpha = if (position == lastVisibleIndex) 0.3f else 1.0f

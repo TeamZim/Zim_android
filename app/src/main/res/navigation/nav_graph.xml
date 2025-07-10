@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_viewCardFragment_to_mypageFragment"
             app:destination="@id/mypageFragment" />
+        <action
+            android:id="@+id/action_viewCardFragment_to_diaryFragment"
+            app:destination="@id/diaryFragment" />
     </fragment>
 
 
@@ -67,6 +70,15 @@
         <action
             android:id="@+id/action_settingsFragment_to_mypageFragment"
             app:destination="@id/mypageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/diaryFragment"
+        android:name="com.example.zim_android.fragment.DiaryFragment"
+        android:label="DiaryFragment">
+
+        <argument
+            android:name="diaryId"
+            app:argType="integer"/>
     </fragment>
 
 </navigation>
