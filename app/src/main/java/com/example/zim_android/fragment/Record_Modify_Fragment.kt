@@ -215,7 +215,6 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
         dialog.show(parentFragmentManager, "editTitle")
     }
 
-
     fun onDateClick(position: Int) {
         Log.d("Edit", "날짜 클릭됨 at $position")
         val dialog = Dialog(requireContext())
@@ -346,7 +345,6 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
         dialog.show(parentFragmentManager, "editMemo")
     }
 
-
     fun onImageClick(position: Int) {
         // tripId는 trip 객체에서 가져오면 됨
         val tripId = trip.id  // 또는 trip.tripId
@@ -425,7 +423,6 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
 
 
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
