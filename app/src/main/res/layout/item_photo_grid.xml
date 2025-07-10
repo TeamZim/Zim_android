@@ -8,7 +8,6 @@
         android:id="@+id/gridImage"
         android:layout_width="102dp"
         android:layout_height="94dp"
-        android:clickable="true"
         android:scaleType="centerCrop"/>
 </FrameLayout>
 <!--사진 한장 크기 조절하는 곳 -->

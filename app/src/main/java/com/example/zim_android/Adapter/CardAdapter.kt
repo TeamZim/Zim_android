@@ -25,10 +25,6 @@ class CardAdapter(
         fun onImageClick(position: Int)
     }
 
-    // 뒷장의 이미지 클릭시 프래그먼트 이동용
-    interface OnPhotoClickListener {
-        fun onPhotoClick(cardPosition: Int, imagePosition: Int)
-    }
     private var onCardEditFieldClickListener: OnCardEditFieldClickListener? = null
     fun setOnCardEditFieldClickListener(listener: OnCardEditFieldClickListener) {
         onCardEditFieldClickListener = listener
@@ -43,7 +39,6 @@ class CardAdapter(
         onEditClickListener = listener
     }
 
-    // 현재 카드만 밝게
     private var focusedPosition: Int? = null
     fun setFocusCard(position: Int?) {
         focusedPosition = position
@@ -101,16 +96,10 @@ class CardAdapter(
 
             // 뒷면 이미지 그리드 설정
             val recyclerView = binding.gridImage
-
-            if (recyclerView.adapter == null) {
-                recyclerView.layoutManager = GridLayoutManager(binding.root.context, 2)
-                recyclerView.adapter = PhotoGridAdapter(dummyImageList){
-                    onItemClick ->
-                    onPhotoClickListener?.onPhotoClick(position, 1) // 우선 이미지 순서 1로 지정해둠.
-                }
-                recyclerView.addItemDecoration(SpaceItemDecoration(13))
-            }
-
+            recyclerView.layoutManager = GridLayoutManager(binding.root.context, 2)
+            val images = tripImages[trip.id] ?: emptyList()
+            recyclerView.adapter = PhotoGridAdapter(images)
+            recyclerView.addItemDecoration(SpaceItemDecoration(13))
         }
 
         private fun flipCard(position: Int) {
@@ -124,8 +113,6 @@ class CardAdapter(
                 showView.rotationY = -90f
                 showView.animate().rotationY(0f).setDuration(150).start()
             }.start()
-
-
 
             isFlippedList[position] = !isCurrentlyFlipped
         }
