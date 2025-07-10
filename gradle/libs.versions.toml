@@ -43,5 +43,6 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-parcelize = { id = "kotlin-parcelize", version.ref = "kotlin" }
 android-navigation-safe-args = { id = "androidx.navigation.safeargs", version = "2.9.1" }
+kotlin-parcelize = { id = "kotlin-parcelize", version.ref = "kotlin" }
 
 
