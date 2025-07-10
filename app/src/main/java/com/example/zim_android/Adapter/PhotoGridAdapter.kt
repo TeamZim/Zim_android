@@ -34,7 +34,6 @@ class PhotoGridAdapter(private val photos: List<Int>,
         notifyDataSetChanged()
     }
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
         val binding = ItemPhotoGridBinding.inflate(
             LayoutInflater.from(parent.context),
@@ -45,7 +44,6 @@ class PhotoGridAdapter(private val photos: List<Int>,
     }
 
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
-        holder.bind(position)
     }
 
     override fun getItemCount(): Int = photos.size

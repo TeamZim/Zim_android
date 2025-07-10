@@ -29,7 +29,6 @@ class CardAdapter(
     interface OnPhotoClickListener {
         fun onPhotoClick(cardPosition: Int, imagePosition: Int)
     }
-
     private var onCardEditFieldClickListener: OnCardEditFieldClickListener? = null
     fun setOnCardEditFieldClickListener(listener: OnCardEditFieldClickListener) {
         onCardEditFieldClickListener = listener
@@ -43,13 +42,6 @@ class CardAdapter(
     fun setOnEditClickListener(listener: OnEditClickListener) {
         onEditClickListener = listener
     }
-
-
-    fun setOnPhotoClickListener(listener: OnPhotoClickListener) {
-        onPhotoClickListener = listener
-    }
-
-
 
     // 현재 카드만 밝게
     private var focusedPosition: Int? = null
@@ -109,6 +101,7 @@ class CardAdapter(
 
             // 뒷면 이미지 그리드 설정
             val recyclerView = binding.gridImage
+
             if (recyclerView.adapter == null) {
                 recyclerView.layoutManager = GridLayoutManager(binding.root.context, 2)
                 recyclerView.adapter = PhotoGridAdapter(dummyImageList){
@@ -117,6 +110,7 @@ class CardAdapter(
                 }
                 recyclerView.addItemDecoration(SpaceItemDecoration(13))
             }
+
         }
 
         private fun flipCard(position: Int) {

@@ -243,7 +243,6 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
             }
         })
 
-
         adapter.setOnPhotoClickListener(object : CardAdapter.OnPhotoClickListener {
             override fun onPhotoClick(cardPosition: Int, imagePosition: Int) {
                 Log.d("ImageClick", "cardPos=$cardPosition, imagePos=$imagePosition")
@@ -254,6 +253,7 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
             override fun onFailure(call: Call<List<TripResponse>>, t: Throwable) {
                 Log.e("API", "네트워크 오류: ${t.message}")
             }
+
     }
 
     override fun onDestroyView() {
@@ -262,7 +262,6 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
     }
 
 }
-
 
 ///여기서 수정하기 화면 프래그먼트로 만들기
 ///수정하기 버튼 조정 필요
