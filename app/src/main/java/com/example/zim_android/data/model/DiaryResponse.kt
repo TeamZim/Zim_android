@@ -16,8 +16,9 @@ data class DiaryResponse(
 )
 
 data class DiaryImageResponse(
-    val imageId: Int,
+    val id: Int,
     val imageUrl: String,
     val cameraType: String,     // "FRONT" or "BACK"
-    val representative: Boolean
+    val isRepresentative: Boolean,
+    val imageOrder: Int
 )

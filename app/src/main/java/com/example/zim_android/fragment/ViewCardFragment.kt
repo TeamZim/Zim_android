@@ -11,6 +11,7 @@ import android.widget.SeekBar
 import androidx.camera.core.ImageProcessor
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -240,17 +241,26 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
                     Log.e("API", "여행 목록 응답 실패: ${response.code()}")
                 }
             }
+        })
+
+        adapter.setOnPhotoClickListener(object : CardAdapter.OnPhotoClickListener {
+            override fun onPhotoClick(cardPosition: Int, imagePosition: Int) {
+                Log.d("ImageClick", "cardPos=$cardPosition, imagePos=$imagePosition")
+                findNavController().navigate(R.id.action_viewCardFragment_to_diaryFragment)
+            }
+        })
 
             override fun onFailure(call: Call<List<TripResponse>>, t: Throwable) {
                 Log.e("API", "네트워크 오류: ${t.message}")
             }
-        })
+
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
+
 }
 
 ///여기서 수정하기 화면 프래그먼트로 만들기
