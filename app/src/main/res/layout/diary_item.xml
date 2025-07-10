@@ -48,15 +48,34 @@
             app:layout_constraintEnd_toEndOf="@+id/diary_frame"
             app:layout_constraintTop_toTopOf="@+id/diary_frame">
 
-            <TextView
-                android:id="@+id/country_name"
-                android:fontFamily="@font/nanum_neuris"
-                android:textColor="@color/primary_700"
-                android:textSize="24dp"
-                android:gravity="center_vertical"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="26dp"
-                android:text="이모지 국가명" />
+                android:orientation="horizontal"
+                >
+                <TextView
+                    android:id="@+id/country_emoji"
+                    android:fontFamily="@font/nanum_neuris"
+                    android:textColor="@color/primary_700"
+                    android:textSize="20dp"
+                    android:gravity="center_vertical"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:text="🇰🇷" />
+
+                <TextView
+                    android:id="@+id/country_name"
+                    android:fontFamily="@font/nanum_neuris"
+                    android:textColor="@color/primary_700"
+                    android:textSize="24dp"
+                    android:layout_marginLeft="3dp"
+                    android:gravity="center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="26dp"
+                    android:text="대한민국" />
+
+            </LinearLayout>
+
 
             <TextView
                 android:id="@+id/city_name"
@@ -162,7 +181,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_width="49dp"
                     android:layout_height="match_parent"
-                    android:text="감정색명" />
+                    android:text="-" />
             </LinearLayout>
 
 
@@ -200,7 +219,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_width="49dp"
                     android:layout_height="match_parent"
-                    android:text="날씨명" />
+                    android:text="-" />
 
 
             </LinearLayout>
@@ -230,6 +249,18 @@
                     android:layout_marginStart="11dp"
                     android:src="@drawable/emotion_color_base_circle"
                     />
+
+                <TextView
+                    android:id="@+id/audio_text"
+                    android:textColor="@color/primary_700"
+                    android:fontFamily="@font/nanum_neuris"
+                    android:textSize="18dp"
+                    android:gravity="center_vertical"
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="49dp"
+                    android:layout_height="match_parent"
+                    android:text="-" />
+
 
             </LinearLayout>
 

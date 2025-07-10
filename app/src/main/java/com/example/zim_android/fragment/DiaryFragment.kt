@@ -10,11 +10,14 @@ import com.example.zim_android.Adapter.DiaryAdapter
 import com.example.zim_android.R
 import com.example.zim_android.data.model.DiaryImageResponse
 import com.example.zim_android.data.model.DiaryResponse
+import com.example.zim_android.data.network.UserSession
 import com.example.zim_android.databinding.DiaryPageBinding
 
 class DiaryFragment: Fragment(R.layout.diary_page) {
     private var _binding: DiaryPageBinding? = null
     private val binding get() = _binding!!
+
+    val userId = UserSession.userId
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,17 +39,16 @@ class DiaryFragment: Fragment(R.layout.diary_page) {
 
         // 인터페이스 작동만 볼거라 더미 리스트 생성해둠.
         val dummyList = List(10) { DiaryResponse(
-            diaryId = 1,
-            userId = 1,
+            id = 1,
             tripId = 1,
-            countryCode = "",
+            countryName = "",
             city = "",
             dateTime = "",
             content = "",
             detailedLocation = "",
             audioUrl = "",
-            emotionId = 1,
-            weatherId = 1,
+            emotionColor = "",
+            weather = "",
             images = listOf(
                 DiaryImageResponse(
                     id = 1,
@@ -62,14 +64,14 @@ class DiaryFragment: Fragment(R.layout.diary_page) {
                     isRepresentative = false,
                     imageOrder = 2
                 )
-            )
+            ),
+            tripName = "",
+            createdAt = ""
         ) }
 
         val diaryItemAdapter = DiaryAdapter(dummyList)
         binding.recyclerView.layoutManager = GridLayoutManager(context, 1)
         binding.recyclerView.adapter = diaryItemAdapter
-
-        // binding.recyclerView.addItemDecoration(VerticalItemSpacing(16))
 
     }
 
