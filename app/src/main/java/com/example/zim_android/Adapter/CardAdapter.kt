@@ -3,12 +3,14 @@ package com.example.zim_android.Adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.zim_android.databinding.ItemCardBinding
 import com.example.zim_android.data.model.TripResponse
 import com.example.zim_android.data.model.TripImageResponse
+import com.example.zim_android.fragment.ViewCardFragmentDirections
 import com.example.zim_android.ui.theme.SpaceItemDecoration
 class CardAdapter(
     private val items: List<TripResponse>,
