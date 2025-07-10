@@ -2,13 +2,10 @@ package com.example.zim_android.fragment
 
 import android.app.Dialog
 import android.graphics.Color
-import android.graphics.RectF
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.WindowInsetsAnimation
 import android.widget.SeekBar
-import androidx.camera.core.ImageProcessor
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -35,7 +32,6 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
     private var _binding: ViewCardFragmentBinding? = null
     private val binding get() = _binding!!
 
-    val tripId: Int = UserSession.currentTripId?.toInt()!!
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -149,92 +145,22 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
                     })
 
                     // 수정 버튼 클릭 시 카드 강조 + 딤 오버레이 표시 -> 수정 필요 진짜 죽인다
+                    //안되서 걍 프래그먼트 연결로 다시 만듬 하아
                     adapter.setOnEditClickListener(object : CardAdapter.OnEditClickListener {
                         override fun onEditButtonClicked(position: Int) {
-                            // 카드 수정 모드 진입 (버튼 그룹 보여주기 등)
-                            adapter.setFocusCard(position)
-                            binding.editButtonGroup.visibility = View.VISIBLE
+                            val selectedTrip = tripList[position]
+                            val fragment = Record_Modify_Fragment.newInstance(selectedTrip)
 
-                            val recyclerView = binding.cardViewpager.getChildAt(0) as? RecyclerView
-                            val holder = recyclerView?.findViewHolderForAdapterPosition(position)
-                            val cardView = holder?.itemView ?: return
-
-                            val location = IntArray(2)
-                            cardView.getLocationOnScreen(location)
-
-                            val hole = RectF(
-                                location[0].toFloat(),
-                                location[1].toFloat(),
-                                (location[0] + cardView.width).toFloat(),
-                                (location[1] + cardView.height).toFloat()
-                            )
-
-                            binding.dimOverlay.post {
-                                binding.dimOverlay.visibility = View.VISIBLE
-                            }
+                            requireActivity().supportFragmentManager.beginTransaction()
+                                .replace(R.id.nav_host_fragment, fragment)
+                                .addToBackStack(null)
+                                .commit()
                         }
                     })
 
-                    // 각 필드 수정 버튼 클릭 처리
-                    adapter.setOnCardEditFieldClickListener(object : CardAdapter.OnCardEditFieldClickListener {
-                        override fun onTitleClick(position: Int) {
-                            val dialog = Record_Modify_1(
-                                currentTitle = "현재 제목", // 실제 tripList[position].title 등으로 바꿔도 됨
-                                onTitleUpdated = { newTitle ->
-                                    Log.d("Edit", "새 제목: $newTitle")
-                                    // TODO: API로 업데이트 등 처리
-                                }
-                            )
-                            dialog.show(parentFragmentManager, "editTitle")
-                        }
 
-                        override fun onDateClick(position: Int) {
-                            Log.d("Edit", "날짜 클릭됨 at $position")
-                            // TODO: 날짜 수정 다이얼로그 띄우기 등
-                        }
 
-                        override fun onMemoClick(position: Int) {
-                            val dialog = Record_Modify_2(
-                                currentTitle = "현재 메모",
-                                onTitleUpdated = { newMemo ->
-                                    Log.d("Edit", "새 메모: $newMemo")
-                                }
-                            )
-                            dialog.show(parentFragmentManager, "editMemo")
-                        }
 
-                        override fun onImageClick(position: Int) {
-                            // 사진 선택 다이얼로그 띄우기
-                            val dialog = Dialog(requireContext())
-                            val bindingDialog = DialogSelectPhotoBinding.inflate(layoutInflater)
-                            dialog.setContentView(bindingDialog.root)
-
-                            bindingDialog.exitBtn.setOnClickListener {
-                                dialog.dismiss()
-                            }
-
-                            // 여행 대표 이미지 리스트 가져오기-> db에 사진이 없는건지 내가 잘못 불러온건지 확인필요
-                            ApiProvider.api.getTripRepresentativeImages(tripId)
-                                .enqueue(object : Callback<List<TripImageResponse>> {
-                                    override fun onResponse(
-                                        call: Call<List<TripImageResponse>>,
-                                        response: Response<List<TripImageResponse>>
-                                    ) {
-                                        val imageList = response.body() ?: emptyList()
-                                        val photoAdapter = DialogPhotoSelectAdapter(requireContext(), imageList) { selectedItem ->
-                                            Log.d("Image", "선택된 이미지: ${selectedItem.imageUrl}")
-                                        }
-                                        bindingDialog.gridView.adapter = photoAdapter
-                                    }
-
-                                    override fun onFailure(call: Call<List<TripImageResponse>>, t: Throwable) {
-                                        Log.e("API", "이미지 불러오기 실패: ${t.message}")
-                                    }
-                                })
-
-                            dialog.show()
-                        }
-                    })
 
                 } else {
                     Log.e("API", "여행 목록 응답 실패: ${response.code()}")

@@ -1,6 +1,10 @@
 package com.example.zim_android.data.model
 
-data class TripResponse (
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+data class TripResponse(
     val id: Int,
     val tripName: String,
     val description: String,
@@ -15,4 +19,4 @@ data class TripResponse (
     val themeId: Int,
     val themeName: String,
     val diaryCount: Int,
-    )
+) : Parcelable
