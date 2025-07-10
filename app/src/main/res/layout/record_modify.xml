@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#80000000"> <!-- 반투명 검정 (#80은 50% 투명) -->
@@ -10,13 +11,17 @@
         android:id="@+id/btn_cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="취소"
-        android:textSize="26sp"
         android:fontFamily="@font/nanum"
-        android:textColor="#FFFFFF"
+        android:gravity="start"
+        android:text="취소"
+        android:textColor="#FEFEFE"
+        android:textSize="26sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="78dp"
-        android:layout_marginStart="20dp"
-        android:layout_gravity="top|start" />
+        android:layout_marginStart="20dp" />
+
+
 
     <!-- 카드 본체: 중앙에 고정 크기 -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -47,10 +52,10 @@
         <!-- 대표 이미지 회색 박스 -->
         <View
             android:id="@+id/image_box"
-            android:layout_width="220dp"
-            android:layout_height="180dp"
-            android:layout_marginTop="20dp"
-            android:background="#E0E0E0"
+            android:layout_width="233dp"
+            android:layout_height="214dp"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/card_image"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/edit_title" />
@@ -71,7 +76,7 @@
 
 
         <!-- 메모 입력 -->
-        <EditText
+        <TextView
             android:id="@+id/edit_memo"
             android:layout_width="0dp"
             android:layout_height="120dp"
@@ -103,5 +108,7 @@
         app:layout_constraintStart_toStartOf="@id/card_container"
         app:layout_constraintEnd_toEndOf="@id/card_container"
         android:layout_marginTop="40dp" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

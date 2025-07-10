@@ -16,11 +16,18 @@ import com.example.zim_android.databinding.RecordModifyBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import com.example.zim_android.data.network.UserSession
+
 
 class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
 
     private var _binding: RecordModifyBinding? = null
     private val binding get() = _binding!!
+
+
+    val userId = UserSession.userId ?: 1
+    // 사용자 ID
+    //아직 카카오로그인이 안된 상태라 노션에 적혀진 1로 하긴 했는데 나중에 카카오로그인 후에 수정필요
 
     private lateinit var trip: TripResponse
 
@@ -47,6 +54,25 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
 
             // TODO: 수정 API 호출하거나 변경 데이터 전달 처리
         }
+        binding.btnCancel.setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+
+
+
+        //editTitle 누르면 제목 수정 다이얼로그 띄우기
+        binding.editTitle.setOnClickListener {
+            onTitleClick(0)  // 포지션이 필요 없으면 그냥 0
+        }
+
+        // 메모 클릭 시 다이얼로그
+        binding.editMemo.setOnClickListener {
+            onMemoClick(0)
+        }
+
+        binding.imageBox.setOnClickListener {
+            onImageClick(0)  // position은 필요 없다면 그냥 0
+        }
 
         //gnb숨기기
         requireActivity().findViewById<View>(R.id.bottom_navigation)?.visibility = View.GONE
@@ -55,31 +81,37 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
 
     // 각 필드 수정 버튼 클릭 처리
 
-   fun onTitleClick(position: Int) {
+    fun onTitleClick(position: Int) {
         val dialog = Record_Modify_1(
-            currentTitle = "현재 제목", // 실제 tripList[position].title 등으로 바꿔도 됨
+            currentTitle = trip.tripName,
             onTitleUpdated = { newTitle ->
                 Log.d("Edit", "새 제목: $newTitle")
-                // TODO: API로 업데이트 등 처리
+                binding.editTitle.setText(newTitle)  // 실제로 UI 업데이트
+                // TODO: API 호출 등 처리
             }
         )
         dialog.show(parentFragmentManager, "editTitle")
     }
+
 
     fun onDateClick(position: Int) {
         Log.d("Edit", "날짜 클릭됨 at $position")
         // TODO: 날짜 수정 다이얼로그 띄우기 등
     }
 
+
     fun onMemoClick(position: Int) {
         val dialog = Record_Modify_2(
-            currentTitle = "현재 메모",
+            currentTitle = trip.description,
             onTitleUpdated = { newMemo ->
                 Log.d("Edit", "새 메모: $newMemo")
+                binding.editMemo.setText(newMemo) // UI에 반영
+                // TODO: API 호출 등 처리
             }
         )
         dialog.show(parentFragmentManager, "editMemo")
     }
+
 
     fun onImageClick(position: Int) {
         // 사진 선택 다이얼로그 띄우기
@@ -91,7 +123,10 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
             dialog.dismiss()
         }
 
-        // 여행 대표 이미지 리스트 가져오기-> db에 사진이 없는건지 내가 잘못 불러온건지 확인필요
+        // tripId는 trip 객체에서 가져오면 됨
+        val tripId = trip.id  // 또는 trip.tripId
+
+        // 여행 대표 이미지 리스트 가져오기
         ApiProvider.api.getTripRepresentativeImages(tripId)
             .enqueue(object : Callback<List<TripImageResponse>> {
                 override fun onResponse(
@@ -101,6 +136,7 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
                     val imageList = response.body() ?: emptyList()
                     val photoAdapter = DialogPhotoSelectAdapter(requireContext(), imageList) { selectedItem ->
                         Log.d("Image", "선택된 이미지: ${selectedItem.imageUrl}")
+                        // TODO: 선택된 이미지 처리
                     }
                     bindingDialog.gridView.adapter = photoAdapter
                 }
@@ -112,6 +148,7 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
 
         dialog.show()
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

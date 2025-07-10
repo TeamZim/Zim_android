@@ -32,7 +32,6 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
     private var _binding: ViewCardFragmentBinding? = null
     private val binding get() = _binding!!
 
-    val tripId: Int = UserSession.currentTripId?.toInt()!!
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
