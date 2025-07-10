@@ -37,7 +37,7 @@ class DiaryFragment : Fragment(R.layout.diary_page) {
 
         binding.backBtnHeader.tvTitle.text = "여행명"
         binding.backBtnHeader.backBtn.setOnClickListener {
-            // 뒤로 가기
+
         }
 
         val userId = UserSession.userId

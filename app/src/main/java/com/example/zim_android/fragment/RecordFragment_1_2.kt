@@ -18,7 +18,6 @@ import com.example.zim_android.data.network.ApiProvider.api
 import com.example.zim_android.data.network.DiaryTempStore
 import com.example.zim_android.data.network.UserSession
 import com.example.zim_android.databinding.Record12FragmentBinding
-import org.w3c.dom.Text
 
 class RecordFragment_1_2: Fragment(R.layout.record_1_2_fragment){
 

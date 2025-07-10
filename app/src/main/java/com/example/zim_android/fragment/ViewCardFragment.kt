@@ -7,6 +7,8 @@ import android.view.View
 import android.widget.SeekBar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.zim_android.R
@@ -82,6 +84,14 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
 
                     val imageMap = mutableMapOf<Long, List<TripImageResponse>>()
                     var loadedCount = 0
+                    
+                    // 카드 뒷면 이미지 클릭 시
+                    adapter.setOnImageClickListener(object : CardAdapter.OnImageClickListener {
+                        override fun onImageClicked(diaryId: Int) {
+                            val action = ViewCardFragmentDirections.actionViewCardFragmentToDiaryFragment(diaryId)
+                            findNavController().navigate(action)
+                        }
+                    })
 
                     // 각 trip의 대표 이미지 불러오기
                     for (trip in tripList) {

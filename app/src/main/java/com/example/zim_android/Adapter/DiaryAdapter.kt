@@ -9,6 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.zim_android.data.model.DiaryResponse
 import com.example.zim_android.databinding.DiaryItemBinding
 import com.bumptech.glide.Glide
+import com.example.zim_android.R
+import android.media.MediaPlayer
+import android.util.Log
+
 
 class DiaryAdapter(private val itemList: List<DiaryResponse>) :
     RecyclerView.Adapter<DiaryAdapter.DiaryViewHolder>() {
@@ -50,8 +54,28 @@ class DiaryAdapter(private val itemList: List<DiaryResponse>) :
 
         // 녹음
         if (!item.audioUrl.isNullOrBlank()) {
-            binding.audioText.text = ""
-//            binding.audioBtn.setImageResource(item.~) // 녹음 버튼 이미지 변경
+            binding.audioText.visibility = View.GONE
+            binding.audioBtn.setImageResource(R.drawable.record_play)
+            binding.audioBtn.isClickable = true
+
+            binding.audioBtn.setOnClickListener {
+                binding.audioBtn.setImageResource(R.drawable.record_pause)
+                val mediaPlayer = MediaPlayer().apply {
+                    setDataSource(item.audioUrl) // URL 지정
+                    setOnPreparedListener { start() } // 준비되면 재생
+                    setOnCompletionListener {
+                        // 재생이 끝났을 때 처리
+                        release()
+                        binding.audioBtn.setImageResource(R.drawable.record_play)
+                    }
+                    setOnErrorListener { mp, what, extra ->
+                        // 오류 처리
+                        Log.e("AudioPlay", "오디오 재생 실패: $what, $extra")
+                        true
+                    }
+                    prepareAsync() // 비동기 준비
+                }
+            }
         }
 
 

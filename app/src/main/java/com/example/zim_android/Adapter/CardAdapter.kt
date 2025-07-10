@@ -3,14 +3,12 @@ package com.example.zim_android.Adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.zim_android.databinding.ItemCardBinding
 import com.example.zim_android.data.model.TripResponse
 import com.example.zim_android.data.model.TripImageResponse
-import com.example.zim_android.fragment.ViewCardFragmentDirections
 import com.example.zim_android.ui.theme.SpaceItemDecoration
 class CardAdapter(
     private val items: List<TripResponse>,
@@ -46,6 +44,16 @@ class CardAdapter(
         notifyDataSetChanged()
     }
 
+
+
+    interface OnImageClickListener {
+        fun onImageClicked(diaryId: Int)
+    }
+
+    private var onImageClickListener: OnImageClickListener? = null
+    fun setOnImageClickListener(listener: OnImageClickListener) {
+        onImageClickListener = listener
+    }
 
 
     inner class ViewHolder(private val binding: ItemCardBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -97,9 +105,7 @@ class CardAdapter(
             recyclerView.layoutManager = GridLayoutManager(binding.root.context, 2)
             val images = tripImages[trip.id] ?: emptyList()
             recyclerView.adapter = PhotoGridAdapter(images) {
-                    diaryId ->
-                val action = ViewCardFragmentDirections.actionViewCardFragmentToDiaryFragment(diaryId)
-                binding.root.findNavController().navigate(action)
+                    diaryId -> onImageClickListener?.onImageClicked(diaryId)
             }
             recyclerView.addItemDecoration(SpaceItemDecoration(13))
         }

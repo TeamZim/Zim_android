@@ -247,6 +247,7 @@
                     android:layout_width="18dp"
                     android:layout_height="18dp"
                     android:layout_marginStart="11dp"
+                    android:clickable="false"
                     android:src="@drawable/emotion_color_base_circle"
                     />
 

@@ -7,6 +7,9 @@
         android:id="@+id/viewCardFragment"
         android:name="com.example.zim_android.fragment.ViewCardFragment"
         android:label="카드 모음" >
+        <argument
+            android:name="diaryId"
+            app:argType="integer"/>
         <action
             android:id="@+id/action_viewCardFragment_to_recordFragment_1_1"
             app:destination="@id/recordFragment_1_1" />
@@ -79,6 +82,10 @@
         <argument
             android:name="diaryId"
             app:argType="integer"/>
+
+        <action
+            android:id="@+id/action_diaryFragment_to_viewCardFragment"
+            app:destination="@id/viewCardFragment" />
     </fragment>
 
 </navigation>
