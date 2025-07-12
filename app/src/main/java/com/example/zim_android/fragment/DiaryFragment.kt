@@ -37,6 +37,8 @@ class DiaryFragment : Fragment(R.layout.diary_page) {
 
         binding.backBtnHeader.tvTitle.text = "여행명"
         binding.backBtnHeader.backBtn.setOnClickListener {
+            // 뒤로 가기 로직 추가
+            // 그냥 네비게이션으로 넘기는게 아니라,따로 무슨 카드였는지를 같이 보내줘야할 것 같음.
         }
 
         val userId = UserSession.userId
@@ -57,13 +59,18 @@ class DiaryFragment : Fragment(R.layout.diary_page) {
                         binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 1)
                         binding.recyclerView.adapter = diaryAdapter
 
-                        val targetId = arguments?.getInt("diaryId")
-                        targetId?.let { id ->
-                            val index = diaryList.indexOfFirst { it.id == id }
-                            if (index != -1) {
-                                binding.recyclerView.scrollToPosition(index)
+
+
+                        binding.recyclerView.post {
+                            val targetId = arguments?.getInt("diaryId")
+                            targetId?.let { id ->
+                                val index = diaryList.indexOfFirst { it.id == id }
+                                if (index != -1) {
+                                    binding.recyclerView.scrollToPosition(index)
+                                }
                             }
                         }
+                        
                     }
                 }
 
