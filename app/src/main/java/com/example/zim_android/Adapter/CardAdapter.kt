@@ -10,10 +10,9 @@ import com.example.zim_android.databinding.ItemCardBinding
 import com.example.zim_android.data.model.TripResponse
 import com.example.zim_android.data.model.TripImageResponse
 import com.example.zim_android.ui.theme.SpaceItemDecoration
-
 class CardAdapter(
     private val items: List<TripResponse>,
-    private val tripImages: Map<Int, List<TripImageResponse>> = emptyMap()
+    private val imageMap: Map<Long, List<TripImageResponse>>
 ) : RecyclerView.Adapter<CardAdapter.ViewHolder>() {
 
     private val isFlippedList = MutableList(items.size) { false }
@@ -47,36 +46,30 @@ class CardAdapter(
 
     inner class ViewHolder(private val binding: ItemCardBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(position: Int) {
-            val trip = items[position]
+        fun bind(trip: TripResponse, position: Int) {
             val isFlipped = isFlippedList[position]
 
-            // 앞/뒤면 상태 설정
             binding.cardFront.visibility = if (isFlipped) View.GONE else View.VISIBLE
             binding.cardBack.visibility = if (isFlipped) View.VISIBLE else View.GONE
 
-            // trip 데이터 바인딩
             binding.travelTitle.text = trip.tripName
             binding.travelDate.text = "${trip.startDate} ~ ${trip.endDate}"
             binding.travelTest.text = trip.description
-            //뒷면에도 여행명 적용
             binding.travelTitleBack.text = trip.tripName
+
             Glide.with(binding.root.context)
                 .load(trip.representativeImageUrl)
                 .into(binding.travelImage)
 
-            // flip 버튼
             binding.flipButton.setOnClickListener {
                 flipCard(position)
             }
 
-            // 더보기 버튼
             binding.dotsButton.setOnClickListener {
                 binding.editLayout.visibility =
                     if (binding.editLayout.visibility == View.VISIBLE) View.GONE else View.VISIBLE
             }
 
-            // 수정 버튼 클릭 시 -> 각 필드에 리스너 할당
             binding.editButton.setOnClickListener {
                 onEditClickListener?.onEditButtonClicked(position)
 
@@ -94,10 +87,12 @@ class CardAdapter(
                 }
             }
 
-            // 뒷면 이미지 그리드 설정
+
             val recyclerView = binding.gridImage
             recyclerView.layoutManager = GridLayoutManager(binding.root.context, 2)
-            val images = tripImages[trip.id] ?: emptyList()
+            val images = imageMap[trip.id.toLong()] ?: emptyList()
+
+
             recyclerView.adapter = PhotoGridAdapter(images)
             recyclerView.addItemDecoration(SpaceItemDecoration(13))
         }
@@ -124,7 +119,7 @@ class CardAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(position)
+        holder.bind(items[position], position)
         holder.itemView.alpha = if (focusedPosition != null && focusedPosition != position) 0.15f else 1.0f
     }
 

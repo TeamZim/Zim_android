@@ -20,6 +20,7 @@ import com.example.zim_android.R
 import com.example.zim_android.data.model.AddVisitedCountryRequest
 import com.example.zim_android.data.model.CountrySearchResponse
 import com.example.zim_android.data.model.Emotion
+import com.example.zim_android.data.model.VisitedCountryResponse
 import com.example.zim_android.data.network.ApiProvider
 import com.example.zim_android.databinding.DialogSelectEmotionColorBinding
 import com.example.zim_android.databinding.ViewMapDialog1Binding
@@ -31,13 +32,9 @@ import retrofit2.Response
 
 class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
 
-    // 예시 데이터: countryCode -> colorCode
-    val visitedCountries = mapOf(
-        "Republic of Korea" to "#FF6B6B",  // 한국
-        "Japan" to "#FF2B2B",  // 일본
-        "France" to "#FFD93D", // 프랑스
-        "China" to "#FFFF00"
-    )
+    private val visitedCountriesDynamic = mutableListOf<VisitedCountryResponse>()
+
+    val userId = 1 // 임시로 테스트할 userId
 
     val api = ApiProvider.api
     private var countryList: List<CountrySearchResponse> = emptyList()
@@ -78,19 +75,10 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
             binding.mapWebView.webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView?, url: String?) {
                     super.onPageFinished(view, url)
+                    colorVisitedCountriesOnMap()
 
-                    // 페이지 로드 끝나면 JS로 색칠
-                    for ((countryCode, colorCode) in visitedCountries) {
-                        val js = """
-    var elements = document.getElementsByClassName('$countryCode');
-    for (var i = 0; i < elements.length; i++) {
-        elements[i].style.fill = '$colorCode';
-    }
-""".trimIndent()
-                        binding.mapWebView.evaluateJavascript(js, null)
-
-                    }
                 }
+
             }
         }
 
@@ -104,6 +92,9 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
         binding.addRecordBtn.setOnClickListener {
             showAddRecordDialog1()
         }
+
+        fetchVisitedCountries()
+
     }
 
     override fun onDestroyView() {
@@ -117,6 +108,62 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
         val js = "document.getElementById('$countryCode').style.fill = '$colorCode';"
         binding.mapWebView.evaluateJavascript(js, null)  // 여기 binding으로 변경
     }
+
+
+    private fun fetchVisitedCountries() {
+        val userId = 1
+        Log.d("API 호출", "userId = $userId")
+        api.getVisitedCountries(userId).enqueue(object : Callback<VisitedCountryListResponse> {
+            override fun onResponse(
+                call: Call<VisitedCountryListResponse>,
+                response: Response<VisitedCountryListResponse>
+            ) {
+                Log.d("API 호출", "onResponse 호출됨")
+
+                val body = response.body()
+                if (body == null) {
+                    Log.e("API 응답", "body가 null임!") // ✅ 바로 이거 찍어봐
+                } else {
+                    val result = body.data
+                    Log.d("API 응답", "받은 국가 수 = ${result.size}")
+                    visitedCountriesDynamic.clear()
+                    visitedCountriesDynamic.addAll(result)
+                    colorVisitedCountriesOnMap()
+                }
+            }
+
+
+            override fun onFailure(call: Call<VisitedCountryListResponse>, t: Throwable) {
+                Log.e("방문 국가 가져오기 실패", t.message.toString())
+            }
+        })
+
+    }
+    //실제 색칠하는 함수 -> 연동하면서 수정했음
+    private fun colorVisitedCountriesOnMap() {
+        for (country in visitedCountriesDynamic) {
+            Log.d("지도색칠", "국가=${country.countryCode}, 색=${country.color}")
+
+                            val js = """
+                    var el = document.getElementById('${country.countryCode}');
+                    if (el) {
+                        el.style.fill = '${country.color}';
+                    }
+                """.trimIndent()
+
+            binding.mapWebView.evaluateJavascript(js, null)
+        }
+    }
+
+    //wrapper 만들기
+    data class VisitedCountryListResponse(
+        val data: List<VisitedCountryResponse>
+    )
+
+
+
+
+
 
 
     // 과거 여행 추가 다이얼로그 띄우기
@@ -314,6 +361,7 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
                         override fun onResponse(call: Call<List<CountrySearchResponse>>, response: Response<List<CountrySearchResponse>>) {
                             if (response.isSuccessful) {
                                 val result = response.body() ?: emptyList()
+                                Log.d("API 호출", "받은 국가 수 = ${result.size}")
                                 countryList = result // 전역 변수에 저장
 
                                 val countryNames = result.map { "${it.countryName}" }
