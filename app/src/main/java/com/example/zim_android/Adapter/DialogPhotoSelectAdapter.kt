@@ -45,11 +45,12 @@ class DialogPhotoSelectAdapter (
         // 이미지 URL 로드
         Glide.with(context)
             .load(item.imageUrl)
+            .centerCrop()
             .into(binding.imageView)
 
         // 선택된 이미지 외에는 어둡게 처리
         if (selectedItem != null && selectedItem != item) {
-            binding.imageView.setColorFilter(Color.parseColor("#CC000000"), PorterDuff.Mode.SRC_OVER)
+            binding.imageView.setColorFilter(Color.parseColor("#A6000000"), PorterDuff.Mode.SRC_OVER)
         } else {
             binding.imageView.clearColorFilter()
         }

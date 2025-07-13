@@ -52,7 +52,7 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
         binding.editTitle.setText(trip.tripName)
         binding.editMemo.setText(trip.description)
         binding.editDate.text = "${trip.startDate} ~ ${trip.endDate}"
-        Glide.with(this).load(trip.representativeImageUrl).into(binding.imageBox)
+        Glide.with(this).load(trip.representativeImageUrl).centerCrop().into(binding.imageBox)
 
 
         // 저장 버튼 클릭 시
@@ -67,13 +67,13 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
                 return@setOnClickListener
             }
 
+            // SetTripRepresentativeImageRequest api 호출
             val request = SetTripRepresentativeImageRequest(diaryId)
             api.setTripRepresentativeImage(tripId, request)
                 .enqueue(object : Callback<Void> {
                     override fun onResponse(call: Call<Void>, response: Response<Void>) {
                         if (response.isSuccessful) {
                             Log.d("Save", "대표 이미지 설정 완료")
-                            // requireActivity().onBackPressedDispatcher.onBackPressed() // or 다이얼로그 닫기
                         } else {
                             Log.e("Save", "대표 이미지 설정 실패: ${response.code()}")
                         }
@@ -203,7 +203,7 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
                     // 저장 버튼 클릭 시 처리
                     bindingDialog.saveBtn.setOnClickListener {
                         selectedItem?.let {
-                            Glide.with(this@Record_Modify_Fragment).load(it.imageUrl).into(binding.imageBox)
+                            Glide.with(this@Record_Modify_Fragment).load(it.imageUrl).centerCrop().into(binding.imageBox)
                             dialog.dismiss()
                         }
                     }

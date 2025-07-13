@@ -59,6 +59,7 @@ class CardAdapter(
 
             Glide.with(binding.root.context)
                 .load(trip.representativeImageUrl)
+                .centerCrop()
                 .into(binding.travelImage)
 
             binding.flipButton.setOnClickListener {

@@ -13,6 +13,7 @@ import com.example.zim_android.R
 import com.example.zim_android.ui.theme.CardItemDecoration
 import com.example.zim_android.Adapter.CardAdapter
 import com.example.zim_android.Adapter.PhotoGridAdapter
+import com.example.zim_android.data.model.TripImageResponse
 import com.example.zim_android.data.model.TripResponse
 import com.example.zim_android.data.network.ApiProvider.api
 import com.example.zim_android.data.network.UserSession
@@ -114,7 +115,7 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
         tripId: Int,
         callback: (List<TripImageResponse>) -> Unit
     ) {
-        ApiProvider.api.getTripRepresentativeImages(tripId).enqueue(object : Callback<List<TripImageResponse>> {
+        api.getTripRepresentativeImages(tripId).enqueue(object : Callback<List<TripImageResponse>> {
             override fun onResponse(
                 call: Call<List<TripImageResponse>>,
                 response: Response<List<TripImageResponse>>
