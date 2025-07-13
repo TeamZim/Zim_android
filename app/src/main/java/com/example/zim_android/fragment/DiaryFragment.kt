@@ -63,12 +63,17 @@ class DiaryFragment : Fragment(R.layout.diary_page) {
                         binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 1)
                         binding.recyclerView.adapter = diaryAdapter
 
+                        val layoutManager = binding.recyclerView.layoutManager as GridLayoutManager
                         binding.recyclerView.post {
                             val targetId = arguments?.getInt("diaryId")
                             targetId?.let { id ->
                                 val index = diaryList.indexOfFirst { it.id == id }
                                 if (index != -1) {
-                                    binding.recyclerView.scrollToPosition(index)
+                                    val itemHeight = binding.recyclerView.getChildAt(0)?.height ?: 0
+                                    val recyclerViewHeight = binding.recyclerView.height
+                                    val offset = (recyclerViewHeight / 2) - (itemHeight / 2)
+
+                                    layoutManager.scrollToPositionWithOffset(index, offset)
                                 }
                             }
                         }
