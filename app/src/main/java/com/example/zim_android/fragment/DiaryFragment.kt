@@ -1,5 +1,6 @@
 package com.example.zim_android.fragment
 
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,7 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.zim_android.Adapter.DiaryAdapter
+import com.example.zim_android.Adapter.DiaryAdapter.DiaryViewHolder
 import com.example.zim_android.R
 import com.example.zim_android.data.model.DiaryResponse
 import com.example.zim_android.data.network.ApiProvider.api
@@ -59,8 +62,6 @@ class DiaryFragment : Fragment(R.layout.diary_page) {
                         binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 1)
                         binding.recyclerView.adapter = diaryAdapter
 
-
-
                         binding.recyclerView.post {
                             val targetId = arguments?.getInt("diaryId")
                             targetId?.let { id ->
@@ -78,6 +79,17 @@ class DiaryFragment : Fragment(R.layout.diary_page) {
                     Log.e("DiaryFragment", "API 요청 실패: ${t.message}", t)
                 }
             })
+
+        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+
+                // 스크롤이 시작될 때 녹음 재생 멈추기
+                if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    DiaryAdapter.stopPlayingAudioIfNeeded()
+                }
+            }
+        })
 
     }
 

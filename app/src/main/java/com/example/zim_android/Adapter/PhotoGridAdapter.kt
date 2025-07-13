@@ -39,18 +39,19 @@ class PhotoGridAdapter(
             .load(photos[position].imageUrl)
             .into(imageView)
 
-        holder.itemView.setOnClickListener {
+        imageView.setOnClickListener {
             onClick(photos[position].diaryId)
+            android.util.Log.d("PhotoGrid", "📸 ${position + 1}번째 사진 클릭됨 (URL: ${photos[position].imageUrl})")
         }
 
         // 선택된 인덱스일 경우 알파값 변경
         imageView.alpha = if (position == lastVisibleIndex) 0.3f else 1.0f
 
 
-        //사진 클릭 시 로그 출력
-        imageView.setOnClickListener {
-            android.util.Log.d("PhotoGrid", "📸 ${position + 1}번째 사진 클릭됨 (URL: ${photos[position].imageUrl})")
-        }
+//        //사진 클릭 시 로그 출력
+//        imageView.setOnClickListener {
+//            android.util.Log.d("PhotoGrid", "📸 ${position + 1}번째 사진 클릭됨 (URL: ${photos[position].imageUrl})")
+//        }
     }
 
     override fun getItemCount(): Int = photos.size

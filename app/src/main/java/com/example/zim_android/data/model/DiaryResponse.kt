@@ -5,14 +5,17 @@ data class DiaryResponse(
     val tripId: Int,
     val tripName: String,
     val countryName: String,
+    val countryEmoji: String,
     val city: String,
     val dateTime: String,
     val createdAt: String,
     val content: String,
     val detailedLocation: String?,
     val audioUrl: String?,
-    val emotionColor: String, // e.g. "#FF6B6B"
-    val weather: String,      // e.g. "맑음"
+    val emotionColor: String,           // e.g. "#FF6B6B"
+    val emotionName: String,
+    val weather: String,                // e.g. "맑음"
+    val weatherIconUrl: String,
     val images: List<DiaryImageResponse>
 )
 

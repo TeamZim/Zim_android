@@ -103,7 +103,7 @@ class CardAdapter(
 
             val recyclerView = binding.gridImage
             recyclerView.layoutManager = GridLayoutManager(binding.root.context, 2)
-            val images = tripImages[trip.id] ?: emptyList()
+            val images =imageMap[trip.id.toLong()] ?: emptyList()
             recyclerView.adapter = PhotoGridAdapter(images) {
                     diaryId -> onImageClickListener?.onImageClicked(diaryId)
             }

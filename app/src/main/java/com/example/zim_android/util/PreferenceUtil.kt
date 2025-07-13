@@ -14,6 +14,10 @@ object PreferenceUtil {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
     }
 
+    object Constants {
+        const val BASE_URL = "https://me-mory.mooo.com"
+    }
+
     // userId 저장 & 조회
     fun setUserId(context: Context, id: Int) {
         getPreferences(context).edit().putInt(KEY_USER_ID, id).apply()

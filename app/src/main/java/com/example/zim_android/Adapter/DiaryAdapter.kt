@@ -12,6 +12,8 @@ import com.bumptech.glide.Glide
 import com.example.zim_android.R
 import android.media.MediaPlayer
 import android.util.Log
+import com.example.zim_android.Adapter.DiaryAdapter.DiaryViewHolder
+import com.example.zim_android.util.PreferenceUtil.Constants
 
 
 class DiaryAdapter(private val itemList: List<DiaryResponse>) :
@@ -36,7 +38,7 @@ class DiaryAdapter(private val itemList: List<DiaryResponse>) :
         binding.audioBtn.setColorFilter(Color.parseColor(defaultColor), PorterDuff.Mode.SRC_IN)
 
         // 텍스트 바인딩
-        binding.countryName.text = item.countryName // emoji로 바꿔야함.
+        binding.countryEmoji.text = item.countryEmoji // emoji로 바꿔야함.
         binding.countryName.text = item.countryName
         binding.cityName.text = item.city
         binding.date.text = item.dateTime.split("T").getOrNull(0) ?: "-"
@@ -44,53 +46,104 @@ class DiaryAdapter(private val itemList: List<DiaryResponse>) :
         binding.detailedLocation.text = item.detailedLocation ?: "-"
         binding.contextText.text = item.content ?: "입력된 기록이 없어요."
 
+        Log.d("diaryId", item.id.toString())
+        Log.d("emotionColor", item.emotionColor.toString())
+
         // 감정색
         binding.emotionColorImg.setColorFilter(Color.parseColor(item.emotionColor), PorterDuff.Mode.SRC_IN)
-        // binding.emotionColorText.text = item. ?: "-" // 감정색명 text 추가
+        binding.emotionColorText.text = item.emotionName ?: "-" // 감정색명 text 추가
 
         // 날씨
-//        if (!item.weather.isNullOrBlank()) binding.photo1.setImageResource(item.~) //  날씨 이미지 추가
+        val fullUrl = Constants.BASE_URL + item.weatherIconUrl
+        if (!item.weather.isNullOrBlank())
+            Glide.with(binding.root.context).load(fullUrl).centerCrop().into(binding.weatherIcon) //  날씨 이미지 추가
         binding.weatherText.text = item.weather ?: "-"
 
         // 녹음
         if (!item.audioUrl.isNullOrBlank()) {
             binding.audioText.visibility = View.GONE
+            binding.audioBtn.clearColorFilter()
             binding.audioBtn.setImageResource(R.drawable.record_play)
             binding.audioBtn.isClickable = true
 
             binding.audioBtn.setOnClickListener {
-                binding.audioBtn.setImageResource(R.drawable.record_pause)
-                val mediaPlayer = MediaPlayer().apply {
-                    setDataSource(item.audioUrl) // URL 지정
-                    setOnPreparedListener { start() } // 준비되면 재생
-                    setOnCompletionListener {
-                        // 재생이 끝났을 때 처리
-                        release()
-                        binding.audioBtn.setImageResource(R.drawable.record_play)
+                // 이미 재생 중이고 동일 뷰를 누른 경우 -> 정지
+                if (isPlaying && currentlyPlayingHolder == holder) {
+                    mediaPlayer?.pause()
+                    mediaPlayer?.seekTo(0)
+                    isPlaying = false
+                    binding.audioBtn.setImageResource(R.drawable.record_play)
+                    return@setOnClickListener
+                }
+
+                // 다른 뷰에서 재생 중이던 미디어가 있다면 정지
+                currentlyPlayingHolder?.let {
+                    it.binding.audioBtn.setImageResource(R.drawable.record_play)
+                }
+                mediaPlayer?.release()
+                mediaPlayer = null
+
+                // 새로운 미디어 재생
+                mediaPlayer = MediaPlayer().apply {
+                    setDataSource(item.audioUrl)
+                    setOnPreparedListener {
+                        start()
+                        DiaryAdapter.isPlaying = true
+                        binding.audioBtn.setImageResource(R.drawable.record_pause)
+                        currentlyPlayingHolder = holder
                     }
-                    setOnErrorListener { mp, what, extra ->
-                        // 오류 처리
+                    setOnCompletionListener {
+                        release()
+                        DiaryAdapter.isPlaying = false
+                        binding.audioBtn.setImageResource(R.drawable.record_play)
+                        currentlyPlayingHolder = null
+                    }
+                    setOnErrorListener { _, what, extra ->
                         Log.e("AudioPlay", "오디오 재생 실패: $what, $extra")
                         true
                     }
-                    prepareAsync() // 비동기 준비
+                    prepareAsync()
                 }
             }
+        } else {
+            binding.audioText.visibility = View.VISIBLE
+            binding.audioBtn.setImageResource(R.drawable.default_color_img)
+            binding.audioBtn.isClickable = false
+            binding.audioBtn.setOnClickListener(null)
         }
 
 
         // 대표 이미지 바인딩
         val repImg = item.images.firstOrNull { it.isRepresentative }
         val otherImg = item.images.firstOrNull { !it.isRepresentative }
-        Glide.with(binding.root.context).load(repImg?.imageUrl).into(binding.photo1)
-        Glide.with(binding.root.context).load(otherImg?.imageUrl).into(binding.photo2)
+        Glide.with(binding.root.context).load(repImg?.imageUrl).centerCrop().into(binding.photo1)
+        Glide.with(binding.root.context).load(otherImg?.imageUrl).centerCrop().into(binding.photo2)
 
 
         // 대표 이미지 마크 처리
         binding.representiveIcon1.visibility = if (item.images[0].isRepresentative) View.VISIBLE else View.GONE
-        binding.representiveIcon2.visibility = if (item.images[2].isRepresentative) View.VISIBLE else View.GONE
+        binding.representiveIcon2.visibility = if (item.images[1].isRepresentative) View.VISIBLE else View.GONE
+    }
 
+    companion object {
+        // 녹음 재생 상태 추적용 변수들
+        private var mediaPlayer: MediaPlayer? = null
+        private var currentlyPlayingHolder: DiaryViewHolder? = null
+        private var isPlaying: Boolean = false
+
+        fun stopPlayingAudioIfNeeded() {
+            if (isPlaying) {
+                mediaPlayer?.pause()
+                mediaPlayer?.seekTo(0)
+                mediaPlayer?.release()
+                mediaPlayer = null
+                currentlyPlayingHolder?.binding?.audioBtn?.setImageResource(R.drawable.record_play)
+                isPlaying = false
+                currentlyPlayingHolder = null
+            }
+        }
     }
 
     override fun getItemCount(): Int = itemList.size
 }
+
