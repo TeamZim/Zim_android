@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.example.zim_android.R
 import android.media.MediaPlayer
 import android.util.Log
+import androidx.core.content.ContextCompat
 import com.example.zim_android.Adapter.DiaryAdapter.DiaryViewHolder
 import com.example.zim_android.util.PreferenceUtil.Constants
 
@@ -42,9 +43,21 @@ class DiaryAdapter(private val itemList: List<DiaryResponse>) :
         binding.countryName.text = item.countryName
         binding.cityName.text = item.city
         binding.date.text = item.dateTime.split("T").getOrNull(0) ?: "-"
-        binding.time.text = item.dateTime.split("T").getOrNull(1) ?: "-"
+        //분단위까지 자르기
+        val timePart = item.dateTime.split("T").getOrNull(1)?.split(":")
+        val hourMinute = if (timePart != null && timePart.size >= 2) {
+            "${timePart[0]}:${timePart[1]}"
+        } else "-"
+        binding.time.text = hourMinute
+
         binding.detailedLocation.text = item.detailedLocation ?: "-"
-        binding.contextText.text = item.content ?: "입력된 기록이 없어요."
+        if (item.content != null) {
+            binding.contextText.text = item.content ?: "입력된 기록이 없어요."
+            binding.contextText.setTextColor(ContextCompat.getColor(binding.root.context, R.color.primary_700))
+
+            binding.contextView1.setBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.unselected))
+            binding.contextView2.setBackgroundColor(ContextCompat.getColor(binding.root.context, R.color.unselected))
+        }
 
         Log.d("diaryId", item.id.toString())
         Log.d("emotionColor", item.emotionColor.toString())

@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.zim_android.Adapter.DiaryAdapter
@@ -40,8 +41,8 @@ class DiaryFragment : Fragment(R.layout.diary_page) {
 
         binding.backBtnHeader.tvTitle.text = "여행명"
         binding.backBtnHeader.backBtn.setOnClickListener {
-            // 뒤로 가기 로직 추가
-            // 그냥 네비게이션으로 넘기는게 아니라,따로 무슨 카드였는지를 같이 보내줘야할 것 같음.
+            findNavController().navigate(R.id.action_diaryFragment_to_viewCardFragment)
+            // 그냥 네비게이션으로 넘기는게 아니라,따로 무슨 카드였는지를 같이 보내줘야함.
         }
 
         val userId = UserSession.userId

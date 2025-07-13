@@ -12,4 +12,20 @@
         <item name="cornerSize">13dp</item>
     </style>
 
+    <style name="ImageTopRoundedCornersTop">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">13dp</item>
+        <item name="cornerSizeTopRight">13dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
+    <style name="ImageTopRoundedCornersBottom">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerSizeBottomLeft">13dp</item>
+        <item name="cornerSizeBottomRight">13dp</item>
+    </style>
+
 </resources>
