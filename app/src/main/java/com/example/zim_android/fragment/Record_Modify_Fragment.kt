@@ -105,8 +105,8 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
                     description = updatedMemo,
                     themeId = trip.themeId,
                     representativeImageUrl = imageUrl,
-                    startDate = startDate,
-                    endDate = endDate
+                    startDate = trip.startDate,
+                    endDate = trip.endDate
                 )
 
                 Log.d("PUT_BODY", """
@@ -140,7 +140,6 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
 
             // ✅ 대표 이미지가 선택된 경우 → 먼저 대표 이미지 API 호출, 그 후 updateTripInfo 호출
             if (diaryId != null) {
-                Log.e("PUT_IMAGE", "❌ diaryId가 null입니다. 대표 이미지 설정 불가")
                 val request = SetTripRepresentativeImageRequest(diaryId)
                 api.setTripRepresentativeImage(trip.id, request)
                     .enqueue(object : Callback<Void> {
