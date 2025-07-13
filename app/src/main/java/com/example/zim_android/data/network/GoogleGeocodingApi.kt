@@ -9,6 +9,7 @@ interface GoogleGeocodingApi {
     @GET("geocode/json")
     suspend fun getAddressFromLocation(
         @Query("latlng") latlng: String,
-        @Query("key") apiKey: String
+        @Query("key") apiKey: String,
+        @Query("language") language: String = "ko"
     ): Response<GeocodingResponse>
 }

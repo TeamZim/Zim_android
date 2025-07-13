@@ -54,6 +54,9 @@ class RecordFragment_1_1: Fragment(R.layout.record_1_1_fragment) {
         // tvtitle text 변경
         binding.commonHeader.tvTitle.text = "기록하기"
 
+        // 기존에 저장되어있던 정보들 초기화
+        DiaryTempStore.clear()
+
         // 기존 여행에 추가
         binding.constraint1.setOnClickListener {
             // 일기 생성 정보 추가
