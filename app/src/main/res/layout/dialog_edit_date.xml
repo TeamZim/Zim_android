@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="295dp"
+        android:layout_height="371dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/dialog_date_frame" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="26dp"
+        android:layout_marginTop="30dp"
+        android:text="여행 날짜"
+        android:textColor="@color/primary_700"
+        android:textSize="24sp"
+        android:fontFamily="@font/nanum_neuris"
+        android:gravity="center_vertical"
+        app:layout_constraintEnd_toEndOf="@+id/imageView3"
+        app:layout_constraintStart_toStartOf="@+id/imageView3"
+        app:layout_constraintTop_toTopOf="@+id/imageView3" />
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="231dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="11dp"
+        android:background="#AFA38F"
+        app:layout_constraintEnd_toEndOf="@+id/imageView3"
+        app:layout_constraintStart_toStartOf="@+id/imageView3"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+        android:text="시작일"
+        android:textColor="@color/primary_700"
+        android:textSize="22sp"
+        android:fontFamily="@font/nanum_neuris"
+        android:gravity="center_vertical"
+        app:layout_constraintStart_toStartOf="@+id/line"
+        app:layout_constraintTop_toBottomOf="@+id/line" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="53dp"
+        android:fontFamily="@font/nanum_neuris"
+        android:gravity="center_vertical"
+        android:text="시작일"
+        android:textColor="@color/primary_700"
+        android:textSize="22sp"
+        app:layout_constraintStart_toStartOf="@+id/line2"
+        app:layout_constraintTop_toBottomOf="@+id/line2" />
+
+    <TextView
+        android:id="@+id/start_date_text"
+        android:layout_width="wrap_content"
+        android:layout_height="22dp"
+        android:layout_marginTop="3dp"
+        android:text="2000.00.00(요일)"
+        android:textColor="@color/primary_700"
+        android:textSize="22sp"
+        android:fontFamily="@font/nanum_neuris"
+        android:gravity="center_vertical"
+        app:layout_constraintStart_toStartOf="@+id/textView3"
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+    <TextView
+        android:id="@+id/end_date_text"
+        android:layout_width="wrap_content"
+        android:layout_height="22dp"
+        android:layout_marginTop="3dp"
+        android:fontFamily="@font/nanum_neuris"
+        android:gravity="center_vertical"
+        android:text="2000.00.00(요일)"
+        android:textColor="@color/primary_700"
+        android:textSize="22sp"
+        app:layout_constraintStart_toStartOf="@+id/textView4"
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+    <View
+        android:id="@+id/line2"
+        android:layout_width="231dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="6dp"
+        android:background="#AFA38F"
+        app:layout_constraintEnd_toEndOf="@+id/imageView3"
+        app:layout_constraintStart_toStartOf="@+id/imageView3"
+        app:layout_constraintTop_toBottomOf="@+id/start_date_text" />
+
+
+    <View
+        android:id="@+id/line3"
+        android:layout_width="231dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:background="#AFA38F"
+        app:layout_constraintEnd_toEndOf="@+id/imageView3"
+        app:layout_constraintStart_toStartOf="@+id/imageView3"
+        app:layout_constraintTop_toBottomOf="@+id/end_date_text" />
+
+    <ImageView
+        android:id="@+id/exit_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="12dp"
+        android:clickable="true"
+        app:layout_constraintEnd_toEndOf="@+id/imageView3"
+        app:layout_constraintTop_toTopOf="@+id/imageView3"
+        app:srcCompat="@drawable/exit_btn" />
+
+    <ImageView
+        android:id="@+id/save_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="21dp"
+        android:clickable="false"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView3"
+        app:layout_constraintEnd_toEndOf="@+id/imageView3"
+        app:layout_constraintStart_toStartOf="@+id/imageView3"
+        app:srcCompat="@drawable/save_btn_unactive" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
