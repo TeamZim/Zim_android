@@ -39,6 +39,10 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
     lateinit var startDate: String
     lateinit var endDate: String
 
+    lateinit var tempStartDate: String
+    lateinit var tempEndDate: String
+
+
     val userId = UserSession.userId ?: 1
     // 사용자 ID
     //아직 카카오로그인이 안된 상태라 노션에 적혀진 1로 하긴 했는데 나중에 카카오로그인 후에 수정필요
@@ -67,6 +71,9 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
 
         startDate = trip.startDate
         endDate = trip.endDate
+
+        tempStartDate = trip.startDate
+        tempEndDate = trip.endDate
 
         // 저장 버튼 클릭 시
         binding.saveButtonModify.setOnClickListener {
@@ -151,12 +158,9 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
         val bindingDialogDate = DialogEditDateBinding.inflate(layoutInflater)
         dialog.setContentView(bindingDialogDate.root)
 
-        var tempStartDate = trip.startDate
-        var tempEndDate = trip.endDate
-
         // 기존 날짜
-        bindingDialogDate.startDateText.text = trip.startDate
-        bindingDialogDate.endDateText.text = trip.endDate
+        bindingDialogDate.startDateText.text = tempStartDate
+        bindingDialogDate.endDateText.text = tempEndDate
         dialog.show()
 
         bindingDialogDate.exitBtn.setOnClickListener {
@@ -193,6 +197,8 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
 
                 bindingDialogDate.startDateText.text = formattedDate
 
+                binding.editDate.text = "${tempStartDate} ~ ${tempEndDate}"
+
                 if (startDate != tempStartDate || endDate != tempEndDate) {
                     bindingDialogDate.saveBtn.setImageResource(R.drawable.save_btn_active)
                     bindingDialogDate.saveBtn.isClickable = true
@@ -200,7 +206,6 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
                     bindingDialogDate.saveBtn.setOnClickListener {
                         startDate = tempStartDate
                         endDate = tempEndDate
-                        binding.editDate.text = "${startDate} ~ ${endDate}"
                         dialog.dismiss()
                     }
 
@@ -209,10 +214,12 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
                     bindingDialogDate.saveBtn.isClickable = false
             }
         }
+    }
 
         bindingDialogDate.endDateText.setOnClickListener {
             val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.KOREAN)
-            val startDateMillis = formatter.parse(tempStartDate)?.time ?: MaterialDatePicker.todayInUtcMilliseconds()
+            Log.d("tempStartDate", tempStartDate)
+            val startDateMillis = formatter.parse(tempStartDate)?.time ?: formatter.parse(startDate)?.time ?: MaterialDatePicker.todayInUtcMilliseconds()
 
             // 시작일 이후만 선택 가능하도록 제한
             val constraintsBuilder = CalendarConstraints.Builder()
@@ -238,6 +245,7 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
                 tempEndDate = formatter2.format(selectedDate) // 종료 날짜 데이터 임시 저장
 
                 bindingDialogDate.endDateText.text = formattedDate
+                binding.editDate.text = "${tempStartDate} ~ ${tempEndDate}"
 
                 if (startDate != tempStartDate || endDate != tempEndDate) {
                     bindingDialogDate.saveBtn.setImageResource(R.drawable.save_btn_active)
@@ -246,7 +254,6 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
                     bindingDialogDate.saveBtn.setOnClickListener {
                         startDate = tempStartDate
                         endDate = tempEndDate
-                        binding.editDate.text = "${startDate} ~ ${endDate}"
                         dialog.dismiss()
                     }
                 } else {
@@ -256,7 +263,7 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
             }
         }
 
-    }}
+    }
 
 
     fun onMemoClick(position: Int) {
