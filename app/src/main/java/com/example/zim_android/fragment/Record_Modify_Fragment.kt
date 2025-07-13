@@ -346,6 +346,8 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
                     Log.e("API", "이미지 불러오기 실패: ${t.message}")
                 }
             })
+
+        dialog.show()
     }
 
 
