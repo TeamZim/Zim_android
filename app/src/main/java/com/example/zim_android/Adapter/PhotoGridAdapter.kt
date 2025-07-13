@@ -32,7 +32,7 @@ class PhotoGridAdapter(private val photos: List<TripImageResponse>) :
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
         val imageView = holder.binding.gridImage
 
-        //Glide를 사용해 URL 로드
+        // Glide를 사용해 URL 로드
         Glide.with(holder.itemView.context)
             .load(photos[position].imageUrl)
             .into(imageView)

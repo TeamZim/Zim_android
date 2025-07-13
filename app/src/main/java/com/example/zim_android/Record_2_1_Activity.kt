@@ -59,7 +59,8 @@ class Record_2_1_Activity : AppCompatActivity() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     // 나라, 도시, 날짜, 시간 담는 변수
-    private var country: String = ""
+    private var countryName: String = ""
+    private var countryCode1: String = ""
     private var cityName: String = ""
     private var dateTime: String = ""
 
@@ -196,18 +197,19 @@ class Record_2_1_Activity : AppCompatActivity() {
                     Log.d("GeoLocationRaw", "response: ${response.body()}")
 
                     // 나라 및 도시 받아오기
-                    country = components?.firstOrNull { "country" in it.types }?.long_name ?: "Unknown"
+                    countryName = components?.firstOrNull { "country" in it.types }?.long_name ?: "Unknown"
+                    countryCode1 = components?.firstOrNull { "country" in it.types }?.long_name ?: "Unknown"
                     cityName = components?.firstOrNull {
                         "locality" in it.types || "administrative_area_level_1" in it.types
                     }?.long_name ?: "Unknown"
 
                     withContext(Dispatchers.Main) {
                         DiaryTempStore.apply {
-                            countryCode = country
+                            countryCode = countryCode1
                             city = cityName
                         }
 
-                        Log.d("GeoLocation", "나라: $country, 도시: $cityName")
+                        Log.d("GeoLocation", "나라: $countryName, 도시: $cityName")
                     }
                 } else {
                     Log.e("GeoLocation", "API 실패: ${response.errorBody()?.string()}")
