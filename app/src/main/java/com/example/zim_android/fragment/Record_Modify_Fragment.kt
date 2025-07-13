@@ -5,12 +5,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
-import com.example.zim_android.Adapter.CardAdapter
+import com.bumptech.glide.Glide
 import com.example.zim_android.Adapter.DialogPhotoSelectAdapter
 import com.example.zim_android.R
+import com.example.zim_android.data.model.SetTripRepresentativeImageRequest
 import com.example.zim_android.data.model.TripImageResponse
 import com.example.zim_android.data.model.TripResponse
-import com.example.zim_android.data.network.ApiProvider
+import com.example.zim_android.data.network.ApiProvider.api
 import com.example.zim_android.databinding.DialogSelectPhotoBinding
 import com.example.zim_android.databinding.RecordModifyBinding
 import retrofit2.Call
@@ -24,6 +25,8 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
     private var _binding: RecordModifyBinding? = null
     private val binding get() = _binding!!
 
+    var selectedItem: TripImageResponse? = null
+    lateinit var photoAdapter: DialogPhotoSelectAdapter
 
     val userId = UserSession.userId ?: 1
     // 사용자 ID
@@ -41,10 +44,15 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = RecordModifyBinding.bind(view)
 
+        // tripId는 trip 객체에서 가져오면 됨
+        val tripId = trip.id  // 또는 trip.tripId
+
+
         // 기존 trip 정보 바인딩
         binding.editTitle.setText(trip.tripName)
         binding.editMemo.setText(trip.description)
         binding.editDate.text = "${trip.startDate} ~ ${trip.endDate}"
+        Glide.with(this).load(trip.representativeImageUrl).into(binding.imageBox)
 
 
         // 저장 버튼 클릭 시
@@ -52,12 +60,35 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
             val updatedTitle = binding.editTitle.text.toString()
             val updatedMemo = binding.editMemo.text.toString()
 
+            // 대표 이미지 api 이용하여 업로드하기
+            val diaryId = selectedItem?.diaryId
+            if (diaryId == null) {
+                Log.e("Save", "대표 이미지가 선택되지 않았습니다.")
+                return@setOnClickListener
+            }
+
+            val request = SetTripRepresentativeImageRequest(diaryId)
+            api.setTripRepresentativeImage(tripId, request)
+                .enqueue(object : Callback<Void> {
+                    override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                        if (response.isSuccessful) {
+                            Log.d("Save", "대표 이미지 설정 완료")
+                            // requireActivity().onBackPressedDispatcher.onBackPressed() // or 다이얼로그 닫기
+                        } else {
+                            Log.e("Save", "대표 이미지 설정 실패: ${response.code()}")
+                        }
+                    }
+                    override fun onFailure(call: Call<Void>, t: Throwable) {
+                        Log.e("Save", "API 호출 실패: ${t.message}")
+                    }
+                })
+
+
             // TODO: 수정 API 호출하거나 변경 데이터 전달 처리
         }
         binding.btnCancel.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
-
 
 
         //editTitle 누르면 제목 수정 다이얼로그 띄우기
@@ -114,6 +145,10 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
 
 
     fun onImageClick(position: Int) {
+        // tripId는 trip 객체에서 가져오면 됨
+        val tripId = trip.id  // 또는 trip.tripId
+
+
         // 사진 선택 다이얼로그 띄우기
         val dialog = Dialog(requireContext())
         val bindingDialog = DialogSelectPhotoBinding.inflate(layoutInflater)
@@ -123,22 +158,55 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
             dialog.dismiss()
         }
 
-        // tripId는 trip 객체에서 가져오면 됨
-        val tripId = trip.id  // 또는 trip.tripId
 
-        // 여행 대표 이미지 리스트 가져오기
-        ApiProvider.api.getTripRepresentativeImages(tripId)
+// 여행 대표 이미지 리스트 가져오기
+        api.getTripRepresentativeImages(tripId)
             .enqueue(object : Callback<List<TripImageResponse>> {
                 override fun onResponse(
                     call: Call<List<TripImageResponse>>,
                     response: Response<List<TripImageResponse>>
                 ) {
                     val imageList = response.body() ?: emptyList()
-                    val photoAdapter = DialogPhotoSelectAdapter(requireContext(), imageList) { selectedItem ->
-                        Log.d("Image", "선택된 이미지: ${selectedItem.imageUrl}")
-                        // TODO: 선택된 이미지 처리
+
+                    // 🔧 5개 미만일 경우 gradient 숨기기
+                    bindingDialog.gradientImg.visibility =
+                        if (imageList.size < 5) View.GONE else View.VISIBLE
+
+                    photoAdapter = DialogPhotoSelectAdapter(requireContext(), imageList) { clickedItem ->
+                        // 같은 항목 다시 클릭하면 선택 해제
+                        if (selectedItem == clickedItem) {
+                            selectedItem = null
+                            bindingDialog.saveBtn.apply {
+                                setImageResource(R.drawable.save_btn_unactive)
+                                isClickable = false
+                            }
+                        } else {
+                            selectedItem = clickedItem
+                            bindingDialog.saveBtn.apply {
+                                setImageResource(R.drawable.save_btn_active)
+                                isClickable = true
+                            }
+                        }
+
+                        // 선택 항목 바뀌었으니 갱신
+                        photoAdapter.setSelectedItem(selectedItem)
                     }
+
                     bindingDialog.gridView.adapter = photoAdapter
+
+                    // 저장 버튼 초기 상태 비활성화
+                    bindingDialog.saveBtn.apply {
+                        setImageResource(R.drawable.save_btn_unactive)
+                        isClickable = false
+                    }
+
+                    // 저장 버튼 클릭 시 처리
+                    bindingDialog.saveBtn.setOnClickListener {
+                        selectedItem?.let {
+                            Glide.with(this@Record_Modify_Fragment).load(it.imageUrl).into(binding.imageBox)
+                            dialog.dismiss()
+                        }
+                    }
                 }
 
                 override fun onFailure(call: Call<List<TripImageResponse>>, t: Throwable) {

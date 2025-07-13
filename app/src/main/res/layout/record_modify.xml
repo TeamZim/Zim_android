@@ -50,7 +50,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <!-- 대표 이미지 회색 박스 -->
-        <View
+        <ImageView
             android:id="@+id/image_box"
             android:layout_width="233dp"
             android:layout_height="214dp"

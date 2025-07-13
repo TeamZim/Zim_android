@@ -52,9 +52,12 @@
         android:id="@+id/grid_view"
         android:layout_width="240dp"
         android:layout_height="361dp"
-        android:layout_marginStart="31dp"
+        android:layout_marginStart="25dp"
         android:layout_marginTop="24dp"
         android:numColumns="2"
+        android:padding="0dp"
+        android:verticalSpacing="10dp"
+        android:horizontalSpacing="0dp"
         app:layout_constraintStart_toStartOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/view" />
 
@@ -69,6 +72,14 @@
         app:layout_constraintStart_toStartOf="@+id/imageView"
         app:srcCompat="@drawable/save_btn_unactive"
         />
+
+    <ImageView
+        android:id="@+id/gradient_img"
+        android:layout_width="231dp"
+        android:layout_height="64dp"
+        app:layout_constraintBottom_toBottomOf="@+id/grid_view"
+        app:layout_constraintStart_toStartOf="@+id/grid_view"
+        app:srcCompat="@drawable/gradation_rectangle" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -12,9 +12,8 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.zim_android.R
 import com.example.zim_android.ui.theme.CardItemDecoration
 import com.example.zim_android.Adapter.CardAdapter
+import com.example.zim_android.Adapter.PhotoGridAdapter
 import com.example.zim_android.data.model.TripResponse
-import com.example.zim_android.data.model.TripImageResponse
-import com.example.zim_android.data.network.ApiProvider
 import com.example.zim_android.data.network.ApiProvider.api
 import com.example.zim_android.data.network.UserSession
 import com.example.zim_android.databinding.ViewCardFragmentBinding
@@ -71,8 +70,8 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
         // 유저 ID 가져오기 (기본값 1)
         val userId = UserSession.userId ?: 1
 
-        // 여행 목록 API 호출
-        ApiProvider.api.getTripsByUser(userId).enqueue(object : Callback<List<TripResponse>> {
+        // 사용자 여행 목록 받아오기
+        api.getTripsByUser(userId).enqueue(object : Callback<List<TripResponse>> {
             override fun onResponse(
                 call: Call<List<TripResponse>>,
                 response: Response<List<TripResponse>>
