@@ -35,7 +35,10 @@ interface ApiService {
 
     // 여행 수정
     @PUT("/api/trips/{tripId}")
-    fun updateTrip(@Body request: TripUpdateRequest, @Path("tripId") tripId: Int): Call<Void>
+    fun updateTrip(
+        @Path("tripId") tripId: Int,
+        @Body request: TripUpdateRequest
+    ): Call<Void>
 
     // 여행 목록 조회
     @GET("/api/trips")
