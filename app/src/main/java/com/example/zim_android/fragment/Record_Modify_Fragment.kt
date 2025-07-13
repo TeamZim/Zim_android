@@ -11,6 +11,7 @@ import com.example.zim_android.R
 import com.example.zim_android.data.model.SetTripRepresentativeImageRequest
 import com.example.zim_android.data.model.TripImageResponse
 import com.example.zim_android.data.model.TripResponse
+import com.example.zim_android.data.model.TripUpdateRequest
 import com.example.zim_android.data.network.ApiProvider.api
 import com.example.zim_android.databinding.DialogSelectPhotoBinding
 import com.example.zim_android.databinding.RecordModifyBinding
@@ -24,6 +25,10 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
 
     private var _binding: RecordModifyBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var updatedTitle: String
+    private lateinit var updatedMemo: String
+
 
     var selectedItem: TripImageResponse? = null
     lateinit var photoAdapter: DialogPhotoSelectAdapter
@@ -44,8 +49,11 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = RecordModifyBinding.bind(view)
 
+
+
         // tripId는 trip 객체에서 가져오면 됨
         val tripId = trip.id  // 또는 trip.tripId
+
 
 
         // 기존 trip 정보 바인딩
@@ -54,34 +62,87 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
         binding.editDate.text = "${trip.startDate} ~ ${trip.endDate}"
         Glide.with(this).load(trip.representativeImageUrl).centerCrop().into(binding.imageBox)
 
+        updatedTitle = trip.tripName
+        updatedMemo = trip.description
+
+
 
         // 저장 버튼 클릭 시
         binding.saveButtonModify.setOnClickListener {
-            val updatedTitle = binding.editTitle.text.toString()
-            val updatedMemo = binding.editMemo.text.toString()
 
-            // 대표 이미지 api 이용하여 업로드하기
-            val diaryId = selectedItem?.diaryId
-            if (diaryId == null) {
-                Log.e("Save", "대표 이미지가 선택되지 않았습니다.")
-                return@setOnClickListener
+            updatedTitle = binding.editTitle.text.toString()
+            updatedMemo = binding.editMemo.text.toString()
+
+
+            val newTitle = updatedTitle  // 수정된 제목
+
+            // 여행 정보 PUT 요청 보내는 함수
+            fun updateTripInfo(imageUrl: String) {
+                val updateRequest = TripUpdateRequest(
+                    tripName = newTitle,
+                    description = updatedMemo,
+                    themeId = trip.themeId,
+                    representativeImageUrl = imageUrl,
+                    startDate = trip.startDate,
+                    endDate = trip.endDate
+                )
+
+                Log.d("PUT_BODY", """
+        여행 수정 요청:
+        📝 제목: ${updateRequest.tripName}
+        🧾 메모: ${updateRequest.description}
+        🎨 테마 ID: ${updateRequest.themeId}
+        🖼 대표 이미지: ${updateRequest.representativeImageUrl}
+        📅 날짜: ${updateRequest.startDate} ~ ${updateRequest.endDate}
+    """.trimIndent())
+
+                api.updateTrip(trip.id, updateRequest)
+                    .enqueue(object : Callback<Void> {
+                        override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                            if (response.isSuccessful) {
+                                Log.d("PUT_RESULT", "✅ 여행 수정 성공 (code=${response.code()})")
+                                requireActivity().onBackPressedDispatcher.onBackPressed()
+                            } else {
+                                Log.e("PUT_RESULT", "❌ 여행 수정 실패 (code=${response.code()})")
+                            }
+                        }
+
+                        override fun onFailure(call: Call<Void>, t: Throwable) {
+                            Log.e("PUT_RESULT", "💥 여행 수정 API 호출 실패: ${t.message}")
+                        }
+                    })
             }
 
-            // SetTripRepresentativeImageRequest api 호출
-            val request = SetTripRepresentativeImageRequest(diaryId)
-            api.setTripRepresentativeImage(tripId, request)
-                .enqueue(object : Callback<Void> {
-                    override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                        if (response.isSuccessful) {
-                            Log.d("Save", "대표 이미지 설정 완료")
-                        } else {
-                            Log.e("Save", "대표 이미지 설정 실패: ${response.code()}")
+            val diaryId = selectedItem?.diaryId
+            val selectedImageUrl = selectedItem?.imageUrl ?: trip.representativeImageUrl
+
+            // ✅ 대표 이미지가 선택된 경우 → 먼저 대표 이미지 API 호출, 그 후 updateTripInfo 호출
+            if (diaryId != null) {
+                val request = SetTripRepresentativeImageRequest(diaryId)
+                api.setTripRepresentativeImage(trip.id, request)
+                    .enqueue(object : Callback<Void> {
+                        override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                            if (response.isSuccessful) {
+                                Log.d("Save", "대표 이미지 설정 완료")
+                                if (selectedImageUrl != null) {
+                                    updateTripInfo(selectedImageUrl)
+                                }
+                            } else {
+                                Log.e("Save", "대표 이미지 설정 실패: ${response.code()}")
+                            }
                         }
-                    }
-                    override fun onFailure(call: Call<Void>, t: Throwable) {
-                        Log.e("Save", "API 호출 실패: ${t.message}")
-                    }
-                })
+
+                        override fun onFailure(call: Call<Void>, t: Throwable) {
+                            Log.e("Save", "대표 이미지 API 호출 실패: ${t.message}")
+                        }
+                    })
+            } else {
+                // ✅ 이미지 변경 없이 바로 여행 정보 PUT
+                val selectedImageUrl: String = selectedItem?.imageUrl ?: trip.representativeImageUrl ?: ""
+                updateTripInfo(selectedImageUrl)
+
+
+            }
 
 
             // TODO: 수정 API 호출하거나 변경 데이터 전달 처리
@@ -116,10 +177,10 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
         val dialog = Record_Modify_1(
             currentTitle = trip.tripName,
             onTitleUpdated = { newTitle ->
-                Log.d("Edit", "새 제목: $newTitle")
-                binding.editTitle.setText(newTitle)  // 실제로 UI 업데이트
-                // TODO: API 호출 등 처리
+                updatedTitle = newTitle
+                binding.editTitle.setText(newTitle)
             }
+
         )
         dialog.show(parentFragmentManager, "editTitle")
     }
