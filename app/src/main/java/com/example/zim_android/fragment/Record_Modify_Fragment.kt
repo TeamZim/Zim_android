@@ -19,6 +19,14 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import com.example.zim_android.data.network.UserSession
+import com.example.zim_android.databinding.DialogEditDateBinding
+import com.google.android.material.datepicker.MaterialDatePicker
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointBackward
+import com.google.android.material.datepicker.DateValidatorPointForward
 
 
 class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
@@ -32,6 +40,13 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
 
     var selectedItem: TripImageResponse? = null
     lateinit var photoAdapter: DialogPhotoSelectAdapter
+
+    lateinit var startDate: String
+    lateinit var endDate: String
+
+    lateinit var tempStartDate: String
+    lateinit var tempEndDate: String
+
 
     val userId = UserSession.userId ?: 1
     // 사용자 ID
@@ -61,6 +76,13 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
         binding.editMemo.setText(trip.description)
         binding.editDate.text = "${trip.startDate} ~ ${trip.endDate}"
         Glide.with(this).load(trip.representativeImageUrl).centerCrop().into(binding.imageBox)
+
+
+        startDate = trip.startDate
+        endDate = trip.endDate
+
+        tempStartDate = trip.startDate
+        tempEndDate = trip.endDate
 
         updatedTitle = trip.tripName
         updatedMemo = trip.description
@@ -162,9 +184,16 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
             onMemoClick(0)
         }
 
+        // 이미지 클릭 시 다이얼로그
         binding.imageBox.setOnClickListener {
             onImageClick(0)  // position은 필요 없다면 그냥 0
         }
+
+        // 날짜 클릭 시 다이얼로그
+        binding.editDate.setOnClickListener {
+            onDateClick(0)
+        }
+
 
         //gnb숨기기
         requireActivity().findViewById<View>(R.id.bottom_navigation)?.visibility = View.GONE
@@ -188,7 +217,115 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
 
     fun onDateClick(position: Int) {
         Log.d("Edit", "날짜 클릭됨 at $position")
-        // TODO: 날짜 수정 다이얼로그 띄우기 등
+        val dialog = Dialog(requireContext())
+        val bindingDialogDate = DialogEditDateBinding.inflate(layoutInflater)
+        dialog.setContentView(bindingDialogDate.root)
+
+        // 기존 날짜
+        bindingDialogDate.startDateText.text = tempStartDate
+        bindingDialogDate.endDateText.text = tempEndDate
+        dialog.show()
+
+        bindingDialogDate.exitBtn.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        bindingDialogDate.startDateText.setOnClickListener {
+            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.KOREAN)
+            val endDateMillis = formatter.parse(tempEndDate)?.time ?: MaterialDatePicker.todayInUtcMilliseconds()
+
+            // 종료일 이전만 선택 가능하게 제한
+            val constraintsBuilder = CalendarConstraints.Builder()
+                .setValidator(DateValidatorPointBackward.before(endDateMillis + 86_400_000L))
+
+            val datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("여행 시작일 선택")
+                .setSelection(endDateMillis)
+                .setCalendarConstraints(constraintsBuilder.build())
+                // .setTheme(R.style.CustomDatePickerTheme)
+                .build()
+
+            datePicker.show(parentFragmentManager, "start_date_picker")
+
+            datePicker.addOnPositiveButtonClickListener { selection ->
+                // 선택된 날짜는 UTC 기준 long 타입 (milliseconds)
+                val selectedDate = Date(selection)
+
+                // 포맷 정의
+                val formatter1 = SimpleDateFormat("yyyy.MM.dd(E)", Locale.KOREAN)
+                val formatter2 = SimpleDateFormat("yyyy-MM-dd", Locale.KOREAN)
+
+                val formattedDate = formatter2.format(selectedDate)
+                tempStartDate = formatter2.format(selectedDate) // 시작 날짜 데이터 임시 저장
+
+                bindingDialogDate.startDateText.text = formattedDate
+
+                binding.editDate.text = "${tempStartDate} ~ ${tempEndDate}"
+
+                if (startDate != tempStartDate || endDate != tempEndDate) {
+                    bindingDialogDate.saveBtn.setImageResource(R.drawable.save_btn_active)
+                    bindingDialogDate.saveBtn.isClickable = true
+
+                    bindingDialogDate.saveBtn.setOnClickListener {
+                        startDate = tempStartDate
+                        endDate = tempEndDate
+                        dialog.dismiss()
+                    }
+
+                } else {
+                    bindingDialogDate.saveBtn.setImageResource(R.drawable.save_btn_unactive)
+                    bindingDialogDate.saveBtn.isClickable = false
+            }
+        }
+    }
+
+        bindingDialogDate.endDateText.setOnClickListener {
+            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.KOREAN)
+            Log.d("tempStartDate", tempStartDate)
+            val startDateMillis = formatter.parse(tempStartDate)?.time ?: formatter.parse(startDate)?.time ?: MaterialDatePicker.todayInUtcMilliseconds()
+
+            // 시작일 이후만 선택 가능하도록 제한
+            val constraintsBuilder = CalendarConstraints.Builder()
+                .setValidator(DateValidatorPointForward.from(startDateMillis))
+
+            val datePicker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("여행 시작일 선택")
+                .setSelection(startDateMillis)
+                .setCalendarConstraints(constraintsBuilder.build())
+                // .setTheme(R.style.CustomDatePickerTheme)
+                .build()
+
+            datePicker.show(parentFragmentManager, "start_date_picker")
+
+
+            datePicker.addOnPositiveButtonClickListener { selection ->
+                val selectedDate = Date(selection)
+
+                val formatter1 = SimpleDateFormat("yyyy.MM.dd(E)", Locale.KOREAN)
+                val formatter2 = SimpleDateFormat("yyyy-MM-dd", Locale.KOREAN)
+
+                val formattedDate = formatter2.format(selectedDate)
+                tempEndDate = formatter2.format(selectedDate) // 종료 날짜 데이터 임시 저장
+
+                bindingDialogDate.endDateText.text = formattedDate
+                binding.editDate.text = "${tempStartDate} ~ ${tempEndDate}"
+
+                if (startDate != tempStartDate || endDate != tempEndDate) {
+                    bindingDialogDate.saveBtn.setImageResource(R.drawable.save_btn_active)
+                    bindingDialogDate.saveBtn.isClickable = true
+
+                    bindingDialogDate.saveBtn.setOnClickListener {
+                        startDate = tempStartDate
+                        endDate = tempEndDate
+                        dialog.dismiss()
+                    }
+                } else {
+                    bindingDialogDate.saveBtn.setImageResource(R.drawable.save_btn_unactive)
+                    bindingDialogDate.saveBtn.isClickable = false
+                }
+            }
+        }
+
     }
 
 
@@ -209,7 +346,6 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
         // tripId는 trip 객체에서 가져오면 됨
         val tripId = trip.id  // 또는 trip.tripId
 
-
         // 사진 선택 다이얼로그 띄우기
         val dialog = Dialog(requireContext())
         val bindingDialog = DialogSelectPhotoBinding.inflate(layoutInflater)
@@ -219,8 +355,7 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
             dialog.dismiss()
         }
 
-
-// 여행 대표 이미지 리스트 가져오기
+        // 여행 대표 이미지 리스트 가져오기
         api.getTripRepresentativeImages(tripId)
             .enqueue(object : Callback<List<TripImageResponse>> {
                 override fun onResponse(
