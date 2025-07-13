@@ -44,6 +44,18 @@ class CardAdapter(
         notifyDataSetChanged()
     }
 
+
+
+    interface OnImageClickListener {
+        fun onImageClicked(diaryId: Int)
+    }
+
+    private var onImageClickListener: OnImageClickListener? = null
+    fun setOnImageClickListener(listener: OnImageClickListener) {
+        onImageClickListener = listener
+    }
+
+
     inner class ViewHolder(private val binding: ItemCardBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(trip: TripResponse, position: Int) {
@@ -91,10 +103,10 @@ class CardAdapter(
 
             val recyclerView = binding.gridImage
             recyclerView.layoutManager = GridLayoutManager(binding.root.context, 2)
-            val images = imageMap[trip.id.toLong()] ?: emptyList()
-
-
-            recyclerView.adapter = PhotoGridAdapter(images)
+            val images =imageMap[trip.id.toLong()] ?: emptyList()
+            recyclerView.adapter = PhotoGridAdapter(images) {
+                    diaryId -> onImageClickListener?.onImageClicked(diaryId)
+            }
             recyclerView.addItemDecoration(SpaceItemDecoration(13))
         }
 
