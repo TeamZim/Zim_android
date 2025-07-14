@@ -39,8 +39,9 @@ class DialogPhotoSelectAdapter (
         }
 
         val item = items[position]
-        Log.d("ImageURL", "item.imageUrl = ${item.imageUrl}")
 
+        val strokeWidthSelected = (1 * context.resources.displayMetrics.density).toInt()
+        val strokeWidthUnselected = 0
 
         // 이미지 URL 로드
         Glide.with(context)
@@ -49,10 +50,15 @@ class DialogPhotoSelectAdapter (
             .into(binding.imageView)
 
         // 선택된 이미지 외에는 어둡게 처리
-        if (selectedItem != null && selectedItem != item) {
-            binding.imageView.setColorFilter(Color.parseColor("#A6000000"), PorterDuff.Mode.SRC_OVER)
-        } else {
+        if (selectedItem == null) {
             binding.imageView.clearColorFilter()
+            binding.imageView.strokeWidth = strokeWidthUnselected.toFloat()
+        } else if (selectedItem == item) {
+            binding.imageView.clearColorFilter()
+            binding.imageView.strokeWidth = strokeWidthSelected.toFloat()
+        } else {
+            binding.imageView.setColorFilter(Color.parseColor("#A6000000"), PorterDuff.Mode.SRC_OVER)
+            binding.imageView.strokeWidth = strokeWidthUnselected.toFloat()
         }
 
         binding.root.setOnClickListener {
