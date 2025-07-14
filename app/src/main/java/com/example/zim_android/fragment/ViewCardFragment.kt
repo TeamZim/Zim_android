@@ -79,7 +79,6 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
             ) {
                 if (response.isSuccessful) {
                     val tripList = response.body() ?: emptyList()
-
                     val imageMap = mutableMapOf<Long, List<TripImageResponse>>()
                     var loadedCount = 0
 

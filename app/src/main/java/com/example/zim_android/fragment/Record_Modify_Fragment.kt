@@ -5,13 +5,16 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.Glide
 import com.example.zim_android.Adapter.DialogPhotoSelectAdapter
+import com.example.zim_android.Adapter.DialogThemeSelectAdapter
 import com.example.zim_android.R
 import com.example.zim_android.data.model.SetTripRepresentativeImageRequest
 import com.example.zim_android.data.model.TripImageResponse
 import com.example.zim_android.data.model.TripResponse
 import com.example.zim_android.data.model.TripUpdateRequest
+import com.example.zim_android.data.model.Theme
 import com.example.zim_android.data.network.ApiProvider.api
 import com.example.zim_android.databinding.DialogSelectPhotoBinding
 import com.example.zim_android.databinding.RecordModifyBinding
@@ -20,6 +23,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import com.example.zim_android.data.network.UserSession
 import com.example.zim_android.databinding.DialogEditDateBinding
+import com.example.zim_android.databinding.DialogThemeSelectBinding
+import com.example.zim_android.ui.theme.ThemeItemDecoration
 import com.google.android.material.datepicker.MaterialDatePicker
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -37,7 +42,6 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
     private lateinit var updatedTitle: String
     private lateinit var updatedMemo: String
 
-
     var selectedItem: TripImageResponse? = null
     lateinit var photoAdapter: DialogPhotoSelectAdapter
 
@@ -46,6 +50,9 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
 
     lateinit var tempStartDate: String
     lateinit var tempEndDate: String
+
+    var updatedThemeId: Int = 1
+    lateinit var themeAdapter: DialogThemeSelectAdapter
 
 
     val userId = UserSession.userId ?: 1
@@ -64,14 +71,14 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = RecordModifyBinding.bind(view)
 
-
-
         // tripId는 trip 객체에서 가져오면 됨
         val tripId = trip.id  // 또는 trip.tripId
 
-
-
         // 기존 trip 정보 바인딩
+        Glide.with(binding.root.context)
+            .load(trip.themeCardImageUrl)
+            .centerCrop()
+            .into(binding.cardTheme)
         binding.editTitle.setText(trip.tripName)
         binding.editMemo.setText(trip.description)
         binding.editDate.text = "${trip.startDate} ~ ${trip.endDate}"
@@ -87,7 +94,7 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
         updatedTitle = trip.tripName
         updatedMemo = trip.description
 
-
+        updatedThemeId = trip.themeId
 
         // 저장 버튼 클릭 시
         binding.saveButtonModify.setOnClickListener {
@@ -103,7 +110,7 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
                 val updateRequest = TripUpdateRequest(
                     tripName = newTitle,
                     description = updatedMemo,
-                    themeId = trip.themeId,
+                    themeId = updatedThemeId, // null이면 기존 테마 사용
                     representativeImageUrl = imageUrl,
                     startDate = startDate,
                     endDate = endDate
@@ -195,6 +202,11 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
             onDateClick(0)
         }
 
+        // 테마 클릭 시 다이얼로그
+        binding.cardTheme.setOnClickListener {
+            Log.d("cardContainer", "cardContainer")
+            onThemeclick()
+        }
 
         //gnb숨기기
         requireActivity().findViewById<View>(R.id.bottom_navigation)?.visibility = View.GONE
@@ -357,10 +369,6 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
             dialog.dismiss()
         }
 
-
-
-
-
         // 여행 대표 이미지 리스트 가져오기
         api.getTripRepresentativeImages(tripId)
             .enqueue(object : Callback<List<TripImageResponse>> {
@@ -370,7 +378,7 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
                 ) {
                     val imageList = response.body() ?: emptyList()
 
-                    // 🔧 5개 미만일 경우 gradient 숨기기
+                    // 5개 미만일 경우 gradient 숨기기
                     bindingDialog.gradientImg.visibility =
                         if (imageList.size < 5) View.GONE else View.VISIBLE
 
@@ -415,13 +423,83 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
                     Log.e("API", "이미지 불러오기 실패: ${t.message}")
                 }
             })
+        dialog.show()
+    }
 
 
+    fun onThemeclick() {
+        var selectedTheme: Theme? = null
+
+        val dialog = Dialog(requireContext())
+        val themeBindingDialog = DialogThemeSelectBinding.inflate(layoutInflater)
+        dialog.setContentView(themeBindingDialog.root)
+
+        themeBindingDialog.recordModifyDialog1ExitBtn.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        api.getThemelist()
+            .enqueue(object : Callback<List<Theme>> {
+            override fun onResponse(
+                call: Call<List<Theme>>,
+                response: Response<List<Theme>>
+            ) {
+                if (response.isSuccessful) {
+                    val themeList = response.body() ?: emptyList()
+
+                    themeAdapter =
+                        DialogThemeSelectAdapter(requireContext(), themeList) { clickedItem ->
+                            if (selectedTheme == clickedItem) {
+                                selectedTheme = null
+                                themeBindingDialog.saveBtn.apply {
+                                    setImageResource(R.drawable.save_btn_unactive)
+                                    isClickable = false
+                                }
+                            } else {
+                                selectedTheme = clickedItem
+                                themeBindingDialog.saveBtn.apply {
+                                    setImageResource(R.drawable.save_btn_active)
+                                    isClickable = true
+                                }
+                            }
+
+                            // 선택 항목 바뀌었으니 갱신
+                            themeAdapter.setSelectedTheme(selectedTheme)
+                        }
+
+                    themeBindingDialog.saveBtn.setOnClickListener {
+                        updatedThemeId = selectedTheme?.id ?: updatedThemeId
+
+                        // Glide.with(this@Record_Modify_Fragment).load(selectedTheme.cardImageUrl).into(binding.cardTheme)
+//
+                        selectedTheme?.let {
+                            Glide.with(this@Record_Modify_Fragment)
+                                .load(it.cardImageUrl)
+                                .centerCrop()
+                                .into(binding.cardTheme)
+                        }
+
+                        dialog.dismiss()
+                    }
+
+                    val spanCount = 2
+                    val spacingInPixels = (16 * resources.displayMetrics.density).toInt()
+
+                    themeBindingDialog.recyclerView.apply {
+                        layoutManager = GridLayoutManager(requireContext(), spanCount)
+                        adapter = themeAdapter
+                        addItemDecoration(ThemeItemDecoration(spanCount, spacingInPixels))
+                    }
+                }
+            }
+            override fun onFailure(call: Call<List<Theme>>, t: Throwable) {
+                Log.e("ThemeAPI", "통신 실패: ${t.message}")
+            }
+        })
 
         dialog.show()
-
-
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
