@@ -23,11 +23,12 @@
 
             <!-- 카드 앞면 -->
             <FrameLayout
+                android:id="@+id/card_front"
                 android:layout_width="300dp"
                 android:layout_height="474dp">
 
                 <ImageView
-                    android:id="@+id/card_front"
+                    android:id="@+id/card_front_theme"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="fitXY"
@@ -143,6 +144,7 @@
 
                 <!-- 배경 이미지 -->
                 <ImageView
+                    android:id="@+id/card_back_theme"
                     android:layout_width="match_parent"
                     android:layout_height="474dp"
                     android:scaleType="fitXY"
