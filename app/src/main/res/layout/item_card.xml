@@ -23,15 +23,17 @@
 
             <!-- 카드 앞면 -->
             <FrameLayout
-                android:id="@+id/card_front"
                 android:layout_width="300dp"
                 android:layout_height="474dp">
 
                 <ImageView
+                    android:id="@+id/card_front"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="fitXY"
-                    android:src="@drawable/card_front" />
+                    android:src="@drawable/card_front"
+                    android:background="@drawable/white_rounded_background"
+                    />
 
                 <ImageButton
                     android:id="@+id/dots_button"
