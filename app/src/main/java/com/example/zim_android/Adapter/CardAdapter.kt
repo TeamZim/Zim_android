@@ -70,6 +70,11 @@ class CardAdapter(
             binding.travelTitleBack.text = trip.tripName
 
             Glide.with(binding.root.context)
+                .load(trip.themeCardImageUrl)
+                .centerCrop()
+                .into(binding.cardFront)
+
+            Glide.with(binding.root.context)
                 .load(trip.representativeImageUrl)
                 .centerCrop()
                 .into(binding.travelImage)
