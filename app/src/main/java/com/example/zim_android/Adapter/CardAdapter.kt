@@ -72,7 +72,12 @@ class CardAdapter(
             Glide.with(binding.root.context)
                 .load(trip.themeCardImageUrl)
                 .centerCrop()
-                .into(binding.cardFront)
+                .into(binding.cardFrontTheme)
+
+            Glide.with(binding.root.context)
+                .load(trip.themeCardImageUrl)
+                .centerCrop()
+                .into(binding.cardBackTheme)
 
             Glide.with(binding.root.context)
                 .load(trip.representativeImageUrl)
