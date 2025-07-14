@@ -28,10 +28,13 @@
                 android:layout_height="474dp">
 
                 <ImageView
+                    android:id="@+id/card_front_theme"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="fitXY"
-                    android:src="@drawable/card_front" />
+                    android:src="@drawable/card_front"
+                    android:background="@drawable/white_rounded_background"
+                    />
 
                 <ImageButton
                     android:id="@+id/dots_button"
@@ -141,6 +144,7 @@
 
                 <!-- 배경 이미지 -->
                 <ImageView
+                    android:id="@+id/card_back_theme"
                     android:layout_width="match_parent"
                     android:layout_height="474dp"
                     android:scaleType="fitXY"

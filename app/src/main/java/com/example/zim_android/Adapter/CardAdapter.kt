@@ -44,6 +44,18 @@ class CardAdapter(
         notifyDataSetChanged()
     }
 
+
+
+    interface OnImageClickListener {
+        fun onImageClicked(diaryId: Int)
+    }
+
+    private var onImageClickListener: OnImageClickListener? = null
+    fun setOnImageClickListener(listener: OnImageClickListener) {
+        onImageClickListener = listener
+    }
+
+
     inner class ViewHolder(private val binding: ItemCardBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(trip: TripResponse, position: Int) {
@@ -56,6 +68,16 @@ class CardAdapter(
             binding.travelDate.text = "${trip.startDate} ~ ${trip.endDate}"
             binding.travelTest.text = trip.description
             binding.travelTitleBack.text = trip.tripName
+
+            Glide.with(binding.root.context)
+                .load(trip.themeCardImageUrl)
+                .centerCrop()
+                .into(binding.cardFrontTheme)
+
+            Glide.with(binding.root.context)
+                .load(trip.themeCardImageUrl)
+                .centerCrop()
+                .into(binding.cardBackTheme)
 
             Glide.with(binding.root.context)
                 .load(trip.representativeImageUrl)
@@ -91,10 +113,10 @@ class CardAdapter(
 
             val recyclerView = binding.gridImage
             recyclerView.layoutManager = GridLayoutManager(binding.root.context, 2)
-            val images = imageMap[trip.id.toLong()] ?: emptyList()
-
-
-            recyclerView.adapter = PhotoGridAdapter(images)
+            val images =imageMap[trip.id.toLong()] ?: emptyList()
+            recyclerView.adapter = PhotoGridAdapter(images) {
+                    diaryId -> onImageClickListener?.onImageClicked(diaryId)
+            }
             recyclerView.addItemDecoration(SpaceItemDecoration(13))
         }
 

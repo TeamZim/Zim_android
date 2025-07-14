@@ -148,6 +148,9 @@ interface ApiService {
     fun getSpecificWeather(@Path("weatherId") weatherId: Int): Call<WeatherResponse>
 
 
+    // 테마 목록 받아오기
+    @GET("/api/themes")
+    fun getThemelist(): Call<List<Theme>>
 
 
     // 파일 업로드 API
