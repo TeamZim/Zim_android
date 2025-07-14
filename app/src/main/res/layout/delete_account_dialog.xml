@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/imageView4"
+        android:layout_width="wrap_content"
+        android:layout_height="138dp"
+        android:background="@drawable/view_map_dialog_1_frame"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="21dp"
+            android:layout_marginEnd="40dp"
+            android:fontFamily="@font/nanum_neuris"
+            android:gravity="center"
+            android:text="계정을 삭제하시겠습니까?"
+            android:textColor="@color/primary_700"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="40dp"
+            android:fontFamily="@font/nanum_neuris"
+            android:gravity="center"
+            android:text="지금까지의 기록이 모두 사라집니다."
+            android:textColor="@color/primary_700"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView5" />
+
+        <ImageView
+            android:id="@+id/cancel_btn_img"
+            android:layout_width="75dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="8dp"
+            android:clickable="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView8"
+            app:srcCompat="@drawable/custom_track" />
+
+        <ImageView
+            android:id="@+id/confirm_btn_img"
+            android:layout_width="75dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="40dp"
+            android:clickable="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/cancel_btn_img"
+            app:srcCompat="@drawable/custom_track" />
+
+        <TextView
+            android:id="@+id/cancel_btn_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="취소"
+            android:textColor="@color/primary_700"
+            android:fontFamily="@font/nanum_neuris"
+            android:textSize="20sp"
+            android:clickable="true"
+            app:layout_constraintBottom_toBottomOf="@+id/cancel_btn_img"
+            app:layout_constraintEnd_toEndOf="@+id/cancel_btn_img"
+            app:layout_constraintStart_toStartOf="@+id/cancel_btn_img"
+            app:layout_constraintTop_toTopOf="@+id/cancel_btn_img" />
+
+        <TextView
+            android:id="@+id/confirm_btn_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="확인"
+            android:textColor="@color/primary_700"
+            android:fontFamily="@font/nanum_neuris"
+            android:textSize="20sp"
+            android:clickable="true"
+            app:layout_constraintBottom_toBottomOf="@+id/confirm_btn_img"
+            app:layout_constraintEnd_toEndOf="@+id/confirm_btn_img"
+            app:layout_constraintStart_toStartOf="@+id/confirm_btn_img"
+            app:layout_constraintTop_toTopOf="@+id/confirm_btn_img" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

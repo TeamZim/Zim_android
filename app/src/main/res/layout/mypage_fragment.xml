@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?android:windowBackground">
 
     <include
@@ -45,7 +47,7 @@
                 android:id="@+id/mypage_profile_image"
                 android:layout_width="133dp"
                 android:layout_height="224dp"
-                android:src="@drawable/mypage_profile"
+                android:src="@color/primary_100"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/mypage_nationality_text" />
 
@@ -57,7 +59,7 @@
 
 
                 <TextView
-                    android:id="@+id/surename_title"
+                    android:id="@+id/surname_title"
                     android:layout_width="wrap_content"
                     android:layout_height="18dp"
                     android:fontFamily="@font/omyu_pretty"
@@ -204,10 +206,10 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/mypage_frame2"
         android:layout_width="345dp"
-        android:layout_height="150dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="500dp"
         android:background="@drawable/mypage_frame_1"
         android:gravity="center_horizontal"
@@ -221,7 +223,10 @@
             android:id="@+id/country_diary_layout"
             android:layout_width="138dp"
             android:layout_height="53dp"
-            android:layout_marginTop="20dp">
+            android:layout_marginTop="31dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
 
             <LinearLayout
@@ -259,9 +264,9 @@
                 android:id="@+id/visited_country_count_layer"
                 android:layout_width="65dp"
                 android:layout_height="51dp"
+                android:clickable="true"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:clickable="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -289,36 +294,37 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+
         <TextView
             android:id="@+id/country_flag_line_1"
             android:layout_width="297dp"
             android:layout_height="18dp"
-            android:layout_marginStart="10dp"
             android:layout_marginTop="20dp"
-            android:layout_marginEnd="10dp"
             android:gravity="center"
             android:text="---"
             android:textColor="@color/black"
             android:textSize="15sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/mypage_profile_image" />
-
+            app:layout_constraintTop_toBottomOf="@+id/country_diary_layout"
+            />
 
         <TextView
             android:id="@+id/country_flag_line_2"
             android:layout_width="297dp"
             android:layout_height="18dp"
-            android:gravity="center"
             android:text="---"
             android:textColor="@color/black"
             android:textSize="15sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/mypage_profile_image" />
+            android:textAlignment="textStart"
+            app:layout_constraintEnd_toEndOf="@+id/country_flag_line_1"
+            app:layout_constraintStart_toStartOf="@+id/country_flag_line_1"
+            app:layout_constraintTop_toBottomOf="@+id/country_flag_line_1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="32dp"
+            />
 
-
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
