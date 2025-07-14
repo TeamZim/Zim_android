@@ -75,6 +75,10 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
         val tripId = trip.id  // 또는 trip.tripId
 
         // 기존 trip 정보 바인딩
+        Glide.with(binding.root.context)
+            .load(trip.themeCardImageUrl)
+            .centerCrop()
+            .into(binding.cardTheme)
         binding.editTitle.setText(trip.tripName)
         binding.editMemo.setText(trip.description)
         binding.editDate.text = "${trip.startDate} ~ ${trip.endDate}"
