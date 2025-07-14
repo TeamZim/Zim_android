@@ -12,6 +12,12 @@
         <item name="cornerSize">13dp</item>
     </style>
 
+    <style name="ThemeRoundedCorners">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">18dp</item>
+    </style>
+
+
     <style name="ImageTopRoundedCornersTop">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopLeft">13dp</item>
