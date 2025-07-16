@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.os.Bundle
@@ -16,26 +17,57 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
+import com.example.zim_android.Adapter.DialogEmotionSelectAdapter
+import com.example.zim_android.MainActivity
 import com.example.zim_android.R
+import com.example.zim_android.data.model.DiaryCreateRequest
+import com.example.zim_android.data.model.DiaryImageRequest
+import com.example.zim_android.data.model.DiaryResponse
+import com.example.zim_android.data.model.Emotion
+import com.example.zim_android.data.network.ApiProvider
 import com.example.zim_android.databinding.DialogSelectEmotionColorBinding
 import com.example.zim_android.databinding.DialogSelectWeatherBinding
 import com.example.zim_android.databinding.Record4Binding
 import com.example.zim_android.fragment.Record_4_1
+import com.example.zim_android.util.PreferenceUtil
 import java.io.File
-
-
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 class Record_4_Activity : AppCompatActivity() {
 
     private lateinit var binding: Record4Binding
 
+    private var selectedEmotionId: Int = -1
+    private var selectedWeatherId: Int = -1
+    private var uploadedImageUrl1: String = ""
+    private var uploadedImageUrl2: String = ""
+    private var uploadedAudioUrl: String = ""
+    private var representIndex: Int = 0 // 이미 너가 갖고 있음
+    private var tripId: Int = 0 // 전달받아서 저장해두기
+
+    val userId = 1 // 임시로 테스트할 userId
+
+    //감정색 기본 세팅
+    private var selectedEmotionColorCode: String = "#D9D9D9"
+
+    //시간 받아오기 세팅
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+    val dateTime = LocalDateTime.now().format(formatter)
+
+
     companion object {
         const val REQUEST_DIARY_INPUT = 1001
         const val RESULT_DIARY_TEXT = "diary_text"
     }
 
-    
+
+
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,7 +93,10 @@ class Record_4_Activity : AppCompatActivity() {
         // 전달받은 값
         val imagePath1 = intent.getStringExtra("imagePath1")
         val imagePath2 = intent.getStringExtra("imagePath2")
-        val representIndex = intent.getIntExtra("representIndex", 0)
+        representIndex = intent.getIntExtra("representIndex", 0)
+        tripId = intent.getIntExtra("tripId", 0)
+
+
 
         // 이미지 세팅
         if (!imagePath1.isNullOrEmpty()) {
@@ -109,6 +144,81 @@ class Record_4_Activity : AppCompatActivity() {
             ).show(supportFragmentManager, "RecordTextDialog")
         }
 
+        binding.saveButton.setOnClickListener {
+            val userId = 1
+            val city = binding.placeInput.text.toString()
+            val content = binding.diaryInput.text.toString()
+
+            val frontImage = DiaryImageRequest(
+                imageUrl = uploadedImageUrl1,
+                cameraType = "FRONT",
+                representative = representIndex == 0
+            )
+            val backImage = DiaryImageRequest(
+                imageUrl = uploadedImageUrl2,
+                cameraType = "BACK",
+                representative = representIndex == 1
+            )
+
+            val diaryRequest = DiaryCreateRequest(
+                userId = userId,
+                tripId = tripId,
+                countryCode = "KR", // 또는 선택된 국가 코드
+                city = city,
+                dateTime = dateTime,
+                content = content,
+                images = listOf(frontImage, backImage),
+                detailedLocation = city,
+                audioUrl = uploadedAudioUrl,
+                emotionId = selectedEmotionId,
+                weatherId = selectedWeatherId
+            )
+
+            Log.d("📝 DiaryRequest 디버깅", """
+    🔸 userId: ${PreferenceUtil.getUserId(this)}
+    🔸 tripId: $tripId
+    🔸 countryCode: KR
+    🔸 city: ${binding.placeInput.text.toString()}
+    🔸 content: ${binding.diaryInput.text.toString()}
+    🔸 dateTime: $dateTime
+    🔸 emotionId: $selectedEmotionId
+    🔸 weatherId: $selectedWeatherId
+    🔸 audioUrl: $uploadedAudioUrl
+    🔸 image1 (FRONT): $uploadedImageUrl1 (대표: ${representIndex == 0})
+    🔸 image2 (BACK): $uploadedImageUrl2 (대표: ${representIndex == 1})
+""".trimIndent())
+
+
+
+            ApiProvider.api.createDiary(diaryRequest).enqueue(object : Callback<DiaryResponse> {
+                override fun onResponse(call: Call<DiaryResponse>, response: Response<DiaryResponse>) {
+                    if (response.isSuccessful) {
+                        val intent = Intent(this@Record_4_Activity, MainActivity::class.java)
+                        //액티비티-> 프래그먼트 넘어갈 떄는 메인액티비티로 이동해야됨
+
+                        intent.putExtra("gotoTripId", tripId)
+                        intent.putExtra("gotoFragment", "ViewCard")
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        startActivity(intent)
+                        finish()
+                    } else {
+                        Log.e("일기 저장 실패", "응답 코드: ${response.code()}, 메시지: ${response.errorBody()?.string()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<DiaryResponse>, t: Throwable) {
+                    Log.e("일기 저장 실패", "에러: ${t.message}")
+                }
+            })
+
+
+
+
+
+
+        }
+
+
 
 
 
@@ -116,6 +226,80 @@ class Record_4_Activity : AppCompatActivity() {
 
 
     }
+
+    private fun showEmotionColorDialog(context: Context) {
+        val dialog = Dialog(context)
+        val dialogBinding = DialogSelectEmotionColorBinding.inflate(LayoutInflater.from(context))
+        dialog.setContentView(dialogBinding.root)
+
+        // 닫기 버튼 클릭 시 다이얼로그 닫기
+        dialogBinding.backToDialog1.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        // 감정 리스트 받아오기
+        ApiProvider.api.getEmotions().enqueue(object : Callback<List<Emotion>> {
+            override fun onResponse(call: Call<List<Emotion>>, response: Response<List<Emotion>>) {
+                if (response.isSuccessful) {
+                    val emotionList = response.body() ?: emptyList()
+
+                    val adapter = DialogEmotionSelectAdapter(
+                        context = context,
+                        items = emotionList,
+                        onItemSelected = {
+                            // 선택 시 저장 버튼 활성화
+                            dialogBinding.dialog2SaveBtn.setImageResource(R.drawable.save_btn_active)
+                            dialogBinding.dialog2SaveBtn.isClickable = true
+                        }
+                    )
+
+                    dialogBinding.dialog2SaveBtn.setOnClickListener {
+                        val selectedItem = adapter.getSelectedItem()
+                        if (selectedItem != null) {
+                            // 선택된 감정에 따라 UI 변경
+                            binding.emotionText.text = selectedItem.name
+                            binding.emotionCircle.setImageResource(R.drawable.emotion_color_base_circle)
+                            binding.emotionCircle.setColorFilter(Color.parseColor(selectedItem.colorCode))
+
+                            // 전역 변수 저장
+                            selectedEmotionId = selectedItem.id
+                            selectedEmotionColorCode = selectedItem.colorCode
+
+                            dialog.dismiss()
+                            dialogBinding.dialog2SaveBtn.isClickable = false
+                        }
+                    }
+
+                    // 그리드에 뷰 추가
+                    for (i in 0 until adapter.getCount()) {
+                        val view = adapter.getView(i)
+                        dialogBinding.colorListGrid.addView(view)
+                    }
+
+                    // 선택 변경 시 그리드 갱신 콜백
+                    adapter.setOnGridUpdateCallback {
+                        dialogBinding.colorListGrid.removeAllViews()
+                        for (i in 0 until adapter.getCount()) {
+                            val view = adapter.getView(i)
+                            dialogBinding.colorListGrid.addView(view)
+                        }
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<List<Emotion>>, t: Throwable) {
+                Log.e("감정 불러오기 실패", t.message.toString())
+            }
+        })
+
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
+    }
+
 
     private var selectedWeatherIcon: ImageView? = null
 
@@ -125,11 +309,11 @@ class Record_4_Activity : AppCompatActivity() {
         dialog.setContentView(dialogBinding.root)
 
         val weatherMap = mapOf(
-            dialogBinding.weatherSunny to Pair("맑음", R.drawable.weather_sunny_sel),
-            dialogBinding.weatherCloudy to Pair("흐림", R.drawable.weather_cloud_sel),
-            dialogBinding.weatherRainy to Pair("비", R.drawable.weather_rainy_sel),
-            dialogBinding.weatherWindy to Pair("바람", R.drawable.weather_windy_sel),
-            dialogBinding.weatherSnow to Pair("눈", R.drawable.weather_snowy_sel)
+            dialogBinding.weatherSunny to Triple("맑음", R.drawable.weather_sunny_sel, 1),
+            dialogBinding.weatherCloudy to Triple("흐림", R.drawable.weather_cloud_sel, 2),
+            dialogBinding.weatherRainy to Triple("비", R.drawable.weather_rainy_sel, 3),
+            dialogBinding.weatherWindy to Triple("바람", R.drawable.weather_windy_sel, 4),
+            dialogBinding.weatherSnow to Triple("눈", R.drawable.weather_snowy_sel, 5)
         )
 
         // 초기 확인 버튼 비활성화
@@ -150,6 +334,8 @@ class Record_4_Activity : AppCompatActivity() {
                 binding.weatherText.text = data.first
                 binding.weatherCircle.setImageResource(data.second)
 
+                // selectedWeatherId 설정!
+                selectedWeatherId = data.third
 
                 // 확인 버튼 활성화
                 dialogBinding.btnConfirm.isEnabled = true
@@ -266,6 +452,8 @@ class Record_4_Activity : AppCompatActivity() {
 
 
 
+
+
 }
 
 
@@ -295,6 +483,10 @@ private fun showEmotionColorDialog(context: Context) {
 
 
 }
+
+
+
+
 
 
 
