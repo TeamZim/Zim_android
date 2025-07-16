@@ -1,15 +1,18 @@
 import android.R
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import com.example.zim_android.data.model.CountryData.countryList
 import com.example.zim_android.data.model.CountryItem
+import com.example.zim_android.data.model.VisitedCountryResponse
 import com.example.zim_android.databinding.MypageDialogGridItemBinding
 
 class DialogMypage1Adapter(
     private val context: Context,
-    private val items: List<CountryItem> // CountryItem 데이터 클래스로 받아오기
+    private val items: List<VisitedCountryResponse> // CountryItem 데이터 클래스로 받아오기
 ) : BaseAdapter() {
 
     override fun getCount(): Int = items.size
@@ -31,8 +34,13 @@ class DialogMypage1Adapter(
         }
 
         val item = items[position]
-        binding.flagText.text = item.flag
+        binding.flagText.text = item.emoji
         binding.countryText.text = item.countryName
+
+        Log.d("VisitedCountry", "리스트 사이즈: ${items.size}")
+        items.forEach {
+            Log.d("VisitedCountry", "👉 ${it.emoji} - ${it.countryName}")
+        }
 
         return view
     }
