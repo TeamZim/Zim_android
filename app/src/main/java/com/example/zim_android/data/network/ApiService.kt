@@ -119,6 +119,8 @@ interface ApiService {
         @Body request: AddVisitedCountryRequest
     ): Call<Void>
 
+
+    // 특정 사용자의 방문 국가 전체 조회
     @GET("/api/countries/{userId}")
     fun getVisitedCountries(@Path("userId") userId: Int): Call<ViewMapFragment.VisitedCountryListResponse>
 
