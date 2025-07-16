@@ -25,6 +25,7 @@
         android:text="국가명"
         android:textColor="@color/primary_700"
         android:textSize="16sp"
+        android:ellipsize="end"
         app:layout_constraintStart_toEndOf="@+id/flag_text"
         app:layout_constraintTop_toTopOf="@+id/flag_text" />
 
