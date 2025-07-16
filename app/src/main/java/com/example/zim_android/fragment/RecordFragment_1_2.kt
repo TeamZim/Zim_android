@@ -16,6 +16,7 @@ import com.example.zim_android.R
 import com.example.zim_android.Record_2_1_Activity
 import com.example.zim_android.data.model.Theme
 import com.example.zim_android.data.model.TripCreateRequest
+import com.example.zim_android.data.model.TripResponse
 import com.example.zim_android.data.network.ApiProvider.api
 import com.example.zim_android.data.network.DiaryTempStore
 import com.example.zim_android.data.network.UserSession
@@ -96,29 +97,39 @@ class RecordFragment_1_2: Fragment(R.layout.record_1_2_fragment){
 
         // 다음 버튼 클릭
         binding.saveBtn.setOnClickListener {
-            val intent = Intent(requireContext(), Record_2_1_Activity::class.java)
-            // UserSession의 currentTripId 업데이트
-            UserSession.currentTripId = currentTripId
-
-            // 일기 생성 정보 추가
-            DiaryTempStore.tripId = UserSession.currentTripId // UserSession에 저장된 현재 userId 사용
-
-            // 여행(카드) 추가
-            // 이 부분의 경우 나중에 일기 생성에서 저장 버튼 클릭시로 옮기기
+            // 여행 생성 요청
             val request = TripCreateRequest(
                 tripName = binding.tripTitle.text.toString(),
                 description = binding.tripDescription.text.toString(),
                 themeId = selectedTheme.id,
                 userId = UserSession.userId ?: error("User ID is null")
             )
-            api.createTrip(request)
-            // 여기까지
 
-            Log.d("request.toString()", request.toString())
-            // 만약 카메라로 사진 안 찍고 여행시작 버튼만 눌러도 여행 추가라면 여기에 카드 추가 구현해야함.
+            api.createTrip(request).enqueue(object : Callback<TripResponse> {
+                override fun onResponse(call: Call<TripResponse>, response: Response<TripResponse>) {
+                    if (response.isSuccessful) {
+                        val tripId = response.body()?.id ?: return
+                        UserSession.currentTripId = tripId
+                        DiaryTempStore.tripId = tripId
 
-            startActivity(intent)
+                        Log.d("TripCreate", "tripId 생성 성공: $tripId")
+
+                        val intent = Intent(requireContext(), Record_2_1_Activity::class.java)
+                        startActivity(intent)
+                    } else {
+                        Log.e("TripCreate", "실패: ${response.code()} / ${response.message()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<TripResponse>, t: Throwable) {
+                    Log.e("TripCreate", "네트워크 오류: ${t.localizedMessage}")
+                }
+            })
+
+            // ✅ 이거 지워야 함!
+            // startActivity(intent)
         }
+
 
 
 

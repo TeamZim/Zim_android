@@ -45,6 +45,7 @@ class Record_3_Activity: AppCompatActivity() {
 
         binding.nextBtn.setOnClickListener {
             val intent = Intent(this, Record_4_Activity::class.java)
+            intent.putExtra("tripId", getIntent().getIntExtra("tripId", 0))
             intent.putExtra("imagePath1", imagePath1)
             intent.putExtra("imagePath2", imagePath2)
             intent.putExtra("representIndex", selectedRepresentativeIndex)
@@ -67,7 +68,9 @@ class Record_3_Activity: AppCompatActivity() {
 
         // 다시 촬영 버튼 클릭 시
         binding.retakeBtn.setOnClickListener {
-            val intent = Intent(this@Record_3_Activity, Record_2_1_Activity::class.java) // 카메라 촬영 화면으로 돌아가기
+            val tripId = intent.getIntExtra("tripId", 0)
+            val intent = Intent(this@Record_3_Activity, Record_2_1_Activity::class.java)
+            intent.putExtra("tripId", tripId)
             startActivity(intent)
             finish()
 
@@ -75,7 +78,9 @@ class Record_3_Activity: AppCompatActivity() {
         }
 
         binding.nextBtn.setOnClickListener {
+            val tripId = intent.getIntExtra("tripId", 0)
             val intent = Intent(this, Record_4_Activity::class.java)
+            intent.putExtra("tripId", tripId)
             intent.putExtra("imagePath1", imagePath1)
             intent.putExtra("imagePath2", imagePath2)
             intent.putExtra("representIndex", selectedRepresentativeIndex)

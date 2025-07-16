@@ -10,9 +10,11 @@ import androidx.navigation.fragment.findNavController
 import com.example.zim_android.R
 import com.example.zim_android.Record_2_1_Activity
 import com.example.zim_android.data.network.DiaryTempStore
+import com.example.zim_android.data.network.UserSession
 import com.example.zim_android.data.network.UserSession.currentTripId
 import com.example.zim_android.data.network.UserSession.userId
 import com.example.zim_android.databinding.Record11FragmentBinding
+import com.example.zim_android.util.PreferenceUtil
 
 class RecordFragment_1_1: Fragment(R.layout.record_1_1_fragment) {
 
@@ -50,6 +52,10 @@ class RecordFragment_1_1: Fragment(R.layout.record_1_1_fragment) {
         // 부모 클래스인 Fragment의 onViewCreated() 메서드를 호출
         // 부모(Fragment) 클래스가 원래 하기로 한 기본 작업들도 그대로 실행되게 해주는 것
         super.onViewCreated(view, savedInstanceState)
+
+        PreferenceUtil.setUserId(requireContext(), 1)
+        UserSession.userId = 1
+
 
         // tvtitle text 변경
         binding.commonHeader.tvTitle.text = "기록하기"

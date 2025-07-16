@@ -1,7 +1,9 @@
 package com.example.zim_android
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -17,9 +19,23 @@ class MainActivity : AppCompatActivity() {
 
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNavigationView.setupWithNavController(navController)
+        handleIntent(intent, navController)
+
 
 
     }
+    private fun handleIntent(intent: Intent?, navController: NavController) {
+        val fragmentName = intent?.getStringExtra("gotoFragment")
+        val tripId = intent?.getIntExtra("gotoTripId", -1) ?: -1
+
+        if (fragmentName == "ViewCard" && tripId != -1) {
+            val bundle = Bundle().apply {
+                putInt("tripId", tripId)
+            }
+            navController.navigate(R.id.viewCardFragment, bundle)
+        }
+    }
+
 
 
 

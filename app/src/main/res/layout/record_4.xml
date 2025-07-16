@@ -490,7 +490,7 @@
 
     <!-- 기록 완료 버튼 -->
     <ImageButton
-        android:id="@+id/completeBtn"
+        android:id="@+id/save_button"
         android:layout_width="353dp"
         android:layout_height="43dp"
         android:layout_marginTop="26dp"
