@@ -11,21 +11,26 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.example.zim_android.Adapter.ThemeSelectGridViewAdapter
 import com.example.zim_android.R
 import com.example.zim_android.Record_2_1_Activity
+import com.example.zim_android.data.model.Theme
 import com.example.zim_android.data.model.TripCreateRequest
 import com.example.zim_android.data.network.ApiProvider.api
 import com.example.zim_android.data.network.DiaryTempStore
 import com.example.zim_android.data.network.UserSession
 import com.example.zim_android.databinding.Record12FragmentBinding
+import retrofit2.Call
+import retrofit2.Response
+import retrofit2.Callback
 
 class RecordFragment_1_2: Fragment(R.layout.record_1_2_fragment){
 
     private var _binding: Record12FragmentBinding? = null
     private val binding get() = _binding!!
 
-    private var selectedThemeIndex = 0
-    private var selectedThemeName: String? = null
+    private lateinit var themeAdapter: ThemeSelectGridViewAdapter
+    private lateinit var selectedTheme: Theme
 
     val currentTripId = 1 // 임시로 1로 지정
 
@@ -52,22 +57,42 @@ class RecordFragment_1_2: Fragment(R.layout.record_1_2_fragment){
             false
         }
 
-        // 테마 선택
-        binding.themeLayout1.setOnClickListener {
-            updateThemeSelection(0)
-            clearFocusAndHideKeyboard() }
-        binding.themeLayout2.setOnClickListener {
-            updateThemeSelection(1)
-            clearFocusAndHideKeyboard() }
-        binding.themeLayout3.setOnClickListener {
-            updateThemeSelection(2)
-            clearFocusAndHideKeyboard() }
+        // 나중에 추가하기
+        // clearFocusAndHideKeyboard()
 
         // 이전 화면으로 돌아가기
         binding.backBtn.setOnClickListener {
             DiaryTempStore.clear() // 저장되어있던 임시 일기 정보들 초기화
             findNavController().navigate(R.id.action_recordFragment_1_2_to_recordFragment_1_1)
         }
+
+        api.getThemelist().enqueue(object : Callback<List<Theme>> {
+            override fun onResponse(call: Call<List<Theme>>, response: Response<List<Theme>>) {
+                if (response.isSuccessful) {
+                    val themeList = response.body() ?: emptyList()
+
+                    if (themeList.isNotEmpty()) {
+                        selectedTheme = themeList[0] // 기본값 설정
+
+                        themeAdapter = ThemeSelectGridViewAdapter(requireContext(), themeList) { clickedItem ->
+                            if (selectedTheme != clickedItem) {
+                                selectedTheme = clickedItem
+                                themeAdapter.setSelectedTheme(clickedItem)
+                            }
+                        }
+
+                        binding.themeSelect.adapter = themeAdapter
+                        themeAdapter.setSelectedTheme(selectedTheme)
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<List<Theme>>, t: Throwable) {
+                Log.e("ThemeLoad", "불러오기 실패: ${t.message}")
+            }
+        })
+
+
 
         // 다음 버튼 클릭
         binding.saveBtn.setOnClickListener {
@@ -79,19 +104,24 @@ class RecordFragment_1_2: Fragment(R.layout.record_1_2_fragment){
             DiaryTempStore.tripId = UserSession.currentTripId // UserSession에 저장된 현재 userId 사용
 
             // 여행(카드) 추가
+            // 이 부분의 경우 나중에 일기 생성에서 저장 버튼 클릭시로 옮기기
             val request = TripCreateRequest(
                 tripName = binding.tripTitle.text.toString(),
                 description = binding.tripDescription.text.toString(),
-                themeId = selectedThemeIndex,
+                themeId = selectedTheme.id,
                 userId = UserSession.userId ?: error("User ID is null")
             )
             api.createTrip(request)
+            // 여기까지
 
             Log.d("request.toString()", request.toString())
             // 만약 카메라로 사진 안 찍고 여행시작 버튼만 눌러도 여행 추가라면 여기에 카드 추가 구현해야함.
 
             startActivity(intent)
         }
+
+
+
 
     }
 
@@ -100,25 +130,6 @@ class RecordFragment_1_2: Fragment(R.layout.record_1_2_fragment){
         _binding = null
     }
 
-    // 여행 테마 설정 이미지 바꾸기
-    fun updateThemeSelection(index: Int) {
-        selectedThemeIndex = index
-        when (index) {
-            0 -> selectedThemeName = "basic_theme"
-            1 -> selectedThemeName = "summer_theme"
-            2 -> selectedThemeName = "winter_theme"
-        }
-
-        binding.themeBtn1.setImageResource(
-            if (index == 0) R.drawable.selected_rectangle else R.drawable.unselected_rectangle
-        )
-        binding.themeBtn2.setImageResource(
-            if (index == 1) R.drawable.selected_rectangle else R.drawable.unselected_rectangle
-        )
-        binding.themeBtn3.setImageResource(
-            if (index == 2) R.drawable.selected_rectangle else R.drawable.unselected_rectangle
-        )
-    }
 
     // 포커스 헤재하는 함수
     private fun clearFocusAndHideKeyboard() {
