@@ -48,7 +48,7 @@
         android:id="@+id/linearLayout"
         android:layout_width="305dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="45dp"
+        android:layout_marginTop="39dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="@+id/frame_img"
         app:layout_constraintStart_toStartOf="@+id/frame_img"
@@ -60,7 +60,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/nanum_neuris"
-            android:text="여행명"
+            android:text="이름"
             android:textColor="@color/primary_700"
             android:textSize="26sp" />
 
@@ -91,7 +91,7 @@
         <TextView
             android:id="@+id/trip_description_title"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="26dp"
             android:fontFamily="@font/nanum_neuris"
             android:text="여행 설명"
             android:textColor="@color/primary_700"
@@ -102,6 +102,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/CustomTextInputLayout"
+            android:layout_marginTop="8dp"
             app:counterEnabled="true"
             app:hintEnabled="false"
             app:counterMaxLength="54">
@@ -110,8 +111,7 @@
                 android:id="@+id/trip_description"
                 android:layout_width="match_parent"
                 android:layout_height="83dp"
-                android:layout_marginTop="6dp"
-                android:background="@drawable/rectangle_1"
+                android:background="@drawable/textinput_frame"
                 android:gravity="top|start"
                 android:inputType="textMultiLine"
                 android:hint="여행에 대한 설명을 입력하세요."
@@ -119,8 +119,8 @@
                 android:textSize="18sp"
                 android:lines="3"
                 android:maxLength="54"
-                android:maxLines="3"
-                android:minLines="3"
+                android:maxLines="2"
+                android:minLines="1"
                 android:padding="16dp" />
             />
         </com.google.android.material.textfield.TextInputLayout>
@@ -136,124 +136,50 @@
             android:textSize="26sp" />
 
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:orientation="horizontal">
-            
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/theme_layout_1"
+            >
+
+
+            <GridView
+                android:id="@+id/theme_select"
+                android:layout_width="match_parent"
+                android:layout_height="133dp"
+                android:numColumns="3"
+                android:verticalSpacing="11dp"
+                android:horizontalSpacing="11dp"
+                android:scrollbars="none"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </GridView>
+
+            <ImageView
+                android:id="@+id/imageView5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:clickable="true"
-                >
+                app:layout_constraintBottom_toBottomOf="@+id/theme_select"
+                app:layout_constraintEnd_toEndOf="@+id/theme_select"
+                app:layout_constraintStart_toStartOf="@+id/theme_select"
+                app:srcCompat="@drawable/theme_select_gradient_img" />
 
-                <ImageView
-                    android:id="@+id/theme_Btn_1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/selected_rectangle" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/nanum_neuris"
-                    android:textColor="@color/primary_700"
-                    android:text="기본"
-                    android:textSize="20sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-                
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/theme_layout_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:layout_marginLeft="12dp"
-                >
-
-                <ImageView
-                    android:id="@+id/theme_Btn_2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/unselected_rectangle" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/nanum_neuris"
-                    android:textColor="@color/primary_700"
-                    android:text="여름"
-                    android:textSize="20sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/theme_layout_3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:layout_marginLeft="12dp"
-                >
-
-                <ImageView
-                    android:id="@+id/theme_Btn_3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/unselected_rectangle" />
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/nanum_neuris"
-                    android:text="겨울"
-                    android:textColor="@color/primary_700"
-                    android:textSize="20sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-        </LinearLayout>
 
 
     </LinearLayout>
 
-    <ImageButton
+    <ImageView
         android:id="@+id/save_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
+        android:clickable="true"
         app:layout_constraintEnd_toEndOf="@+id/frame_img"
+        app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="@+id/frame_img"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout"
         app:srcCompat="@drawable/button_image" />
