@@ -143,7 +143,7 @@ class MypageFragment: Fragment(R.layout.mypage_fragment){
                     dialogBinding.countryCount.text = "${countryList.size}개국"
 
                     if (countryList.size >= 19) {
-                        dialogBinding.gradientImg.visibility = View.GONE
+                        dialogBinding.gradientImg.visibility = View.VISIBLE
                     }
 
                     dialog.window?.setLayout(
