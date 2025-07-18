@@ -1,20 +1,27 @@
 package com.example.zim_android.View
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.location.Geocoder
+import android.media.ExifInterface
 import android.media.MediaPlayer
 import android.media.MediaRecorder
+import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import com.example.zim_android.Adapter.DialogEmotionSelectAdapter
@@ -24,18 +31,27 @@ import com.example.zim_android.data.model.DiaryCreateRequest
 import com.example.zim_android.data.model.DiaryImageRequest
 import com.example.zim_android.data.model.DiaryResponse
 import com.example.zim_android.data.model.Emotion
+import com.example.zim_android.data.model.FileUploadResponse
 import com.example.zim_android.data.network.ApiProvider
+import com.example.zim_android.data.network.DiaryTempStore.countryCode
 import com.example.zim_android.databinding.DialogSelectEmotionColorBinding
 import com.example.zim_android.databinding.DialogSelectWeatherBinding
 import com.example.zim_android.databinding.Record4Binding
 import com.example.zim_android.fragment.Record_4_1
 import com.example.zim_android.util.PreferenceUtil
+import com.google.android.gms.location.LocationServices
+import okhttp3.MultipartBody
 import java.io.File
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody
+import okhttp3.ResponseBody
+import java.util.Locale
 
 
 class Record_4_Activity : AppCompatActivity() {
@@ -66,15 +82,11 @@ class Record_4_Activity : AppCompatActivity() {
     }
 
 
-
-
-
-
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = Record4Binding.inflate(layoutInflater)
         setContentView(binding.root)
-
 
 
         //녹음 권한 설정
@@ -97,7 +109,6 @@ class Record_4_Activity : AppCompatActivity() {
         tripId = intent.getIntExtra("tripId", 0)
 
 
-
         // 이미지 세팅
         if (!imagePath1.isNullOrEmpty()) {
             val bitmap1 = BitmapFactory.decodeFile(imagePath1)
@@ -107,6 +118,17 @@ class Record_4_Activity : AppCompatActivity() {
             val bitmap2 = BitmapFactory.decodeFile(imagePath2)
             binding.image2.setImageBitmap(bitmap2)
         }
+
+        val imageFile = File(
+            if (representIndex == 0) imagePath1!! else imagePath2!!
+        )
+
+
+
+        binding.root.post {
+            applyPhotoMetadataToTextViews(imageFile, this)
+        }
+
 
         //글자 수 세는
         binding.placeInput.addTextChangedListener {
@@ -145,87 +167,84 @@ class Record_4_Activity : AppCompatActivity() {
         }
 
         binding.saveButton.setOnClickListener {
-            val userId = 1
             val city = binding.placeInput.text.toString()
             val content = binding.diaryInput.text.toString()
 
-            val frontImage = DiaryImageRequest(
-                imageUrl = uploadedImageUrl1,
-                cameraType = "FRONT",
-                representative = representIndex == 0
-            )
-            val backImage = DiaryImageRequest(
-                imageUrl = uploadedImageUrl2,
-                cameraType = "BACK",
-                representative = representIndex == 1
-            )
+            if (imagePath1.isNullOrEmpty() || imagePath2.isNullOrEmpty()) {
+                Log.e("❌", "이미지 경로 없음")
+                return@setOnClickListener
+            }
 
-            val diaryRequest = DiaryCreateRequest(
-                userId = userId,
-                tripId = tripId,
-                countryCode = "KR", // 또는 선택된 국가 코드
-                city = city,
-                dateTime = dateTime,
-                content = content,
-                images = listOf(frontImage, backImage),
-                detailedLocation = city,
-                audioUrl = uploadedAudioUrl,
-                emotionId = selectedEmotionId,
-                weatherId = selectedWeatherId
-            )
-
-            Log.d("📝 DiaryRequest 디버깅", """
-    🔸 userId: ${PreferenceUtil.getUserId(this)}
-    🔸 tripId: $tripId
-    🔸 countryCode: KR
-    🔸 city: ${binding.placeInput.text.toString()}
-    🔸 content: ${binding.diaryInput.text.toString()}
-    🔸 dateTime: $dateTime
-    🔸 emotionId: $selectedEmotionId
-    🔸 weatherId: $selectedWeatherId
-    🔸 audioUrl: $uploadedAudioUrl
-    🔸 image1 (FRONT): $uploadedImageUrl1 (대표: ${representIndex == 0})
-    🔸 image2 (BACK): $uploadedImageUrl2 (대표: ${representIndex == 1})
-""".trimIndent())
-
-
-
-            ApiProvider.api.createDiary(diaryRequest).enqueue(object : Callback<DiaryResponse> {
-                override fun onResponse(call: Call<DiaryResponse>, response: Response<DiaryResponse>) {
-                    if (response.isSuccessful) {
-                        val intent = Intent(this@Record_4_Activity, MainActivity::class.java)
-                        //액티비티-> 프래그먼트 넘어갈 떄는 메인액티비티로 이동해야됨
-
-                        intent.putExtra("gotoTripId", tripId)
-                        intent.putExtra("gotoFragment", "ViewCard")
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                        startActivity(intent)
-                        finish()
+            uploadFile(imagePath1, "image") { url1 ->
+                uploadedImageUrl1 = url1 ?: ""
+                uploadFile(imagePath2, "image") { url2 ->
+                    uploadedImageUrl2 = url2 ?: ""
+                    if (audioFilePath.isNotEmpty()) {
+                        uploadFile(audioFilePath, "audio") { audioUrl ->
+                            uploadedAudioUrl = audioUrl ?: ""
+                            postDiary(city, content)
+                        }
                     } else {
-                        Log.e("일기 저장 실패", "응답 코드: ${response.code()}, 메시지: ${response.errorBody()?.string()}")
+                        postDiary(city, content)
                     }
                 }
-
-                override fun onFailure(call: Call<DiaryResponse>, t: Throwable) {
-                    Log.e("일기 저장 실패", "에러: ${t.message}")
-                }
-            })
-
-
-
-
-
-
+            }
         }
 
 
-
-
-
-
-
-
     }
+
+    private fun postDiary(city: String, content: String) {
+        val frontImage = DiaryImageRequest(
+            imageUrl = uploadedImageUrl1,
+            cameraType = "FRONT",
+            representative = representIndex == 0
+        )
+        val backImage = DiaryImageRequest(
+            imageUrl = uploadedImageUrl2,
+            cameraType = "BACK",
+            representative = representIndex == 1
+        )
+
+        val diaryRequest = DiaryCreateRequest(
+            userId = PreferenceUtil.getUserId(this),
+            tripId = tripId,
+            countryCode = "KR",
+            city = city,
+            dateTime = dateTime,
+            content = content,
+            images = listOf(frontImage, backImage),
+            detailedLocation = city,
+            audioUrl = uploadedAudioUrl,
+            emotionId = selectedEmotionId,
+            weatherId = selectedWeatherId
+        )
+
+        Log.d("📝 DiaryRequest 디버깅", diaryRequest.toString())
+
+        ApiProvider.api.createDiary(diaryRequest).enqueue(object : Callback<DiaryResponse> {
+            override fun onResponse(call: Call<DiaryResponse>, response: Response<DiaryResponse>) {
+                if (response.isSuccessful) {
+                    val intent = Intent(this@Record_4_Activity, MainActivity::class.java)
+                    intent.putExtra("gotoTripId", tripId)
+                    intent.putExtra("gotoFragment", "ViewCard")
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    startActivity(intent)
+                    finish()
+                } else {
+                    Log.e(
+                        "일기 저장 실패",
+                        "응답 코드: ${response.code()}, 메시지: ${response.errorBody()?.string()}"
+                    )
+                }
+            }
+
+            override fun onFailure(call: Call<DiaryResponse>, t: Throwable) {
+                Log.e("일기 저장 실패", "에러: ${t.message}")
+            }
+        })
+    }
+
 
     private fun showEmotionColorDialog(context: Context) {
         val dialog = Dialog(context)
@@ -317,7 +336,7 @@ class Record_4_Activity : AppCompatActivity() {
         )
 
         // 초기 확인 버튼 비활성화
-       dialogBinding.btnConfirm.isEnabled = false
+        dialogBinding.btnConfirm.isEnabled = false
 
 
         // 아이콘 클릭 시
@@ -448,13 +467,76 @@ class Record_4_Activity : AppCompatActivity() {
         Log.d("재생", "재생 시작됨")
     }
 
+    //파일 업로드 관련 코드
+    fun uploadFile(filePath: String, type: String, callback: (String?) -> Unit) {
+        val file = File(filePath)
+        val requestFile = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+        val multipart = MultipartBody.Part.createFormData("file", file.name, requestFile)
 
+        ApiProvider.api.uploadFile(type, multipart).enqueue(object : Callback<ResponseBody> {
+            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                if (response.isSuccessful) {
+                    val uploadedUrl = response.body()?.string() // ← plain text일 경우
+                    Log.d("파일 업로드 성공", "[$type] $uploadedUrl")
+                    callback(uploadedUrl)
+                } else {
+                    Log.e("파일 업로드 실패", response.errorBody()?.string().toString())
+                    callback(null)
+                }
+            }
 
+            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                Log.e("파일 업로드 오류", t.message.toString())
+                callback(null)
+            }
+        })
 
+    }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun applyPhotoMetadataToTextViews(imageFile: File, context: Context) {
+        val exif = ExifInterface(imageFile)
 
+        // 날짜/시간 추출
+        val datetime = exif.getAttribute(ExifInterface.TAG_DATETIME_ORIGINAL)
+            ?: exif.getAttribute(ExifInterface.TAG_DATETIME)
+            ?: exif.getAttribute(ExifInterface.TAG_DATETIME_DIGITIZED)
+            ?: LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"))
 
+        val parts = datetime.split(" ", ":", ".")
+
+        if (datetime.contains(" ")) {
+            val (dateRaw, timeRaw) = datetime.split(" ")
+            val dateParts = dateRaw.replace(":", ".").split(".")
+            val timeParts = timeRaw.split(":")
+
+            if (dateParts.size >= 3 && timeParts.size >= 2) {
+                val date = "${dateParts[0]}.${dateParts[1]}.${dateParts[2]}"
+                val time = "${timeParts[0]}:${timeParts[1]}"
+                binding.date.text = date
+                binding.time.text = time
+            }
+        }
+
+        // 위치 추출
+        val latLong = FloatArray(2)
+        val hasLatLong = exif.getLatLong(latLong)
+        Log.d("메타데이터", "hasLatLong = $hasLatLong")
+
+        if (hasLatLong) {
+            // 👉 사진에서 위치 추출 성공
+            getAddressFromLatLon(binding, context, latLong[0].toDouble(), latLong[1].toDouble())
+
+        } else {
+            // 👉 사진에 위치 없음 → 현재 위치로 대체
+            getCurrentLocation(binding, context)
+
+        }
+    }
 }
+
+
+
 
 
 private fun showEmotionColorDialog(context: Context) {
@@ -503,4 +585,52 @@ private fun getUnselectedRes(viewId: Int?): Int {
 }
 
 
+@SuppressLint("MissingPermission")
+fun getCurrentLocation(binding: Record4Binding, context: Context) {
+    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
+    fusedLocationClient.lastLocation
+        .addOnSuccessListener { location ->
+            if (location != null) {
+                Log.d("현재위치", "lat=${location.latitude}, lon=${location.longitude}")
+                getAddressFromLatLon(binding, context, location.latitude, location.longitude)
+            } else {
+                Log.e("현재위치", "위치를 가져올 수 없음")
+            }
+        }
+        .addOnFailureListener {
+            Log.e("현재위치", "오류: ${it.message}")
+        }
+}
+
+
+fun getAddressFromLatLon(binding: Record4Binding, context: Context, lat: Double, lon: Double) {
+    val geocoder = Geocoder(context, Locale.getDefault())
+    try {
+        val addresses = geocoder.getFromLocation(lat, lon, 1)
+        if (!addresses.isNullOrEmpty()) {
+            val address = addresses[0]
+            val cityText = address.locality ?: address.subAdminArea ?: address.adminArea ?: "알 수 없음"
+            val countryText = address.countryName ?: "알 수 없음"
+
+            val flagEmoji = countryToFlagEmoji(countryCode)
+            val displayCountry = "$flagEmoji $countryText"
+
+            Handler(Looper.getMainLooper()).post {
+                binding.country.text = displayCountry
+                binding.city.text = cityText
+                Log.d("📍위치", "country=$countryText, city=$cityText")
+            }
+        }
+    } catch (e: Exception) {
+        Log.e("Geocoder", "주소 변환 실패: ${e.message}")
+    }
+}
+
+fun countryToFlagEmoji(countryCode: String): String {
+    return countryCode
+        .uppercase()
+        .map { char -> 0x1F1E6 + (char.code - 'A'.code) }
+        .map { code -> String(Character.toChars(code)) }
+        .joinToString("")
+}

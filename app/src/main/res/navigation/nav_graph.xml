@@ -88,4 +88,9 @@
             app:destination="@id/viewCardFragment" />
     </fragment>
 
+    <item
+        android:id="@+id/menu_view_card"
+        android:icon="@drawable/ic_card"
+        android:title="카드" />
+
 </navigation>
