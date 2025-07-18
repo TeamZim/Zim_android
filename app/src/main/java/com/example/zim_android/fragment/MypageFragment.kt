@@ -89,9 +89,11 @@ class MypageFragment: Fragment(R.layout.mypage_fragment){
                             params.bottomToBottom = ConstraintLayout.LayoutParams.UNSET
                             binding.countryFlagLine1.layoutParams = params
 
-                            // 앞 10개 → line1 / 나머지 → line2
-                            val firstLine = flagList.take(10).joinToString("")
-                            val secondLine = flagList.drop(10).joinToString("")
+                            // 앞 18개 → line1 / 나머지 → line2
+                            val trimmedList = flagList.take(72)
+                            val firstLine = trimmedList.take(36).joinToString("")
+                            val secondLine = trimmedList.drop(36).take(36).joinToString("")
+
 
                             binding.countryFlagLine1.text = firstLine
                             binding.countryFlagLine2.text = secondLine
