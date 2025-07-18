@@ -3,6 +3,8 @@ package com.example.zim_android.fragment
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -47,6 +49,8 @@ class RecordFragment_1_2: Fragment(R.layout.record_1_2_fragment){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // 입력 감지 함수
+        setupTextWatchers()
         binding.commonHeader.tvTitle.text = "기록하기"
 
         // root에 포커스 해제 설정
@@ -137,5 +141,26 @@ class RecordFragment_1_2: Fragment(R.layout.record_1_2_fragment){
         focused?.clearFocus()
         val imm = requireContext().getSystemService(InputMethodManager::class.java)
         imm.hideSoftInputFromWindow(focused?.windowToken, 0)
+    }
+
+
+    private fun setupTextWatchers() {
+        val textWatcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val titleNotEmpty = binding.tripTitle.text?.isNotBlank() == true
+                val descNotEmpty = binding.tripDescription.text?.isNotBlank() == true
+                binding.saveBtn.isClickable = titleNotEmpty && descNotEmpty
+                if (titleNotEmpty && descNotEmpty) {
+                    binding.saveBtn.setImageResource(R.drawable.create_trip_btn_active)
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        }
+
+        binding.tripTitle.addTextChangedListener(textWatcher)
+        binding.tripDescription.addTextChangedListener(textWatcher)
     }
 }
