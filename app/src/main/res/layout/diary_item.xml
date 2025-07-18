@@ -213,7 +213,6 @@
 
                 <ImageView
                     android:id="@+id/weather_icon"
-                    android:layout_gravity="center"
                     android:layout_width="16dp"
                     android:layout_height="18dp"
                     android:layout_gravity="center"
