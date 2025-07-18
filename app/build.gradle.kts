@@ -96,4 +96,8 @@ dependencies {
     implementation("com.kakao.sdk:v2-navi:2.19.0") // 카카오내비 API 모듈
     implementation("com.kakao.sdk:v2-cert:2.19.0") // 카카오톡 인증 서비스 API 모듈
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    implementation ("androidx.viewpager2:viewpager2:1.0.0")
+    implementation ("com.google.android.material:material:1.8.0") // Dot indicator용
+
 }
