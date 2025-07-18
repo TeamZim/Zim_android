@@ -85,9 +85,6 @@ class SettingsFragment: Fragment(R.layout.settings_fragment){
             dialogBinding.cancelBtnImg.setOnClickListener {
                 deleteAccountDialog.dismiss()
             }
-            dialogBinding.cancelBtnText.setOnClickListener {
-                deleteAccountDialog.dismiss()
-            }
 
             // 확인
             dialogBinding.confirmBtnImg.setOnClickListener {
@@ -103,19 +100,7 @@ class SettingsFragment: Fragment(R.layout.settings_fragment){
                     }
                 })
             }
-            dialogBinding.confirmBtnText.setOnClickListener {
-                api.deleteAccount(userId).enqueue(object : Callback<String>{
-                    override fun onResponse(call: Call<String?>, response: Response<String?>) {
-                        Log.d("DeleteAccount", "계정 삭제 성공 - response: ${response.body()}")
-                        // TODO("Not yet implemented")
-                        // 아예 스플래쉬로 이동해야할 것 같음
-                    }
 
-                    override fun onFailure(call: Call<String>, t: Throwable) {
-                        Log.e("Delete", "통신 실패: ${t.message}")
-                    }
-                })
-            }
             deleteAccountDialog.show()
         }
 
