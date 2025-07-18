@@ -33,7 +33,9 @@ import com.example.zim_android.data.model.DiaryResponse
 import com.example.zim_android.data.model.Emotion
 import com.example.zim_android.data.model.FileUploadResponse
 import com.example.zim_android.data.network.ApiProvider
+import com.example.zim_android.data.network.DiaryTempStore.city
 import com.example.zim_android.data.network.DiaryTempStore.countryCode
+import com.example.zim_android.data.network.DiaryTempStore.detailedLocation
 import com.example.zim_android.databinding.DialogSelectEmotionColorBinding
 import com.example.zim_android.databinding.DialogSelectWeatherBinding
 import com.example.zim_android.databinding.Record4Binding
@@ -167,7 +169,7 @@ class Record_4_Activity : AppCompatActivity() {
         }
 
         binding.saveButton.setOnClickListener {
-            val city = binding.placeInput.text.toString()
+            val detailedLocation = binding.placeInput.text.toString()
             val content = binding.diaryInput.text.toString()
 
             if (imagePath1.isNullOrEmpty() || imagePath2.isNullOrEmpty()) {
@@ -182,10 +184,12 @@ class Record_4_Activity : AppCompatActivity() {
                     if (audioFilePath.isNotEmpty()) {
                         uploadFile(audioFilePath, "audio") { audioUrl ->
                             uploadedAudioUrl = audioUrl ?: ""
-                            postDiary(city, content)
+                            postDiary(city, content, detailedLocation)
+
                         }
                     } else {
-                        postDiary(city, content)
+                        postDiary(city, content, detailedLocation)
+
                     }
                 }
             }
@@ -194,7 +198,8 @@ class Record_4_Activity : AppCompatActivity() {
 
     }
 
-    private fun postDiary(city: String, content: String) {
+    private fun postDiary(city: String, content: String, detailedLocation: String) {
+
         val frontImage = DiaryImageRequest(
             imageUrl = uploadedImageUrl1,
             cameraType = "FRONT",
@@ -214,7 +219,7 @@ class Record_4_Activity : AppCompatActivity() {
             dateTime = dateTime,
             content = content,
             images = listOf(frontImage, backImage),
-            detailedLocation = city,
+            detailedLocation = detailedLocation,
             audioUrl = uploadedAudioUrl,
             emotionId = selectedEmotionId,
             weatherId = selectedWeatherId
@@ -226,10 +231,12 @@ class Record_4_Activity : AppCompatActivity() {
             override fun onResponse(call: Call<DiaryResponse>, response: Response<DiaryResponse>) {
                 if (response.isSuccessful) {
                     val intent = Intent(this@Record_4_Activity, MainActivity::class.java)
-                    intent.putExtra("gotoTripId", tripId)
                     intent.putExtra("gotoFragment", "ViewCard")
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                     startActivity(intent)
+                    Log.d("Record_4_Activity", "MainActivity로 이동 Intent 보냄: gotoFragment=ViewCard")
+
+
+
                     finish()
                 } else {
                     Log.e(

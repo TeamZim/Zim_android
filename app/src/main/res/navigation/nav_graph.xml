@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:startDestination="@id/viewCardFragment">
 
+
     <fragment
         android:id="@+id/viewCardFragment"
         android:name="com.example.zim_android.fragment.ViewCardFragment"
@@ -88,9 +89,5 @@
             app:destination="@id/viewCardFragment" />
     </fragment>
 
-    <item
-        android:id="@+id/menu_view_card"
-        android:icon="@drawable/ic_card"
-        android:title="카드" />
 
 </navigation>
