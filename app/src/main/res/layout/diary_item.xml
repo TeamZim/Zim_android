@@ -144,7 +144,7 @@
                 <TextView
                     android:id="@+id/detailed_location"
                     android:fontFamily="@font/nanum_neuris"
-                    android:textColor="@color/primary_700"
+                    android:textColor="#A7A4A0"
                     android:textSize="18dp"
                     android:gravity="center_vertical"
                     android:layout_marginLeft="4dp"
@@ -184,7 +184,7 @@
 
                 <TextView
                     android:id="@+id/emotion_color_text"
-                    android:textColor="@color/primary_700"
+                    android:textColor="#A7A4A0"
                     android:fontFamily="@font/nanum_neuris"
                     android:textSize="18dp"
                     android:gravity="center_vertical"
@@ -214,16 +214,16 @@
                 <ImageView
                     android:id="@+id/weather_icon"
                     android:layout_gravity="center"
-                    android:layout_width="18dp"
+                    android:layout_width="16dp"
                     android:layout_height="18dp"
+                    android:layout_gravity="center"
                     android:layout_marginStart="11dp"
                     android:layout_marginTop="2dp"
-                    android:src="@drawable/emotion_color_base_circle"
-                    />
+                    android:src="@drawable/emotion_color_base_circle" />
 
                 <TextView
                     android:id="@+id/weather_text"
-                    android:textColor="@color/primary_700"
+                    android:textColor="#A7A4A0"
                     android:fontFamily="@font/nanum_neuris"
                     android:textSize="18dp"
                     android:gravity="center_vertical"
@@ -265,7 +265,7 @@
 
                 <TextView
                     android:id="@+id/audio_text"
-                    android:textColor="@color/primary_700"
+                    android:textColor="#A7A4A0"
                     android:fontFamily="@font/nanum_neuris"
                     android:textSize="18dp"
                     android:gravity="center_vertical"

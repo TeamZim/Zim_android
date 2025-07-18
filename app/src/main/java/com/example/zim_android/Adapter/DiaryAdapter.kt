@@ -13,8 +13,8 @@ import com.example.zim_android.R
 import android.media.MediaPlayer
 import android.util.Log
 import androidx.core.content.ContextCompat
-import com.example.zim_android.Adapter.DiaryAdapter.DiaryViewHolder
 import com.example.zim_android.util.PreferenceUtil.Constants
+import androidx.core.graphics.toColorInt
 
 
 class DiaryAdapter(private val itemList: List<DiaryResponse>) :
@@ -35,6 +35,7 @@ class DiaryAdapter(private val itemList: List<DiaryResponse>) :
 
         // 감정색, 날씨, 녹음 아이콘 기본 세팅
         binding.emotionColorImg.setColorFilter(Color.parseColor(defaultColor), PorterDuff.Mode.SRC_IN)
+        binding.weatherIcon.setImageResource(R.drawable.emotion_color_base_circle)
         binding.weatherIcon.setColorFilter(Color.parseColor(defaultColor), PorterDuff.Mode.SRC_IN)
         binding.audioBtn.setColorFilter(Color.parseColor(defaultColor), PorterDuff.Mode.SRC_IN)
 
@@ -50,7 +51,15 @@ class DiaryAdapter(private val itemList: List<DiaryResponse>) :
         } else "-"
         binding.time.text = hourMinute
 
-        binding.detailedLocation.text = item.detailedLocation ?: "-"
+
+        binding.detailedLocationIcon.setColorFilter("#A7A4A0".toColorInt(), PorterDuff.Mode.SRC_IN)
+        if (item.detailedLocation?.isNotEmpty() ?: false) {
+            binding.detailedLocation.text = item.detailedLocation
+            binding.detailedLocation.setTextColor(ContextCompat.getColor(binding.root.context, R.color.primary_700))
+            binding.detailedLocationIcon.clearColorFilter()
+
+        }
+
         if (item.content != null) {
             binding.contextText.text = item.content ?: "입력된 기록이 없어요."
             binding.contextText.setTextColor(ContextCompat.getColor(binding.root.context, R.color.primary_700))
@@ -67,10 +76,13 @@ class DiaryAdapter(private val itemList: List<DiaryResponse>) :
         binding.emotionColorText.text = item.emotionName ?: "-" // 감정색명 text 추가
 
         // 날씨
-        val fullUrl = Constants.BASE_URL + item.weatherIconUrl
-        if (!item.weather.isNullOrBlank())
-            Glide.with(binding.root.context).load(fullUrl).centerCrop().into(binding.weatherIcon) //  날씨 이미지 추가
         binding.weatherText.text = item.weather ?: "-"
+
+        if (!item.weather.isNullOrEmpty()){
+            val fullUrl = Constants.BASE_URL + item.weatherIconUrl
+            binding.weatherIcon.clearColorFilter()
+            Glide.with(binding.root.context).load(fullUrl).centerCrop().into(binding.weatherIcon) //  날씨 이미지 추가
+        }
 
         // 녹음
         if (!item.audioUrl.isNullOrBlank()) {
