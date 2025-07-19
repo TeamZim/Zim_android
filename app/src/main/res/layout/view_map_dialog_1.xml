@@ -134,10 +134,11 @@
             app:layout_constraintStart_toEndOf="@+id/dialog_1_selected_color_img"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
+        <ImageView
             android:id="@+id/select_color_btn"
             android:layout_width="22dp"
             android:layout_height="22dp"
+            android:clickable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/add_record_arrow_btn_img" />
@@ -155,7 +156,7 @@
         />
 
 
-    <ImageButton
+    <ImageView
         android:id="@+id/dialog_1_save_btn"
         android:layout_width="231dp"
         android:layout_height="40dp"

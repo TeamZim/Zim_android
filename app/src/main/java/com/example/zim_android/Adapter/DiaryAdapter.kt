@@ -79,9 +79,8 @@ class DiaryAdapter(private val itemList: List<DiaryResponse>) :
         binding.weatherText.text = item.weather ?: "-"
 
         if (!item.weather.isNullOrEmpty()){
-            val fullUrl = Constants.BASE_URL + item.weatherIconUrl
             binding.weatherIcon.clearColorFilter()
-            Glide.with(binding.root.context).load(fullUrl).centerCrop().into(binding.weatherIcon) //  날씨 이미지 추가
+            Glide.with(binding.root.context).load(item.weatherIconUrl).into(binding.weatherIcon) //  날씨 이미지 추가
         }
 
         // 녹음
