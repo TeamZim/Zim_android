@@ -283,11 +283,12 @@
 
                 <TextView
                     android:id="@+id/emotion_text"
-                    android:text="선택 안 함"
-                    android:textSize="12sp"
+                    android:text="기본"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/nanum"
                     android:textColor="#888888"
                     android:gravity="center_vertical"
-                    android:layout_width="wrap_content"
+                    android:layout_width="49dp"
                     android:layout_height="wrap_content" />
 
                 <ImageView
@@ -346,11 +347,14 @@
                 <TextView
                     android:id="@+id/weather_text"
                     android:text="선택 안 함"
-                    android:textSize="12sp"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/nanum"
                     android:textColor="#888888"
                     android:gravity="center_vertical"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_width="49dp"
+                    android:layout_height="wrap_content"
+                    android:letterSpacing="-0.01"
+                    />
 
                 <ImageView
                     android:layout_width="8dp"

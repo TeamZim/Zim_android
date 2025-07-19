@@ -15,12 +15,14 @@
 
     <ImageView
         android:id="@+id/add_record_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="400dp"
-        android:layout_marginLeft="50dp"
-        android:clickable="true"
-        app:srcCompat="@drawable/add_record_btn" />
+        android:layout_width="56dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="503dp"
+        android:layout_marginStart="25dp"
+        android:background="@android:color/transparent"
+        app:srcCompat="@drawable/add_map"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </FrameLayout>

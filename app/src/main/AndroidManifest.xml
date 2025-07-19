@@ -29,7 +29,9 @@
         android:theme="@style/Theme.Zim_android"
         tools:targetApi="33">
 
-        <activity android:name=".MainActivity" />
+        <activity android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop" />
 
         <activity
             android:name=".LauncherActivity"

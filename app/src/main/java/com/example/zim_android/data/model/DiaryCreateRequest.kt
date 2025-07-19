@@ -11,11 +11,11 @@ data class DiaryCreateRequest (
     val detailedLocation: String,
     val audioUrl: String,
     val emotionId: Int,
-    val weatherId: Int
-    )
+    val weatherId: Int?
+)
 
 data class DiaryImageRequest(
     val imageUrl: String,
     val cameraType: String,
-    val representative: Boolean
+    val isRepresentative: Boolean
 )
