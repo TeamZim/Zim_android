@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:paddingTop="20dp"/>
 
-    <ImageButton
+    <ImageView
         android:id="@+id/add_record_btn"
         android:layout_width="56dp"
         android:layout_height="70dp"

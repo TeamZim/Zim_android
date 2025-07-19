@@ -279,11 +279,16 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
                 override fun onResponse(call: Call<List<Emotion>>, response: Response<List<Emotion>>) {
                     if (response.isSuccessful) {
                         val emotionList = response.body() ?: emptyList()
+                        val slicedEmotionList = if (emotionList.size > 1) {
+                            emotionList.subList(1, minOf(13, emotionList.size)) // index 1 ~ 12
+                        } else {
+                            emptyList()
+                        }
 
                         // 어댑터에 연결
                         val emotionSelectAdapter = DialogEmotionSelectAdapter(
                             context = requireContext(),
-                            items = emotionList,
+                            items = slicedEmotionList,
                             onItemSelected = { selectedEmotion ->
                                 // 감정 선택 시 처리 부분
                                 // 저장 버튼 활성화 및 클릭 가능하게하기

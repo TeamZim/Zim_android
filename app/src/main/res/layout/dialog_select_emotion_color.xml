@@ -64,12 +64,13 @@
         />
 
 
-    <ImageButton
+    <ImageView
         android:id="@+id/back_to_dialog_1"
         android:layout_width="27dp"
         android:layout_height="27dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
+        android:clickable="true"
         app:layout_constraintStart_toStartOf="@+id/dialog_1_frame"
         app:layout_constraintTop_toTopOf="@+id/dialog_1_frame"
         app:srcCompat="@drawable/back_button" />

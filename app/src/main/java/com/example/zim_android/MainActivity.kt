@@ -35,7 +35,6 @@ class MainActivity : AppCompatActivity() {
             navController.popBackStack(R.id.viewCardFragment, false)
             navController.navigate(R.id.viewCardFragment)
             Log.d("MainActivity", "받은 이동 요청: $fragmentName")
-
         }
     }
 
@@ -48,6 +47,7 @@ class MainActivity : AppCompatActivity() {
             gotoFragmentName = null
         }
     }
+
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
