@@ -78,8 +78,12 @@ class OnBoardingActivity : AppCompatActivity() {
                 binding.onboardingViewPager.currentItem = nextIndex
             } else {
                 PreferenceManager.setOnboardingShown(this)
-                startActivity(Intent(this, MainActivity::class.java))
+                val intent = Intent(this, MainActivity::class.java).apply {
+
+                }
+                startActivity(intent)
                 finish()
+
             }
         }
     }

@@ -640,4 +640,9 @@ fun countryToFlagEmoji(countryCode: String): String {
         .map { char -> 0x1F1E6 + (char.code - 'A'.code) }
         .map { code -> String(Character.toChars(code)) }
         .joinToString("")
+    Log.e("국기", countryCode
+        .uppercase()
+        .map { char -> 0x1F1E6 + (char.code - 'A'.code) }
+        .map { code -> String(Character.toChars(code)) }
+        .joinToString(""))
 }

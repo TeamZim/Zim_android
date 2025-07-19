@@ -27,6 +27,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Zim_android"
         tools:targetApi="33">
+
+        <activity android:name=".MainActivity" />
+
         <activity
             android:name=".LauncherActivity"
             android:exported="true"
@@ -59,7 +62,7 @@
         </activity>
 
         <activity android:name=".View.Record_4_Activity" />
-        <activity android:name=".fragment.Record_4_1" />
+
 
     </application>
 
