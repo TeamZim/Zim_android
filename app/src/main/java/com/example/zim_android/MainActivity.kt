@@ -34,7 +34,6 @@ class MainActivity : AppCompatActivity() {
             navController.popBackStack(R.id.viewCardFragment, false)
             navController.navigate(R.id.viewCardFragment)
             Log.d("MainActivity", "받은 이동 요청: $fragmentName")
-
         }
     }
 
