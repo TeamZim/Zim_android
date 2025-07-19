@@ -29,7 +29,7 @@
         app:layout_constraintEnd_toEndOf="@+id/textView6"
         app:layout_constraintStart_toStartOf="@+id/textView6"
         app:layout_constraintTop_toBottomOf="@+id/textView6"
-        app:srcCompat="@drawable/onBoarding_2_img_1" />
+        app:srcCompat="@drawable/onboarding_2_img_1" />
 
     <ImageView
         android:id="@+id/imageView6"
@@ -38,7 +38,7 @@
         app:layout_constraintEnd_toEndOf="@+id/imageView7"
         app:layout_constraintStart_toStartOf="@+id/imageView7"
         app:layout_constraintTop_toBottomOf="@+id/imageView7"
-        app:srcCompat="@drawable/onBoarding_2_img_2" />
+        app:srcCompat="@drawable/onboarding_2_img_2" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
