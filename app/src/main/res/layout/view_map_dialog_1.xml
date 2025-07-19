@@ -50,7 +50,7 @@
 
     <TextView
         android:id="@+id/dialog_1_country_title"
-        android:layout_width="235dp"
+        android:layout_width="233dp"
         android:layout_height="26dp"
         android:layout_marginTop="23dp"
         android:text="국가"
@@ -60,49 +60,45 @@
         app:layout_constraintStart_toStartOf="@+id/dialog_1_frame"
         app:layout_constraintTop_toBottomOf="@+id/dialog_1_line" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/dialog_1_textInputLayout"
+    <EditText
+        android:id="@+id/country_EditText"
         android:layout_width="235dp"
-        android:layout_height="40dp"
+        android:layout_height="35dp"
         android:layout_marginTop="2dp"
-        android:ems="10"
         android:fontFamily="@font/nanum_neuris"
         android:inputType="text"
         android:textSize="16sp"
+        android:hint="국가명을 입력하세요."
+        android:textColorHint="@color/unselected"
         app:layout_constraintEnd_toEndOf="@+id/dialog_1_country_title"
         app:layout_constraintStart_toStartOf="@+id/dialog_1_country_title"
         app:layout_constraintTop_toBottomOf="@+id/dialog_1_country_title"
         app:endIconMode="dropdown_menu"
         app:hintEnabled="false"
-        >
+        android:background="@android:color/transparent"
+        android:textCursorDrawable="@color/primary_700"
+        />
 
-        <com.google.android.material.textfield.MaterialAutoCompleteTextView
-            android:id="@+id/dialog_1_country_list_textInput"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            android:background="@android:color/transparent"
-            android:dropDownHeight="127dp"
-            android:dropDownWidth="234dp"
-            app:popupTheme="@style/AddRecordDropdownPopupTheme"
-            android:fontFamily="@font/nanum_neuris"
-            android:textSize="16sp"
-            android:hint="국가명을 입력해주세요."
-            />
-
-    </com.google.android.material.textfield.TextInputLayout>
+    <View
+        android:layout_width="235dp"
+        android:layout_height="0.75dp"
+        android:background="@color/unselected"
+        android:layout_marginBottom="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/country_EditText"
+        app:layout_constraintEnd_toEndOf="@+id/country_EditText"
+        app:layout_constraintStart_toStartOf="@+id/country_EditText" />
 
     <TextView
         android:id="@+id/dialog_1_emotion_color_title"
         android:layout_width="235dp"
         android:layout_height="26dp"
-        android:layout_marginTop="31dp"
+        android:layout_marginTop="28dp"
         android:text="감정색"
         android:textColor="@color/primary_700"
         android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="@+id/dialog_1_frame"
-        app:layout_constraintStart_toStartOf="@+id/dialog_1_frame"
-        app:layout_constraintTop_toBottomOf="@+id/dialog_1_textInputLayout" />
+        app:layout_constraintEnd_toEndOf="@+id/country_EditText"
+        app:layout_constraintStart_toStartOf="@+id/country_EditText"
+        app:layout_constraintTop_toBottomOf="@+id/country_EditText" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/dialog_1_emotion_color_select_layout"
@@ -129,16 +125,17 @@
             android:layout_marginStart="10dp"
             android:fontFamily="@font/nanum_neuris"
             android:gravity="center_vertical"
-            android:text="선택 안 함"
+            android:text="기본"
             android:textSize="16sp"
             app:layout_constraintStart_toEndOf="@+id/dialog_1_selected_color_img"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/select_color_btn"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
+            android:layout_width="6dp"
+            android:layout_height="14dp"
             android:clickable="true"
+            app:layout_constraintBottom_toBottomOf="@+id/dialog_1_selected_color_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/add_record_arrow_btn_img" />
@@ -148,8 +145,8 @@
 
     <View
         android:layout_width="235dp"
-        android:layout_height="1dp"
-        android:background="#23241B"
+        android:layout_height="0.75dp"
+        android:background="@color/unselected"
         app:layout_constraintTop_toBottomOf="@id/dialog_1_emotion_color_select_layout"
         app:layout_constraintStart_toStartOf="@id/dialog_1_emotion_color_select_layout"
         app:layout_constraintEnd_toEndOf="@id/dialog_1_emotion_color_select_layout"

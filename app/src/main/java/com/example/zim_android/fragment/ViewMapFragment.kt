@@ -1,7 +1,7 @@
 package com.example.zim_android.fragment
 
+import CountryDropdownAdapter
 import android.app.Dialog
-import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -10,10 +10,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.ArrayAdapter
+import android.widget.PopupWindow
 import androidx.fragment.app.Fragment
 import com.example.zim_android.Adapter.DialogEmotionSelectAdapter
 import com.example.zim_android.R
@@ -21,11 +20,13 @@ import com.example.zim_android.data.model.AddVisitedCountryRequest
 import com.example.zim_android.data.model.CountrySearchResponse
 import com.example.zim_android.data.model.Emotion
 import com.example.zim_android.data.model.VisitedCountryResponse
-import com.example.zim_android.data.network.ApiProvider
+import com.example.zim_android.data.network.ApiProvider.api
 import com.example.zim_android.databinding.DialogSelectEmotionColorBinding
+import com.example.zim_android.databinding.DropdownLayoutBinding
 import com.example.zim_android.databinding.ViewMapDialog1Binding
 import com.example.zim_android.databinding.ViewMapFragmentBinding
 import com.example.zim_android.util.PreferenceUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,11 +36,7 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
     private val visitedCountriesDynamic = mutableListOf<VisitedCountryResponse>()
 
     val userId = 1 // 임시로 테스트할 userId
-
-    val api = ApiProvider.api
-    private var countryList: List<CountrySearchResponse> = emptyList()
-
-    private lateinit var webView: WebView
+//    var suppressDropdown = false
 
     // 나라별로 저장된 색상
     private val countryColorMap = mutableMapOf<String, String>()
@@ -50,9 +47,10 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
     // 필요한 정보(국가, 감정색 코드, 아이디) 저장하는 변수들
     // 지도에 추가할
     var selectedCountryCode: String = ""
-    var selectedEmotionColorCode: String = "#D9D9D9"
+    var selectedEmotionColorCode: String = "#EEEEEE"
     var selectedEmotionId: Int = 1
 
+    private lateinit var dropdownAdapter: CountryDropdownAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -139,12 +137,13 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
         })
 
     }
+
     //실제 색칠하는 함수 -> 연동하면서 수정했음
     private fun colorVisitedCountriesOnMap() {
         for (country in visitedCountriesDynamic) {
             Log.d("지도색칠", "국가=${country.countryCode}, 색=${country.color}")
 
-                            val js = """
+            val js = """
                     var el = document.getElementById('${country.countryCode}');
                     if (el) {
                         el.style.fill = '${country.color}';
@@ -161,18 +160,13 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
     )
 
 
-
-
-
-
-
     // 과거 여행 추가 다이얼로그 띄우기
     private fun showAddRecordDialog1() {
         val dialog1 = Dialog(requireContext())
         val dialog1Binding = ViewMapDialog1Binding.inflate(layoutInflater)
         dialog1.setContentView(dialog1Binding.root)
 
-        val inputField = dialog1Binding.dialog1CountryListTextInput
+//        val inputField = dialog1Binding.dialog1CountryListTextInput
 
         // x버튼 클릭시 다이얼로그 내리기
         dialog1Binding.dialog1ExitBtn.setOnClickListener {
@@ -180,27 +174,37 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
         }
 
         // 드롭다운 세팅
-        Dropdown(dialog1Binding)
-
-        // 사용자가 드롭다운에서 나라를 선택한 경우
-        val textInput = dialog1Binding.dialog1CountryListTextInput
-
-        inputField.setOnItemClickListener { parent, _, position, _ ->
-            val selectedCountry = parent.getItemAtPosition(position) as CountrySearchResponse
-            val countryCode = selectedCountry.countryCode
-            selectedCountryCode = countryCode
-
-            // 포커스 제거 (깜빡이는거 제거)
-            dialog1Binding.dialog1CountryListTextInput.clearFocus()
-
-            // 키보드 내리기
-            // getSystemService = 입력 서비스 가지고 오기, InputMethodManager 타입으로 다운캐스팅
-            val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(dialog1Binding.dialog1CountryListTextInput.windowToken, 0) // 키보드 내려
-
-            dialog1Binding.dialog1SaveBtn.setImageResource(R.drawable.save_btn_active)
-            dialog1Binding.dialog1SaveBtn.isClickable = true // 국가 선택시 저장 btn active
-        }
+//        Dropdown(dialog1Binding)
+        setupCountryDropdown(dialog1Binding)
+//
+////         사용자가 드롭다운에서 나라를 선택한 경우
+//        dialog1Binding.countryEditText.setOnItemClickListener { parent, _, position, _ ->
+//            val selectedCountry = parent.getItemAtPosition(position) as CountrySearchResponse
+//            val countryCode = selectedCountry.countryCode
+//            selectedCountryCode = countryCode
+//
+//            // 포커스 제거 (깜빡이는거 제거)
+//            dialog1Binding.dialog1CountryListTextInput.clearFocus()
+//
+////            suppressDropdown = true // 드롭다운 다시 열리지 않게 설정
+//
+//            inputField.clearFocus()
+//            inputField.dismissDropDown()
+//
+//            // 키보드 내리기
+//            // getSystemService = 입력 서비스 가지고 오기, InputMethodManager 타입으로 다운캐스팅
+//            val imm =
+//                requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+//            imm.hideSoftInputFromWindow(
+//                dialog1Binding.dialog1CountryListTextInput.windowToken,
+//                0
+//            ) // 키보드 내려
+//
+//
+//
+//            dialog1Binding.dialog1SaveBtn.setImageResource(R.drawable.save_btn_active)
+//            dialog1Binding.dialog1SaveBtn.isClickable = true // 국가 선택시 저장 btn active
+//        }
 
 //        textInput.setOnClickListener {
 //            // 다이얼로그 안에서는 포커스가 textinput이 아니라 다이얼로그로 가서 키보드가 자동으로 안 올라올 수 있음.
@@ -232,6 +236,7 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
                             Log.e("저장 실패", "응답 코드: ${response.code()}")
                         }
                     }
+
                     override fun onFailure(call: Call<Void>, t: Throwable) {
                         Log.e("저장 실패", t.message.toString())
                     }
@@ -259,7 +264,6 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
     }
 
 
-
     // 감정색 선택 다이얼로그 띄우는 부분
     private fun showAddRecordDialog2(dialog1Binding: ViewMapDialog1Binding) {
         // 감정색 다이얼로그 작업
@@ -274,9 +278,11 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
                 dialog2.dismiss()
             }
 
-
             api.getEmotions().enqueue(object : Callback<List<Emotion>> {
-                override fun onResponse(call: Call<List<Emotion>>, response: Response<List<Emotion>>) {
+                override fun onResponse(
+                    call: Call<List<Emotion>>,
+                    response: Response<List<Emotion>>
+                ) {
                     if (response.isSuccessful) {
                         val emotionList = response.body() ?: emptyList()
                         val slicedEmotionList = if (emotionList.size > 1) {
@@ -301,7 +307,11 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
                             val selectedItem = emotionSelectAdapter.getSelectedItem()
                             if (selectedItem != null) {
                                 dialog1Binding.dialog1SelectedColorImg.setImageResource(R.drawable.emotion_color_base_circle)
-                                dialog1Binding.dialog1SelectedColorImg.setColorFilter(Color.parseColor(selectedItem.colorCode))
+                                dialog1Binding.dialog1SelectedColorImg.setColorFilter(
+                                    Color.parseColor(
+                                        selectedItem.colorCode
+                                    )
+                                )
                                 dialog1Binding.dialog1SelectedColorText.text = selectedItem.name
 
                                 selectedEmotionColorCode = selectedItem.colorCode // 컬러 코드 저장
@@ -317,7 +327,7 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
                             dialog2Binding.colorListGrid.addView(view)
                         }
 
-                        emotionSelectAdapter.setOnGridUpdateCallback{
+                        emotionSelectAdapter.setOnGridUpdateCallback {
                             dialog2Binding.colorListGrid.removeAllViews()
                             for (i in 0 until emotionSelectAdapter.getCount()) {
                                 val view = emotionSelectAdapter.getView(i)
@@ -325,7 +335,7 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
                             }
                         } // 초기화 한 번 호출
 
-                        }
+                    }
                 }
 
                 override fun onFailure(call: Call<List<Emotion>>, t: Throwable) {
@@ -341,100 +351,97 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
 
             dialog2.show()
 
+        }
+
+    }
+
+    private fun setupCountryDropdown(dialog1Binding: ViewMapDialog1Binding) {
+        val editText = dialog1Binding.countryEditText
+        var userManuallyEdited = false
+
+        // RecyclerView를 팝업 내용으로 사용
+        val dropdownBinding = DropdownLayoutBinding.inflate(layoutInflater, null, false)
+        val recyclerView = dropdownBinding.recyclerView
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+
+        val popupWindow = PopupWindow(
+            dropdownBinding.root, // 여기 중요
+            editText.width,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            true
+        )
+
+        val textWatcher = object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (userManuallyEdited) {
+                    selectedCountryCode = "" // ✅ 기존 선택값 초기화
+                    dialog1Binding.dialog1SaveBtn.setImageResource(R.drawable.save_btn_unactive)
+                    dialog1Binding.dialog1SaveBtn.isClickable = false
+                }
+
+                val keyword = s.toString()
+                Log.d("keyword", keyword)
+
+                api.searchCountry(keyword).enqueue(object : Callback<CountrySearchListResponse> {
+                    override fun onResponse(
+                        call: Call<CountrySearchListResponse>,
+                        response: Response<CountrySearchListResponse>
+                    ) {
+                        val result = response.body()?.data ?: return
+                        dropdownAdapter.updateItems(result)
+
+                        if (!popupWindow.isShowing) {
+                            popupWindow.width = editText.width
+                            popupWindow.showAsDropDown(editText, 0, -18)
+                        }
+                    }
+
+                    override fun onFailure(call: Call<CountrySearchListResponse>, t: Throwable) {
+                        Log.e("API 실패", t.message ?: "Unknown error")
+                    }
+                })
+
             }
 
         }
 
+        editText.setOnTouchListener { _, _ ->
+            // 사용자가 손으로 눌렀을 경우 → 이후 텍스트가 바뀌면 수정으로 간주
+            userManuallyEdited = true
+            false
+        }
 
 
-    // 드롭다운 세팅
-    private fun Dropdown(dialog1Binding: ViewMapDialog1Binding) {
+        editText.addTextChangedListener(textWatcher)
 
-        val inputField = dialog1Binding.dialog1CountryListTextInput
-        val dropdownAdapter = ArrayAdapter<CountrySearchResponse>(requireContext(), android.R.layout.simple_dropdown_item_1line, mutableListOf())
-        inputField.setAdapter(dropdownAdapter)
+        dropdownAdapter = CountryDropdownAdapter { selectedItem ->
 
-        // 검색 기능
-        inputField.threshold = 1 // 1자 입력 시부터 검색 시작
-        inputField.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val keyword = s.toString()
+            editText.removeTextChangedListener(textWatcher)
 
-                if (keyword.isNotEmpty()) {
-                    api.searchCountry(keyword).enqueue(object : Callback<List<CountrySearchResponse>> {
-                        override fun onResponse(call: Call<List<CountrySearchResponse>>, response: Response<List<CountrySearchResponse>>) {
-                            if (response.isSuccessful) {
-                                val result = response.body() ?: emptyList()
-                                Log.d("API 호출", "받은 국가 수 = ${result.size}")
-                                countryList = result // 전역 변수에 저장
+            editText.setText(selectedItem.countryName)
+            selectedCountryCode = selectedItem.countryCode
+            userManuallyEdited = false // 선택된 항목이니까 "수정 아님"
 
-                                val countryNames = result.map { "${it.countryName}" }
+            dialog1Binding.dialog1SaveBtn.setImageResource(R.drawable.save_btn_active)
+            dialog1Binding.dialog1SaveBtn.isClickable = true
 
-                                dropdownAdapter.clear()
-                                dropdownAdapter.addAll(result)
-                                dropdownAdapter.notifyDataSetChanged()
-                            }
-                        }
-                        override fun onFailure(call: Call<List<CountrySearchResponse>>, t: Throwable) {
-                            Log.e("국가 검색 실패", t.message.toString())
-                        }
-                    })
-                }
+            popupWindow.dismiss()
+
+            editText.post {
+                editText.addTextChangedListener(textWatcher)
             }
-            override fun afterTextChanged(s: Editable?) {}
-        })
+        }
+        recyclerView.adapter = dropdownAdapter
     }
 
 
-    private fun dropdownSelect(dialog1Binding: ViewMapDialog1Binding) {
-
-    }
-
-
-
-    }
-
-// 🟨 countryNameToCode 함수: 반드시 클래스 마지막에 붙여줘야 함 (다른 함수 밖, 클래스 안)
-private fun countryNameToCode(name: String): String? {
-    return mapOf(
-        "한국" to "KR",
-        "일본" to "Japan",
-        "미국" to "US",
-        "프랑스" to "FR",
-        "독일" to "DE",
-        "중국" to "CN",
-        "영국" to "GB",
-        "이탈리아" to "IT",
-        "스페인" to "ES",
-        "러시아" to "RU",
-        "브라질" to "BR",
-        "캐나다" to "CA",
-        "멕시코" to "MX",
-        "사우디아라비아" to "SA",
-        "태국" to "TH",
-        "인도" to "IN",
-        "베트남" to "VN",
-        "싱가포르" to "SG",
-        "남아프리카공화국" to "ZA",
-        "스웨덴" to "SE",
-        "호주" to "AU",
-        "네덜란드" to "NL",
-        "뉴질랜드" to "NZ",
-        "노르웨이" to "NO",
-        "핀란드" to "FI",
-        "스위스" to "CH",
-        "포르투갈" to "PT",
-        "폴란드" to "PL",
-        "덴마크" to "DK",
-        "아르헨티나" to "AR",
-        "칠레" to "CL",
-        "이집트" to "EG",
-        "터키" to "TR",
-        "아랍에미리트" to "AE",
-        "인도네시아" to "ID",
-        "Korea" to "KR"
-    )[name]
+    data class CountrySearchListResponse(
+        val data: List<CountrySearchResponse>
+    )
 }
 
 

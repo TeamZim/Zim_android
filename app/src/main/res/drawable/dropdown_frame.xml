@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="250dp"
+    android:height="143dp"
+    android:viewportWidth="250"
+    android:viewportHeight="143">
+  <path
+      android:pathData="M8,15C8,10.58 11.58,7 16,7H234C238.42,7 242,10.58 242,15V126C242,130.42 238.42,134 234,134H16C11.58,134 8,130.42 8,126V15Z"
+      android:fillColor="#ffffff"/>
+
+  <!-- 테두리 (같은 path, stroke 스타일) -->
+  <path
+      android:pathData="M8,15C8,10.58 11.58,7 16,7H234C238.42,7 242,10.58 242,15V126C242,130.42 238.42,134 234,134H16C11.58,134 8,130.42 8,126V15Z"
+      android:strokeColor="#EBE9E5"
+      android:strokeWidth="1"
+      android:fillColor="@android:color/transparent" />
+</vector>
