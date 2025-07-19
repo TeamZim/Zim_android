@@ -2,6 +2,8 @@ package com.example.zim_android.data.network
 
 import com.example.zim_android.data.model.*
 import com.example.zim_android.fragment.ViewMapFragment
+import okhttp3.MultipartBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -161,8 +163,9 @@ interface ApiService {
     @Multipart
     @POST("/upload")
     fun uploadFile(
-        @Part("type") type: String,
-        @Part file: okhttp3.MultipartBody.Part
-    ): Call<FileUploadResponse>
+        @Query("type") type: String,
+        @Part file: MultipartBody.Part
+    ): Call<ResponseBody>
+
 
 }

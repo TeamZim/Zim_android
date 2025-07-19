@@ -40,9 +40,14 @@ import java.io.FileOutputStream
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
+
+
 class Record_2_1_Activity : AppCompatActivity() {
+
+
     private lateinit var binding: Record21Binding
     private lateinit var imageCapture: ImageCapture // 카메라 객체
+
 
     private var captureStep = 1 // 몇 번째 촬영인지 담아두는 변수
     private var isFrontCamera: Boolean = true //  기본 초기 세팅은 전면
@@ -334,6 +339,9 @@ class Record_2_1_Activity : AppCompatActivity() {
                             DiaryTempStore.images = imageList
 
                             val intent = Intent(this@Record_2_1_Activity, Record_3_Activity::class.java)
+                            intent.putExtra("tripId", DiaryTempStore.tripId)
+                            //트립 아이디 뒤에 전달
+
                             startActivity(intent)
                             finish()
                         } else {
