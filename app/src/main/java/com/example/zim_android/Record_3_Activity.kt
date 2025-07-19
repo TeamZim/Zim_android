@@ -99,7 +99,7 @@ class Record_3_Activity: AppCompatActivity() {
 
         // DiaryTempStore에 저장된 representative 바꾸기
         val updatedImages = DiaryTempStore.images.mapIndexed { index, image ->
-            image.copy(representative = index == selectedRepresentativeIndex) // 대표 이미지 선택한 것만 true
+            image.copy(isRepresentative = index == selectedRepresentativeIndex) // 대표 이미지 선택한 것만 true
         }
         DiaryTempStore.images = updatedImages
 

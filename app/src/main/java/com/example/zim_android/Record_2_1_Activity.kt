@@ -328,12 +328,12 @@ class Record_2_1_Activity : AppCompatActivity() {
                                 DiaryImageRequest(
                                     imageUrl = (imagePath1 ?: imagePath1).toString(),
                                     cameraType = if (!isFrontCamera) "FRONT" else "BACK",
-                                    representative = true // 우선 임시로 첫 번째 사진을 대표로 설정, record_3에서 수정할 것임.
+                                    isRepresentative = true // 우선 임시로 첫 번째 사진을 대표로 설정, record_3에서 수정할 것임.
                                 ),
                                 DiaryImageRequest(
                                     imageUrl = (imagePath2 ?: imagePath2).toString(),
                                     cameraType = if (isFrontCamera) "FRONT" else "BACK",
-                                    representative = false
+                                    isRepresentative = false
                                 )
                             )
                             DiaryTempStore.images = imageList

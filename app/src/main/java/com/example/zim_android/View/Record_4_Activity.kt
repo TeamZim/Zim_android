@@ -61,7 +61,8 @@ class Record_4_Activity : AppCompatActivity() {
     private lateinit var binding: Record4Binding
 
     private var selectedEmotionId: Int = -1
-    private var selectedWeatherId: Int = -1
+    private var selectedWeatherId: Int? = null
+
     private var uploadedImageUrl1: String = ""
     private var uploadedImageUrl2: String = ""
     private var uploadedAudioUrl: String = ""
@@ -172,28 +173,32 @@ class Record_4_Activity : AppCompatActivity() {
             val detailedLocation = binding.placeInput.text.toString()
             val content = binding.diaryInput.text.toString()
 
+            // 감정이 선택되지 않았다면 1로 기본 설정
+            if (selectedEmotionId == -1) {
+                selectedEmotionId = 1
+            }
+
             if (imagePath1.isNullOrEmpty() || imagePath2.isNullOrEmpty()) {
                 Log.e("❌", "이미지 경로 없음")
                 return@setOnClickListener
             }
 
-            uploadFile(imagePath1, "image") { url1 ->
+            uploadFile(imagePath1, "images") { url1 ->
                 uploadedImageUrl1 = url1 ?: ""
-                uploadFile(imagePath2, "image") { url2 ->
+                uploadFile(imagePath2, "images") { url2 ->
                     uploadedImageUrl2 = url2 ?: ""
                     if (audioFilePath.isNotEmpty()) {
                         uploadFile(audioFilePath, "audio") { audioUrl ->
                             uploadedAudioUrl = audioUrl ?: ""
                             postDiary(city, content, detailedLocation)
-
                         }
                     } else {
                         postDiary(city, content, detailedLocation)
-
                     }
                 }
             }
         }
+
 
 
     }
@@ -203,12 +208,12 @@ class Record_4_Activity : AppCompatActivity() {
         val frontImage = DiaryImageRequest(
             imageUrl = uploadedImageUrl1,
             cameraType = "FRONT",
-            representative = representIndex == 0
+            isRepresentative = representIndex == 0
         )
         val backImage = DiaryImageRequest(
             imageUrl = uploadedImageUrl2,
             cameraType = "BACK",
-            representative = representIndex == 1
+            isRepresentative = representIndex == 1
         )
 
         val diaryRequest = DiaryCreateRequest(
@@ -222,7 +227,7 @@ class Record_4_Activity : AppCompatActivity() {
             detailedLocation = detailedLocation,
             audioUrl = uploadedAudioUrl,
             emotionId = selectedEmotionId,
-            weatherId = selectedWeatherId
+            weatherId = selectedWeatherId,
         )
 
         Log.d("📝 DiaryRequest 디버깅", diaryRequest.toString())
@@ -230,14 +235,13 @@ class Record_4_Activity : AppCompatActivity() {
         ApiProvider.api.createDiary(diaryRequest).enqueue(object : Callback<DiaryResponse> {
             override fun onResponse(call: Call<DiaryResponse>, response: Response<DiaryResponse>) {
                 if (response.isSuccessful) {
-                    val intent = Intent(this@Record_4_Activity, MainActivity::class.java)
-                    intent.putExtra("gotoFragment", "ViewCard")
+                    val intent = Intent(this@Record_4_Activity, MainActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        putExtra("gotoFragment", "ViewCard")
+                    }
                     startActivity(intent)
-                    Log.d("Record_4_Activity", "MainActivity로 이동 Intent 보냄: gotoFragment=ViewCard")
-
-
-
                     finish()
+
                 } else {
                     Log.e(
                         "일기 저장 실패",
@@ -245,6 +249,9 @@ class Record_4_Activity : AppCompatActivity() {
                     )
                 }
             }
+
+
+
 
             override fun onFailure(call: Call<DiaryResponse>, t: Throwable) {
                 Log.e("일기 저장 실패", "에러: ${t.message}")
@@ -570,11 +577,7 @@ private fun showEmotionColorDialog(context: Context) {
     dialog.show()
 
 
-
 }
-
-
-
 
 
 
@@ -619,6 +622,7 @@ fun getAddressFromLatLon(binding: Record4Binding, context: Context, lat: Double,
             val address = addresses[0]
             val cityText = address.locality ?: address.subAdminArea ?: address.adminArea ?: "알 수 없음"
             val countryText = address.countryName ?: "알 수 없음"
+            val countryCode = address.countryCode ?: "KR"
 
             val flagEmoji = countryToFlagEmoji(countryCode)
             val displayCountry = "$flagEmoji $countryText"
@@ -628,21 +632,17 @@ fun getAddressFromLatLon(binding: Record4Binding, context: Context, lat: Double,
                 binding.city.text = cityText
                 Log.d("📍위치", "country=$countryText, city=$cityText")
             }
+
         }
     } catch (e: Exception) {
         Log.e("Geocoder", "주소 변환 실패: ${e.message}")
     }
-}
+    }
+    fun countryToFlagEmoji(countryCode: String?): String {
+        if (countryCode.isNullOrEmpty() || countryCode.length != 2) return "🏳️"
+        return countryCode.uppercase().map {
+            Character.toChars(0x1F1E6 + (it.code - 'A'.code))
+        }.joinToString("") { String(it) }
+    }
 
-fun countryToFlagEmoji(countryCode: String): String {
-    return countryCode
-        .uppercase()
-        .map { char -> 0x1F1E6 + (char.code - 'A'.code) }
-        .map { code -> String(Character.toChars(code)) }
-        .joinToString("")
-    Log.e("국기", countryCode
-        .uppercase()
-        .map { char -> 0x1F1E6 + (char.code - 'A'.code) }
-        .map { code -> String(Character.toChars(code)) }
-        .joinToString(""))
-}
+

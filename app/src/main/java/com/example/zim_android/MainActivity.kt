@@ -11,6 +11,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
 
+
     private lateinit var navController: NavController
     private var gotoFragmentName: String? = null
 
@@ -46,6 +47,15 @@ class MainActivity : AppCompatActivity() {
             gotoFragmentName = null
         }
     }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleNavigationIntent(intent)
+    }
+
+
+
+
 
 }
 
