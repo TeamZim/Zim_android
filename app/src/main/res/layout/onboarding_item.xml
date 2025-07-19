@@ -27,7 +27,6 @@
             android:layout_height="wrap_content"
             android:text="프로필을 입력해주세요!"
             android:textSize="28sp"
-            android:textStyle="bold"
             android:fontFamily="@font/nanum"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -35,17 +34,65 @@
             android:layout_marginTop="41dp" />
 
         <!-- 사진 업로드 박스 -->
-        <ImageView
+        <FrameLayout
             android:id="@+id/photoUploadBox"
             android:layout_width="174dp"
             android:layout_height="294dp"
+            android:background="@drawable/rounded_box"
             android:layout_marginTop="16dp"
-            android:scaleType="centerInside"
-            android:background="@drawable/photo_upload_background"
-            android:contentDescription="사진 업로드"
+            android:clipToOutline="true"
             app:layout_constraintTop_toBottomOf="@id/profileTitle"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageView
+                android:id="@+id/photoUploadBackground"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop" />
+
+            <!-- 아이콘 -->
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:layout_gravity="center">
+
+                <!-- 아이콘 -->
+                <ImageView
+                    android:id="@+id/uploadIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/image_icon"
+                    android:scaleType="fitCenter" />
+
+                <!-- 텍스트 -->
+                <TextView
+                    android:id="@+id/uploadText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="터치해서 사진 업로드"
+                    android:textColor="#817F7C"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/nanum" />
+
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/cancelImage"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/cancel_image"
+                android:background="@android:color/transparent"
+                android:layout_gravity="top|end"
+                android:layout_margin="8dp"
+                android:visibility="gone"/>
+        </FrameLayout>
+
+
 
         <!-- ====== 한글 성명 & 생년월일 ====== -->
 

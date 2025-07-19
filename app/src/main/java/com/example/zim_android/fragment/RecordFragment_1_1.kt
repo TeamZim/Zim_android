@@ -2,6 +2,7 @@ package com.example.zim_android.fragment
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,12 +10,17 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.zim_android.R
 import com.example.zim_android.Record_2_1_Activity
+import com.example.zim_android.data.model.TripResponse
+import com.example.zim_android.data.network.ApiProvider.api
 import com.example.zim_android.data.network.DiaryTempStore
 import com.example.zim_android.data.network.UserSession
 import com.example.zim_android.data.network.UserSession.currentTripId
 import com.example.zim_android.data.network.UserSession.userId
 import com.example.zim_android.databinding.Record11FragmentBinding
 import com.example.zim_android.util.PreferenceUtil
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class RecordFragment_1_1: Fragment(R.layout.record_1_1_fragment) {
 
@@ -56,6 +62,23 @@ class RecordFragment_1_1: Fragment(R.layout.record_1_1_fragment) {
         PreferenceUtil.setUserId(requireContext(), 1)
         UserSession.userId = 1
 
+        // ✅ 여행 목록 중 가장 최신 tripId 설정
+        api.getTripsByUser(UserSession.userId ?: 1).enqueue(object : Callback<List<TripResponse>> {
+            override fun onResponse(call: Call<List<TripResponse>>, response: Response<List<TripResponse>>) {
+                if (response.isSuccessful) {
+                    val tripList = response.body() ?: return
+                    val latestTripId = tripList.maxByOrNull { it.id }?.id
+                    if (latestTripId != null) {
+                        UserSession.currentTripId = latestTripId
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<List<TripResponse>>, t: Throwable) {
+                // 실패 로그
+            }
+        })
+
 
         // tvtitle text 변경
         binding.commonHeader.tvTitle.text = "기록하기"
@@ -65,6 +88,8 @@ class RecordFragment_1_1: Fragment(R.layout.record_1_1_fragment) {
 
         // 기존 여행에 추가
         binding.constraint1.setOnClickListener {
+            Log.d("💡기존 여행 tripId", "UserSession.currentTripId = ${UserSession.currentTripId}")
+
             // 일기 생성 정보 추가
             DiaryTempStore.apply {
                 userId = userId  // UserSession에 저장된 현재 userId 사용
