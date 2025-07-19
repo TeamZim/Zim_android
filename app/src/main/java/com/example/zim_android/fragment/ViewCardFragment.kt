@@ -90,8 +90,11 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
                             loadedCount++
 
                             if (loadedCount == tripList.size) {
-                                setupCardAdapter(tripList, imageMap)
+                                // tripId 내림차순 정렬
+                                val sortedTripList = tripList.sortedByDescending { it.id }
+                                setupCardAdapter(sortedTripList, imageMap)
                             }
+
                         }
                     }
                 } else {
@@ -135,6 +138,8 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
             }
         })
     }
+
+
 
     // 카드 어댑터 설정 및 ViewPager 연결
     private fun setupCardAdapter(
