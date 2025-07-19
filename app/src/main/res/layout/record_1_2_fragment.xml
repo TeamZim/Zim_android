@@ -206,7 +206,7 @@
         app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="@+id/frame_img"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        app:srcCompat="@drawable/save_btn_unactive" />
+        app:srcCompat="@drawable/create_trip_brn_unactive" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
