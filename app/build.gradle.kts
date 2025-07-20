@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.android.navigation.safe.args)
     id("kotlin-parcelize")
+    id("kotlin-kapt")
 }
 
 android {
@@ -100,5 +101,10 @@ dependencies {
 
     implementation ("androidx.viewpager2:viewpager2:1.0.0")
     implementation ("com.google.android.material:material:1.8.0") // Dot indicator용
+
+    implementation ("com.github.bumptech.glide:glide:4.16.0")//사진 불러올 때 radius주기
+    kapt ("com.github.bumptech.glide:compiler:4.16.0")
+    implementation ("jp.wasabeef:glide-transformations:4.3.0")
+
 
 }

@@ -1,12 +1,17 @@
 package com.example.zim_android.View
 
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -15,11 +20,34 @@ import com.example.zim_android.MainActivity
 import com.example.zim_android.PreferenceManager
 import com.example.zim_android.R
 import com.example.zim_android.databinding.ActivityOnboardingBinding
+import java.util.Calendar
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions
+import com.example.zim_android.data.model.JoinRequest
+import java.io.File
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import android.net.Uri
+import android.util.Log
+import com.example.zim_android.data.model.User
+import com.example.zim_android.data.network.ApiProvider
+import com.example.zim_android.data.model.UserResponse
+import com.google.gson.Gson
+import okhttp3.ResponseBody
+
+
 class OnBoardingActivity : AppCompatActivity() {
 
     companion object {
         private const val REQUEST_CODE_PICK_IMAGE = 1001
     }
+
+
 
     private lateinit var binding: ActivityOnboardingBinding
     private lateinit var adapter: OnBoardingAdapter
@@ -72,29 +100,92 @@ class OnBoardingActivity : AppCompatActivity() {
             }
         })
 
+
+
         binding.nextButton.setOnClickListener {
-            val nextIndex = binding.onboardingViewPager.currentItem + 1
+            val currentPage = binding.onboardingViewPager.currentItem
+
+            // 4번 페이지일 경우: 필드 입력 안되면 클릭 무시
+            if (currentPage == 4) {
+                val currentView = (binding.onboardingViewPager.getChildAt(0) as? RecyclerView)
+                    ?.findViewHolderForAdapterPosition(4)?.itemView ?: return@setOnClickListener
+
+                val koreanNameEdit = currentView.findViewById<EditText>(R.id.koreanNameEdit)
+                val birthdayEdit = currentView.findViewById<EditText>(R.id.birthdayEdit)
+                val lastNameEdit = currentView.findViewById<EditText>(R.id.lastNameEngEdit)
+                val firstNameEdit = currentView.findViewById<EditText>(R.id.firstNameEngEdit)
+
+                val allFilled = listOf(
+                    koreanNameEdit.text?.isNotBlank(),
+                    birthdayEdit.text?.isNotBlank(),
+                    lastNameEdit.text?.isNotBlank(),
+                    firstNameEdit.text?.isNotBlank()
+                ).all { it == true }
+
+                if (!allFilled) return@setOnClickListener // 👉 입력 안되면 클릭 무시
+
+
+                val imageView = currentView.findViewById<ImageView>(R.id.photoUploadBackground)
+                val imageUri = imageView.tag as? Uri ?: return@setOnClickListener
+
+                val filePath = getRealPathFromUri(imageUri)
+                val imageFile = File(filePath)
+                val requestFile = imageFile.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+                val multipart = MultipartBody.Part.createFormData("file", imageFile.name, requestFile)
+
+                ApiProvider.api.uploadFile("profile", multipart)
+                    .enqueue(object : Callback<ResponseBody> {
+                        override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                            if (response.isSuccessful) {
+                                val rawJson = response.body()?.string()
+                                Log.d("업로드 응답", rawJson ?: "null")
+
+                                try {
+                                    val imageUrl = rawJson?.replace("\"", "") ?: return
+                                    sendJoinRequest(imageUrl)
+                                } catch (e: Exception) {
+                                    Log.e("파싱 오류", e.message ?: "unknown error")
+                                }
+
+                            } else {
+                                Log.e("이미지 업로드 실패", "서버 응답 오류: ${response.code()}")
+                            }
+                        }
+
+                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                            Log.e("이미지 업로드 실패", t.message ?: "unknown error")
+                        }
+                    })
+
+
+
+                return@setOnClickListener
+            }
+
+            // 페이지 이동
+            val nextIndex = currentPage + 1
             if (nextIndex < adapter.itemCount) {
                 binding.onboardingViewPager.currentItem = nextIndex
             } else {
                 PreferenceManager.setOnboardingShown(this)
-                val intent = Intent(this, MainActivity::class.java).apply {
-
-                }
-                startActivity(intent)
+                startActivity(Intent(this, MainActivity::class.java))
                 finish()
 
             }
         }
     }
 
+
     private fun setupPhotoPicker() {
         val currentView = (binding.onboardingViewPager.getChildAt(0) as? RecyclerView)
             ?.findViewHolderForAdapterPosition(4)?.itemView ?: return
 
-        val photoUploadBox = currentView.findViewById<ImageView>(R.id.photoUploadBox)
+        val photoUploadBox = currentView.findViewById<FrameLayout>(R.id.photoUploadBox)
+        val photoUploadBackground = currentView.findViewById<ImageView>(R.id.photoUploadBackground)
+
+        selectedImageView = photoUploadBackground // ← 여기다 이미지 넣을 거야
+
         photoUploadBox.setOnClickListener {
-            selectedImageView = photoUploadBox
             val intent = Intent(Intent.ACTION_PICK).apply {
                 type = "image/*"
             }
@@ -102,18 +193,75 @@ class OnBoardingActivity : AppCompatActivity() {
         }
     }
 
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == REQUEST_CODE_PICK_IMAGE && resultCode == RESULT_OK) {
             val imageUri = data?.data
-            selectedImageView?.setImageURI(imageUri)
+
+            // 현재 뷰에서 아이콘, 텍스트 찾아오기
+            val currentView = (binding.onboardingViewPager.getChildAt(0) as? RecyclerView)
+                ?.findViewHolderForAdapterPosition(4)?.itemView ?: return
+
+            val uploadIcon = currentView.findViewById<ImageView>(R.id.uploadIcon)
+            val uploadText = currentView.findViewById<TextView>(R.id.uploadText)
+            val cancelBtn = currentView.findViewById<ImageButton>(R.id.cancelImage)
+            val uploadImage = currentView.findViewById<ImageView>(R.id.photoUploadBackground)
+
+            // 아이콘과 텍스트 안 보이게
+            uploadIcon.visibility = View.GONE
+            uploadText.visibility = View.GONE
+            cancelBtn.visibility = View.VISIBLE
+            uploadImage.visibility = View.VISIBLE
+
+            cancelBtn.setOnClickListener {
+                // 이미지 제거
+                uploadImage.setImageDrawable(null)
+                uploadImage.visibility = View.GONE
+
+                // 아이콘과 텍스트 다시 표시
+                uploadIcon.visibility = View.VISIBLE
+                uploadText.visibility = View.VISIBLE
+
+                // 취소 버튼 숨기기
+                cancelBtn.visibility = View.GONE
+            }
+
+
+            // 업로드한 이미지 표시
+
+            Glide.with(this)
+                .load(imageUri)
+                .apply(RequestOptions().centerCrop().transform(RoundedCorners(32)))
+                .into(uploadImage)
+            uploadImage.tag = imageUri
+
         }
     }
+
 
     private fun observeInputFields() {
         val currentView = (binding.onboardingViewPager.getChildAt(0) as? RecyclerView)
             ?.findViewHolderForAdapterPosition(4)?.itemView ?: return
+
+
+
+        // 대문자만 입력되도록 강제
+        val toUpperFilter = object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                val text = s.toString()
+                if (text != text.uppercase()) {
+                    s?.replace(0, s.length, text.uppercase())
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        }
+
+
+
 
         val koreanNameEdit = currentView.findViewById<EditText>(R.id.koreanNameEdit)
         val birthdayEdit = currentView.findViewById<EditText>(R.id.birthdayEdit)
@@ -129,6 +277,15 @@ class OnBoardingActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         }
 
+        //생일 입력시 드르륵 하게 하는
+        birthdayEdit.isFocusable = false
+        birthdayEdit.isClickable = true
+        birthdayEdit.setOnClickListener {
+            showDatePickerDialog(birthdayEdit)
+        }
+
+        lastNameEdit.addTextChangedListener(toUpperFilter)
+        firstNameEdit.addTextChangedListener(toUpperFilter)
         koreanNameEdit.addTextChangedListener(watcher)
         birthdayEdit.addTextChangedListener(watcher)
         lastNameEdit.addTextChangedListener(watcher)
@@ -151,6 +308,8 @@ class OnBoardingActivity : AppCompatActivity() {
         binding.nextButton.setBackgroundResource(
             if (allFilled) R.drawable.next_big_but else R.drawable.next_big_but_non
         )
+
+
     }
 
     private fun setupIndicator() {
@@ -189,4 +348,130 @@ class OnBoardingActivity : AppCompatActivity() {
             }
         }
     }
+
+    //드르륵
+    private fun showDatePickerDialog(targetEditText: EditText) {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(
+            this@OnBoardingActivity,
+            android.R.style.Theme_Holo_Light_Dialog, // spinner 스타일 테마
+            { _, year, monthOfYear, dayOfMonth ->
+                val monthNames = listOf(
+                    "1월/Jan", "2월/Feb", "3월/Mar", "4월/Apr", "5월/May", "6월/Jun",
+                    "7월/Jul", "8월/Aug", "9월/Sep", "10월/Oct", "11월/Nov", "12월/Dec"
+                )
+                val dayStr = "%02d".format(dayOfMonth)
+                val birthFormatted = "$dayStr ${monthNames[monthOfYear]} $year"
+                targetEditText.setText(birthFormatted)
+
+            },
+            year, month, day
+        )
+        datePickerDialog.show()
+
+    }
+
+    private fun sendJoinRequest(imageUrl: String) {
+        val currentView = (binding.onboardingViewPager.getChildAt(0) as? RecyclerView)
+            ?.findViewHolderForAdapterPosition(4)?.itemView ?: return
+
+        val koreanName = currentView.findViewById<EditText>(R.id.koreanNameEdit).text.toString()
+        val birthday = currentView.findViewById<EditText>(R.id.birthdayEdit).text.toString()
+        val lastName = currentView.findViewById<EditText>(R.id.lastNameEngEdit).text.toString()
+        val firstName = currentView.findViewById<EditText>(R.id.firstNameEngEdit).text.toString()
+
+        val request = JoinRequest(
+            kakaoId= "4317757086", // 실제 카카오 ID로 교체
+            profileImageUrl = imageUrl,
+            surName = lastName,
+            firstName = firstName,
+            koreanName = koreanName,
+            birth = birthday,
+            nationality = "REPUBLIC OF KOREA"
+        )
+        Log.d("회원가입", "요청 보냄: $koreanName / $birthday / $imageUrl/ $lastName / $firstName ")
+
+
+        ApiProvider.api.join(request).enqueue(object : Callback<UserResponse> {
+            override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
+                if (response.isSuccessful) {
+                    val user = response.body()
+                    // user.profileImageUrl 등 사용 가능
+                    PreferenceManager.setOnboardingShown(this@OnBoardingActivity)
+                    startActivity(Intent(this@OnBoardingActivity, MainActivity::class.java))
+                    finish()
+                    Log.d("로그/업로드", "응답 코드: ${response.code()}")
+
+
+                } else {
+                    Log.e("회원가입 실패", "응답 코드: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(call: Call<UserResponse>, t: Throwable) {
+                Log.e("회원가입 실패", t.message ?: "unknown error")
+            }
+        })
+
+    }
+
+    private fun getRealPathFromUri(uri: Uri): String {
+        val projection = arrayOf(android.provider.MediaStore.Images.Media.DATA)
+        contentResolver.query(uri, projection, null, null, null).use { cursor ->
+            if (cursor != null && cursor.moveToFirst()) {
+                val columnIndex = cursor.getColumnIndexOrThrow(android.provider.MediaStore.Images.Media.DATA)
+                return cursor.getString(columnIndex)
+            }
+        }
+        throw IllegalArgumentException("이미지 경로를 가져올 수 없습니다.")
+    }
+
+    private fun uploadProfileImage(imageFile: File, callback: (String?) -> Unit) {
+        val requestFile = imageFile.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+        val body = MultipartBody.Part.createFormData("file", imageFile.name, requestFile)
+
+        ApiProvider.api.uploadFile("profile", body)
+            .enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(
+                    call: Call<ResponseBody>,
+                    response: Response<ResponseBody>
+                ) {
+                    if (response.isSuccessful) {
+                        val json = response.body()?.string()
+                        Log.d("프로필 업로드 응답", json ?: "응답 없음")
+
+                        try {
+                            val gson = Gson()
+                            val userResponse = gson.fromJson(json, User::class.java)
+                            val imageUrl = userResponse.profileImageUrl
+                            callback(imageUrl)
+                        } catch (e: Exception) {
+                            Log.e("파싱 실패", e.message ?: "unknown error")
+                            callback(null)
+                        }
+                    } else {
+                        Log.e("프로필 업로드 실패", "응답 코드: ${response.code()}")
+                        callback(null)
+                    }
+                }
+
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    Log.e("프로필 업로드 오류", t.message ?: "알 수 없음")
+                    callback(null)
+                }
+            })
+
+    }
+
+
+
+
+
 }
+
+
+
