@@ -453,10 +453,11 @@ class OnBoardingActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val user = response.body()
 
-                    user?.user?.userId?.let {
-                        UserSession.userId = it
-                        UserSession.saveToPreferences(this@OnBoardingActivity)
-                    }
+                    // userId update하는 부분
+//                    user?.user?.userId?.let {
+//                        UserSession.userId = it
+//                        UserSession.saveToPreferences(this@OnBoardingActivity)
+//                    }
 
                     Log.d("response.body().toString()", response.body().toString())
 
