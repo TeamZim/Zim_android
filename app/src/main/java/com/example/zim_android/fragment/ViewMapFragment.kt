@@ -233,6 +233,7 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
                     override fun onResponse(call: Call<Void>, response: Response<Void>) {
                         if (response.isSuccessful) {
                             Log.d("저장 성공", "방문 국가 저장 완료")
+                            fetchVisitedCountries() // 저장 후 지도 갱신
                         } else {
                             Log.e("저장 실패", "응답 코드: ${response.code()}")
                         }
