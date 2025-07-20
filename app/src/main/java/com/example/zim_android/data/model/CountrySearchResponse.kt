@@ -8,4 +8,12 @@ data class CountrySearchResponse (
     override fun toString(): String {
         return countryName
     }
+
+    override fun equals(other: Any?): Boolean {
+        return other is CountrySearchResponse && other.countryName == this.countryName
+    }
+
+    override fun hashCode(): Int {
+        return countryName.hashCode()
+    }
 }

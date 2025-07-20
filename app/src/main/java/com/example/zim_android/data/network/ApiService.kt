@@ -2,6 +2,8 @@ package com.example.zim_android.data.network
 
 import com.example.zim_android.data.model.*
 import com.example.zim_android.fragment.ViewMapFragment
+import com.example.zim_android.fragment.ViewMapFragment.CountrySearchListResponse
+//import com.example.zim_android.fragment.ViewMapFragment.CountrySearchListResponse
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -112,7 +114,7 @@ interface ApiService {
     // 국가 관리 API
     // 국가 검색
     @GET("/api/countries/search")
-    fun searchCountry(@Query("keyword") keyword: String): Call<List<CountrySearchResponse>>
+    fun searchCountry(@Query("keyword") keyword: String): Call<CountrySearchListResponse>
 
     // 방문 국가 저장
     @POST("/api/countries/{userId}")

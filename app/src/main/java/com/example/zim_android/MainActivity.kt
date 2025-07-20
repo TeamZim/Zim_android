@@ -47,16 +47,10 @@ class MainActivity : AppCompatActivity() {
             gotoFragmentName = null
         }
     }
-
-
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         handleNavigationIntent(intent)
     }
-
-
-
-
 
 }
 
