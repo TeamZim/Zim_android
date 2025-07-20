@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.PopupWindow
@@ -366,11 +367,16 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
 
 
         val popupWindow = PopupWindow(
-            dropdownBinding.root, // 여기 중요
+            dropdownBinding.root,
             editText.width,
             ViewGroup.LayoutParams.WRAP_CONTENT,
-            true
-        )
+            false
+        ).apply {
+            isOutsideTouchable = true
+            isFocusable = false
+            inputMethodMode = PopupWindow.INPUT_METHOD_NEEDED
+            softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+        }
 
         val textWatcher = object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {}
