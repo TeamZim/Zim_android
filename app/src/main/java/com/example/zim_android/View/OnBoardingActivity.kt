@@ -20,7 +20,6 @@ import com.example.zim_android.MainActivity
 import com.example.zim_android.PreferenceManager
 import com.example.zim_android.R
 import com.example.zim_android.databinding.ActivityOnboardingBinding
-import java.util.Calendar
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
@@ -39,9 +38,15 @@ import com.example.zim_android.data.network.ApiProvider
 import com.example.zim_android.data.model.UserResponse
 import com.google.gson.Gson
 import okhttp3.ResponseBody
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+
 
 
 class OnBoardingActivity : AppCompatActivity() {
+    private lateinit var savedBirthForApi: String
+
 
     companion object {
         private const val REQUEST_CODE_PICK_IMAGE = 1001
@@ -358,19 +363,31 @@ class OnBoardingActivity : AppCompatActivity() {
 
         val datePickerDialog = DatePickerDialog(
             this@OnBoardingActivity,
-            android.R.style.Theme_Holo_Light_Dialog, // spinner 스타일 테마
+            android.R.style.Theme_Holo_Light_Dialog,
             { _, year, monthOfYear, dayOfMonth ->
+
+                // 1. UI에 보이는 예쁜 포맷
                 val monthNames = listOf(
                     "1월/Jan", "2월/Feb", "3월/Mar", "4월/Apr", "5월/May", "6월/Jun",
                     "7월/Jul", "8월/Aug", "9월/Sep", "10월/Oct", "11월/Nov", "12월/Dec"
                 )
                 val dayStr = "%02d".format(dayOfMonth)
-                val birthFormatted = "$dayStr ${monthNames[monthOfYear]} $year"
-                targetEditText.setText(birthFormatted)
+                val birthFormattedForDisplay = "$dayStr ${monthNames[monthOfYear]} $year"
+                targetEditText.setText(birthFormattedForDisplay)
+
+                // 2. 서버에 보낼 ISO 포맷
+                val calendar = Calendar.getInstance()
+                calendar.set(year, monthOfYear, dayOfMonth)
+                val serverFormat = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA)
+                val birthFormattedForServer = serverFormat.format(calendar.time)
+
+                // 3. 서버에 보낼 값 따로 저장해두기 (예: 전역 변수에 저장)
+                savedBirthForApi = birthFormattedForServer // 예: lateinit var savedBirthForApi: String
 
             },
             year, month, day
         )
+
         datePickerDialog.show()
 
     }
@@ -385,14 +402,15 @@ class OnBoardingActivity : AppCompatActivity() {
         val firstName = currentView.findViewById<EditText>(R.id.firstNameEngEdit).text.toString()
 
         val request = JoinRequest(
-            kakaoId= "4317757086", // 실제 카카오 ID로 교체
+            kakaoId = "1", // 문자열이므로 타입 일치 OK
             profileImageUrl = imageUrl,
             surName = lastName,
             firstName = firstName,
             koreanName = koreanName,
-            birth = birthday,
+            birth = savedBirthForApi,
             nationality = "REPUBLIC OF KOREA"
         )
+
         Log.d("회원가입", "요청 보냄: $koreanName / $birthday / $imageUrl/ $lastName / $firstName ")
 
 
@@ -400,10 +418,13 @@ class OnBoardingActivity : AppCompatActivity() {
             override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
                 if (response.isSuccessful) {
                     val user = response.body()
-                    // user.profileImageUrl 등 사용 가능
-                    PreferenceManager.setOnboardingShown(this@OnBoardingActivity)
-                    startActivity(Intent(this@OnBoardingActivity, MainActivity::class.java))
-                    finish()
+                    // ✅ ViewPager를 5페이지로 이동
+                    binding.onboardingViewPager.currentItem = 5
+
+                    // ✅ 온보딩 표시 여부 저장은 여기서 하지 않음 (사용자가 "시작하기" 눌러야 저장)
+                    // PreferenceManager.setOnboardingShown(this@OnBoardingActivity)
+                    // startActivity(Intent(this@OnBoardingActivity, MainActivity::class.java))
+                    // finish()
                     Log.d("로그/업로드", "응답 코드: ${response.code()}")
 
 
