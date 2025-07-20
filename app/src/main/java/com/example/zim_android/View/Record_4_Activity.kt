@@ -36,6 +36,7 @@ import com.example.zim_android.data.network.ApiProvider
 import com.example.zim_android.data.network.DiaryTempStore.city
 import com.example.zim_android.data.network.DiaryTempStore.countryCode
 import com.example.zim_android.data.network.DiaryTempStore.detailedLocation
+import com.example.zim_android.data.network.UserSession
 import com.example.zim_android.databinding.DialogSelectEmotionColorBinding
 import com.example.zim_android.databinding.DialogSelectWeatherBinding
 import com.example.zim_android.databinding.Record4Binding
@@ -69,7 +70,7 @@ class Record_4_Activity : AppCompatActivity() {
     private var representIndex: Int = 0 // 이미 너가 갖고 있음
     private var tripId: Int = 0 // 전달받아서 저장해두기
 
-    val userId = 1 // 임시로 테스트할 userId
+    val userId = UserSession.userId // 임시로 테스트할 userId
 
     //감정색 기본 세팅
     private var selectedEmotionColorCode: String = "#D9D9D9"

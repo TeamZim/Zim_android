@@ -25,8 +25,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="테마명"
+        android:textColor="#817F7C"
+        android:textSize="20sp"
+        android:fontFamily="@font/nanum_neuris"
         app:layout_constraintBottom_toBottomOf="@+id/theme_btn_img"
         app:layout_constraintEnd_toEndOf="@+id/theme_btn_img"
         app:layout_constraintStart_toStartOf="@+id/theme_btn_img"
         app:layout_constraintTop_toTopOf="@+id/theme_btn_img" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

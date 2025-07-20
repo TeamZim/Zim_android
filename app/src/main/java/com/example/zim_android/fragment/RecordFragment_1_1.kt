@@ -60,7 +60,7 @@ class RecordFragment_1_1: Fragment(R.layout.record_1_1_fragment) {
         super.onViewCreated(view, savedInstanceState)
 
         PreferenceUtil.setUserId(requireContext(), 1)
-        UserSession.userId = 1
+//        UserSession.userId = 1
 
         // ✅ 여행 목록 중 가장 최신 tripId 설정
         api.getTripsByUser(UserSession.userId ?: 1).enqueue(object : Callback<List<TripResponse>> {

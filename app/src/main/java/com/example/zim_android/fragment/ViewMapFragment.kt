@@ -28,6 +28,7 @@ import com.example.zim_android.databinding.ViewMapDialog1Binding
 import com.example.zim_android.databinding.ViewMapFragmentBinding
 import com.example.zim_android.util.PreferenceUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.zim_android.data.network.UserSession
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -36,7 +37,7 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
 
     private val visitedCountriesDynamic = mutableListOf<VisitedCountryResponse>()
 
-    val userId = 1 // 임시로 테스트할 userId
+    val userId = UserSession.userId ?: 1 // 임시로 테스트할 userId
 //    var suppressDropdown = false
 
     // 나라별로 저장된 색상
@@ -110,7 +111,6 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
 
 
     private fun fetchVisitedCountries() {
-        val userId = 1
         Log.d("API 호출", "userId = $userId")
         api.getVisitedCountries(userId).enqueue(object : Callback<VisitedCountryListResponse> {
             override fun onResponse(
@@ -226,7 +226,7 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
                     countryCode = selectedCountryCode,
                     emotionId = selectedEmotionId
                 )
-                val userId = PreferenceUtil.getUserId(requireContext())
+                // val userId = PreferenceUtil.getUserId(requireContext())
 
                 // 백엔드에 저장
                 api.addVisitedCountry(userId, request).enqueue(object : Callback<Void> {

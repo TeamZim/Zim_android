@@ -7,33 +7,24 @@
     android:background="?android:windowBackground">
 
     <include
-        android:id="@+id/common_header"
-        layout="@layout/common_header" />
+        android:id="@+id/back_btn_header"
+        layout="@layout/back_btn_header" />
 
     <ImageView
         android:id="@+id/frame_img"
         android:layout_width="350dp"
         android:layout_height="579dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/rectangle_1" />
 
-    <ImageView
-        android:id="@+id/back_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="22dp"
-        android:layout_marginTop="45dp"
-        app:layout_constraintStart_toStartOf="@+id/frame_img"
-        app:layout_constraintTop_toTopOf="@+id/frame_img"
-        app:srcCompat="@drawable/angle_bracket" />
-
     <TextView
         android:id="@+id/title_text"
         android:layout_width="wrap_content"
-        android:layout_height="25dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
         android:layout_marginTop="40dp"
         android:fontFamily="@font/nanum_neuris"
@@ -48,7 +39,7 @@
         android:id="@+id/linearLayout"
         android:layout_width="305dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="39dp"
+        android:layout_marginTop="30dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="@+id/frame_img"
         app:layout_constraintStart_toStartOf="@+id/frame_img"
@@ -81,6 +72,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/trip_title_title"
                 style="@style/CustomTextInputLayout"
+                app:counterTextColor="@color/primary_500"
                 app:counterMaxLength="14">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -89,12 +81,14 @@
                     android:layout_height="28dp"
                     android:fontFamily="@font/nanum_neuris"
                     android:background="@android:color/transparent"
+                    android:textColorHint="@color/unselected"
                     android:hint="여행명을 입력하세요."
                     android:inputType="text"
                     android:maxLength="14"
                     android:paddingTop="0dp"
                     android:paddingStart="0dp"
                     android:paddingBottom="0dp"
+                    android:textColor="@color/primary_700"
                     android:textSize="18sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -115,7 +109,7 @@
         <TextView
             android:id="@+id/trip_description_title"
             android:layout_width="match_parent"
-            android:layout_height="26dp"
+            android:layout_height="wrap_content"
             android:fontFamily="@font/nanum_neuris"
             android:text="여행 설명"
             android:textColor="@color/primary_700"
@@ -126,9 +120,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/CustomTextInputLayout"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="5dp"
             app:counterEnabled="true"
             app:hintEnabled="false"
+            app:counterTextColor="@color/primary_500"
             app:counterMaxLength="54">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -136,17 +131,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="83dp"
                 android:background="@drawable/textinput_frame"
-                android:gravity="top|start"
-                android:inputType="textMultiLine"
-                android:hint="여행에 대한 설명을 입력하세요."
                 android:fontFamily="@font/nanum_neuris"
-                android:textSize="18sp"
-                android:lines="3"
+                android:gravity="top|start"
+                android:hint="여행에 대한 설명을 입력하세요."
                 android:maxLength="54"
                 android:maxLines="2"
-                android:minLines="1"
-                android:padding="16dp" />
-            />
+                android:minLines="2"
+                android:padding="16dp"
+                android:textColor="@color/primary_700"
+                android:textColorHint="@color/unselected"
+                android:scrollHorizontally="false"
+                android:textSize="18sp" />
+
         </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -157,6 +153,7 @@
             android:fontFamily="@font/nanum_neuris"
             android:text="카드 테마 설정"
             android:textColor="@color/primary_700"
+            android:layout_marginTop="-3dp"
             android:textSize="26sp" />
 
 
@@ -200,13 +197,15 @@
         android:id="@+id/save_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:clickable="false"
+        app:layout_constraintBottom_toBottomOf="@+id/frame_img"
         app:layout_constraintEnd_toEndOf="@+id/frame_img"
         app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="@+id/frame_img"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        app:srcCompat="@drawable/create_trip_brn_unactive" />
+        app:srcCompat="@drawable/create_trip_brn_unactive"
+        android:layout_marginBottom="26dp"
+
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

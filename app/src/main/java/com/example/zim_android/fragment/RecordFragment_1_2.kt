@@ -52,7 +52,7 @@ class RecordFragment_1_2: Fragment(R.layout.record_1_2_fragment){
 
         // 입력 감지 함수
         setupTextWatchers()
-        binding.commonHeader.tvTitle.text = "기록하기"
+        binding.backBtnHeader.tvTitle.text = "기록하기"
 
         // root에 포커스 해제 설정
         binding.root.setOnTouchListener { _, event ->
@@ -66,7 +66,7 @@ class RecordFragment_1_2: Fragment(R.layout.record_1_2_fragment){
         // clearFocusAndHideKeyboard()
 
         // 이전 화면으로 돌아가기
-        binding.backBtn.setOnClickListener {
+        binding.backBtnHeader.backBtn.setOnClickListener {
             DiaryTempStore.clear() // 저장되어있던 임시 일기 정보들 초기화
             findNavController().navigate(R.id.action_recordFragment_1_2_to_recordFragment_1_1)
         }

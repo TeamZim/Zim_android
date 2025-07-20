@@ -33,9 +33,13 @@ import retrofit2.Callback
 import retrofit2.Response
 import android.net.Uri
 import android.util.Log
+import com.example.zim_android.data.model.KakaoLoginRequest
+import com.example.zim_android.data.model.KakaoLoginResponse
 import com.example.zim_android.data.model.User
 import com.example.zim_android.data.network.ApiProvider
 import com.example.zim_android.data.model.UserResponse
+import com.example.zim_android.data.network.ApiProvider.api
+import com.example.zim_android.data.network.UserSession
 import com.google.gson.Gson
 import okhttp3.ResponseBody
 import java.text.SimpleDateFormat
@@ -46,9 +50,6 @@ import com.kakao.sdk.user.UserApiClient
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 
-
-
-
 class OnBoardingActivity : AppCompatActivity() {
 
     private lateinit var savedBirthForApi: String
@@ -56,6 +57,8 @@ class OnBoardingActivity : AppCompatActivity() {
         private const val REQUEST_CODE_PICK_IMAGE = 1001
     }
 
+    private var userKakaoId: String = ""
+    private var userKakaoImgUrl: String = ""
 
 
     private lateinit var binding: ActivityOnboardingBinding
@@ -82,11 +85,21 @@ class OnBoardingActivity : AppCompatActivity() {
         setupIndicator()
         setCurrentIndicator(0)
 
+//        UserApiClient.instance.unlink { error ->
+//            if (error != null) {
+//                Log.e("카카오 연결 끊기 실패", error.toString())
+//            } else {
+//                Log.i("카카오 연결 끊기", "성공적으로 연결 해제됨")
+//                // ✅ 연결 해제 후 앱 초기 화면으로 이동 (예: SplashActivity)
+//                // val intent = Intent(requireContext(), SplashActivity::class.java)
+//                // intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//                // startActivity(intent)
+//            }
+//        }
+
         binding.onboardingViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 setCurrentIndicator(position)
-
-
 
                 // ✅ 입력 안 끝났으면 스와이프 막기
                 binding.onboardingViewPager.isUserInputEnabled = when (position) {
@@ -148,42 +161,46 @@ class OnBoardingActivity : AppCompatActivity() {
 
                 if (!allFilled) return@setOnClickListener // 👉 입력 안되면 클릭 무시
 
-
                 val imageView = currentView.findViewById<ImageView>(R.id.photoUploadBackground)
-                val imageUri = imageView.tag as? Uri ?: return@setOnClickListener
+                val imageTag = imageView.tag
 
-                val filePath = getRealPathFromUri(imageUri)
-                val imageFile = File(filePath)
-                val requestFile = imageFile.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-                val multipart = MultipartBody.Part.createFormData("file", imageFile.name, requestFile)
+                when {
+                    imageTag is Uri -> {
+                            // 사용자가 업로드한 이미지이므로 서버에 파일 업로드 → URL 받아서 회원가입 요청
+                            val filePath = getRealPathFromUri(imageTag)
+                            val imageFile = File(filePath)
+                            val requestFile = imageFile.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+                            val multipart = MultipartBody.Part.createFormData("file", imageFile.name, requestFile)
 
-                ApiProvider.api.uploadFile("profile", multipart)
-                    .enqueue(object : Callback<ResponseBody> {
-                        override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                            if (response.isSuccessful) {
-                                val rawJson = response.body()?.string()
-                                Log.d("업로드 응답", rawJson ?: "null")
+                            api.uploadFile("profile", multipart)
+                                .enqueue(object : Callback<ResponseBody> {
+                                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                                        if (response.isSuccessful) {
+                                            val rawJson = response.body()?.string()
+                                            val uploadedUrl = rawJson?.replace("\"", "") ?: return
+                                            sendJoinRequest(uploadedUrl)
+                                        } else {
+                                            Log.e("이미지 업로드 실패", "응답 코드: ${response.code()}")
+                                        }
+                                    }
 
-                                try {
-                                    val imageUrl = rawJson?.replace("\"", "") ?: return
-                                    sendJoinRequest(imageUrl)
-                                } catch (e: Exception) {
-                                    Log.e("파싱 오류", e.message ?: "unknown error")
-                                }
+                                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                                        Log.e("이미지 업로드 실패", t.message ?: "Unknown error")
+                                    }
+                                })
+                    }
 
-                            } else {
-                                Log.e("이미지 업로드 실패", "서버 응답 오류: ${response.code()}")
-                            }
-                        }
+                    imageTag is String && imageTag.isNotBlank() -> {
+                        // 카카오 URL 정상인 경우만
+                        sendJoinRequest(imageTag)
+                    }
 
-                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                            Log.e("이미지 업로드 실패", t.message ?: "unknown error")
-                        }
-                    })
-
-
-
-                return@setOnClickListener
+                    else -> {
+                        // 이미지가 없거나 ""이거나 잘못된 경우
+                        Log.e("회원가입 실패", "이미지 없음 또는 잘못된 URL")
+                        return@setOnClickListener
+                    }
+                }
             }
 
             // 페이지 이동
@@ -301,7 +318,7 @@ class OnBoardingActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         }
 
-        //생일 입력시 드르륵 하게 하는
+        // 생일 입력시 드르륵 하게 하는
         birthdayEdit.isFocusable = false
         birthdayEdit.isClickable = true
         birthdayEdit.setOnClickListener {
@@ -421,7 +438,7 @@ class OnBoardingActivity : AppCompatActivity() {
         val firstName = currentView.findViewById<EditText>(R.id.firstNameEngEdit).text.toString()
 
         val request = JoinRequest(
-            kakaoId= "43177571326", // 실제 카카오 ID로 교체
+            kakaoId= userKakaoId, // 실제 카카오 ID로 교체
             profileImageUrl = imageUrl,
             surName = lastName,
             firstName = firstName,
@@ -431,11 +448,19 @@ class OnBoardingActivity : AppCompatActivity() {
         )
         Log.d("회원가입", "요청 보냄: $koreanName / $savedBirthForApi / $imageUrl / $lastName / $firstName ")
 
-
-        ApiProvider.api.join(request).enqueue(object : Callback<UserResponse> {
+        api.join(request).enqueue(object : Callback<UserResponse> {
             override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
                 if (response.isSuccessful) {
                     val user = response.body()
+
+                    // userId update하는 부분
+//                    user?.user?.userId?.let {
+//                        UserSession.userId = it
+//                        UserSession.saveToPreferences(this@OnBoardingActivity)
+//                    }
+
+                    Log.d("response.body().toString()", response.body().toString())
+
                     // ✅ ViewPager를 5페이지로 이동
                     binding.onboardingViewPager.currentItem = 5
 
@@ -469,42 +494,42 @@ class OnBoardingActivity : AppCompatActivity() {
         throw IllegalArgumentException("이미지 경로를 가져올 수 없습니다.")
     }
 
-    private fun uploadProfileImage(imageFile: File, callback: (String?) -> Unit) {
-        val requestFile = imageFile.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-        val body = MultipartBody.Part.createFormData("file", imageFile.name, requestFile)
-
-        ApiProvider.api.uploadFile("profile", body)
-            .enqueue(object : Callback<ResponseBody> {
-                override fun onResponse(
-                    call: Call<ResponseBody>,
-                    response: Response<ResponseBody>
-                ) {
-                    if (response.isSuccessful) {
-                        val json = response.body()?.string()
-                        Log.d("프로필 업로드 응답", json ?: "응답 없음")
-
-                        try {
-                            val gson = Gson()
-                            val userResponse = gson.fromJson(json, User::class.java)
-                            val imageUrl = userResponse.profileImageUrl
-                            callback(imageUrl)
-                        } catch (e: Exception) {
-                            Log.e("파싱 실패", e.message ?: "unknown error")
-                            callback(null)
-                        }
-                    } else {
-                        Log.e("프로필 업로드 실패", "응답 코드: ${response.code()}")
-                        callback(null)
-                    }
-                }
-
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                    Log.e("프로필 업로드 오류", t.message ?: "알 수 없음")
-                    callback(null)
-                }
-            })
-
-    }
+//    private fun uploadProfileImage(imageFile: File, callback: (String?) -> Unit) {
+//        val requestFile = imageFile.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+//        val body = MultipartBody.Part.createFormData("file", imageFile.name, requestFile)
+//
+//        api.uploadFile("profile", body)
+//            .enqueue(object : Callback<ResponseBody> {
+//                override fun onResponse(
+//                    call: Call<ResponseBody>,
+//                    response: Response<ResponseBody>
+//                ) {
+//                    if (response.isSuccessful) {
+//                        val json = response.body()?.string()
+//                        Log.d("프로필 업로드 응답", json ?: "응답 없음")
+//
+//                        try {
+//                            val gson = Gson()
+//                            val userResponse = gson.fromJson(json, User::class.java)
+//                            val imageUrl = userResponse.profileImageUrl
+//                            callback(imageUrl)
+//                        } catch (e: Exception) {
+//                            Log.e("파싱 실패", e.message ?: "unknown error")
+//                            callback(null)
+//                        }
+//                    } else {
+//                        Log.e("프로필 업로드 실패", "응답 코드: ${response.code()}")
+//                        callback(null)
+//                    }
+//                }
+//
+//                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+//                    Log.e("프로필 업로드 오류", t.message ?: "알 수 없음")
+//                    callback(null)
+//                }
+//            })
+//
+//    }
 
     private fun startKakaoLogin() {
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
@@ -512,70 +537,62 @@ class OnBoardingActivity : AppCompatActivity() {
                 Log.e("카카오 로그인", "카카오계정으로 로그인 실패", error)
             } else if (token != null) {
                 Log.i("카카오 로그인", "로그인 성공 ${token.accessToken}")
-                // ✅ 카카오 사용자 정보 요청
-                UserApiClient.instance.me { user, meError ->
-                    if (meError != null) {
-                        Log.e("카카오 사용자 정보", "사용자 정보 요청 실패", meError)
-                    } else if (user != null) {
-                        val imageUrl = user.kakaoAccount?.profile?.profileImageUrl
-                        Log.d("카카오 사용자 정보", "프로필 이미지 URL: $imageUrl")
 
-                        if (!imageUrl.isNullOrBlank()) {
-                            showKakaoProfileImageOnPage4(imageUrl)
+                //  1. accessToken으로 서버에 로그인 요청
+                val request = KakaoLoginRequest(token.accessToken)
+
+                api.kakaoLogin(request).enqueue(object : Callback<KakaoLoginResponse> {
+                    override fun onResponse(
+                        call: Call<KakaoLoginResponse>,
+                        response: Response<KakaoLoginResponse>
+                    ) {
+                        if (response.isSuccessful) {
+                            val loginResult = response.body()
+                            Log.d("서버 로그인 성공", "registered=${loginResult?.registered}, kakaoId=${loginResult?.kakaoId}, profileImageUrl=${loginResult?.profileImageUrl}")
+                            userKakaoId = loginResult?.kakaoId ?: ""
+                            userKakaoImgUrl = loginResult?.profileImageUrl ?: ""
+
+                            // 로그인 성공 후 처리
+                            if (loginResult?.registered == false) {
+                                startActivity(Intent(this@OnBoardingActivity, MainActivity::class.java))
+                                finish()
+                            } else {
+                                // 회원가입인 경우 처리
+                                binding.onboardingViewPager.currentItem = 4
+                                // post로 처리 안하면 비동기로 올라가서 사진이 안 올라감. 반드시 post 써야함.
+                                binding.onboardingViewPager.post {
+                                    showKakaoProfileImageOnPage4(userKakaoImgUrl)
+                                }
+                                Log.d("서버 로그인", "미가입자입니다.")
+                            }
+                        } else {
+                            Log.e("서버 로그인 실패", "code=${response.code()}")
                         }
                     }
-                }
 
-                binding.onboardingViewPager.currentItem = 4
+                    override fun onFailure(call: Call<KakaoLoginResponse>, t: Throwable) {
+                        Log.e("서버 로그인 실패", t.message ?: "Unknown error")
+                    }
+                })
             }
         }
 
         if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
-            // 카카오톡으로 로그인 시도
             UserApiClient.instance.loginWithKakaoTalk(
                 context = this@OnBoardingActivity,
                 callback = { token, error ->
                     if (error != null) {
-                        Log.e("카카오 로그인", "카카오톡 로그인 실패", error)
-
-                        if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
-                            // 사용자가 로그인 취소한 경우
-                            return@loginWithKakaoTalk
-                        }
-
-                        // 카카오톡 로그인 실패 → 계정 로그인으로 재시도
-                        UserApiClient.instance.loginWithKakaoAccount(
-                            context = this@OnBoardingActivity,
-                            callback = callback
-                        )
+                        if (error is ClientError && error.reason == ClientErrorCause.Cancelled) return@loginWithKakaoTalk
+                        UserApiClient.instance.loginWithKakaoAccount(context = this@OnBoardingActivity, callback = callback)
                     } else if (token != null) {
-                        Log.i("카카오 로그인", "카카오톡 로그인 성공 ${token.accessToken}")
-                        UserApiClient.instance.me { user, meError ->
-                            if (meError != null) {
-                                Log.e("카카오 사용자 정보", "사용자 정보 요청 실패", meError)
-                            } else if (user != null) {
-                                val imageUrl = user.kakaoAccount?.profile?.profileImageUrl
-                                Log.d("카카오 사용자 정보", "프로필 이미지 URL: $imageUrl")
-
-                                if (!imageUrl.isNullOrBlank()) {
-                                    showKakaoProfileImageOnPage4(imageUrl)
-                                }
-                            }
-                        }
-
-                        binding.onboardingViewPager.currentItem = 4
+                        callback(token, null) // ✅ 토큰 처리 콜백 재사용
                     }
                 }
             )
         } else {
-            // 카카오톡이 없으면 계정 로그인
-            UserApiClient.instance.loginWithKakaoAccount(
-                context = this@OnBoardingActivity,
-                callback = callback
-            )
+            UserApiClient.instance.loginWithKakaoAccount(context = this@OnBoardingActivity, callback = callback)
         }
     }
-
 
     private fun showKakaoProfileImageOnPage4(imageUrl: String) {
         val currentView = (binding.onboardingViewPager.getChildAt(0) as? RecyclerView)
@@ -586,17 +603,24 @@ class OnBoardingActivity : AppCompatActivity() {
         val cancelBtn = currentView.findViewById<ImageButton>(R.id.cancelImage)
         val uploadImage = currentView.findViewById<ImageView>(R.id.photoUploadBackground)
 
-        // 기본 아이콘 숨기고 이미지 표시
-        uploadIcon.visibility = View.GONE
-        uploadText.visibility = View.GONE
-        cancelBtn.visibility = View.VISIBLE
-        uploadImage.visibility = View.VISIBLE
+        Log.d("imageUrl.isNullOrBlank()", imageUrl.isNullOrBlank().toString())
+        Log.d("imageUrl", imageUrl)
 
-        // Glide로 이미지 표시
-        Glide.with(this)
-            .load(imageUrl)
-            .apply(RequestOptions().centerCrop().transform(RoundedCorners(32)))
-            .into(uploadImage)
+        if (!imageUrl.isNullOrBlank()) {
+            Log.d("imageUrl.isNullOrBlank()", imageUrl.isNullOrBlank().toString())
+            // 기본 아이콘 숨기고 이미지 표시
+            uploadIcon.visibility = View.GONE
+            uploadText.visibility = View.GONE
+            cancelBtn.visibility = View.VISIBLE
+            uploadImage.visibility = View.VISIBLE
+
+            // Glide로 이미지 표시
+            Glide.with(this)
+                .load(imageUrl)
+                .apply(RequestOptions().centerCrop().transform(RoundedCorners(32)))
+                .into(uploadImage)
+        }
+
 
         // 업로드 취소 기능
         cancelBtn.setOnClickListener {
@@ -612,8 +636,6 @@ class OnBoardingActivity : AppCompatActivity() {
         Log.d("카카오 사용자 이미지", "imageUrl: $imageUrl")
 
     }
-
-
 
 }
 

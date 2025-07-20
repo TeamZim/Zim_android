@@ -12,9 +12,9 @@
     <TextView
         android:id="@+id/tv_title"
         android:text="타이틀"
-        android:textSize="22sp"
-        android:textStyle="bold"
+        android:textSize="26sp"
         android:textColor="#23241B"
+        android:fontFamily="@font/nanum_neuris"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
