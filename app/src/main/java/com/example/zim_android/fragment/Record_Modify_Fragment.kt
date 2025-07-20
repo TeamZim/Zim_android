@@ -55,7 +55,7 @@ class Record_Modify_Fragment : Fragment(R.layout.record_modify) {
     lateinit var themeAdapter: DialogThemeSelectAdapter
 
 
-    val userId = UserSession.userId ?: 1
+    val userId = UserSession.userId ?: 6
     // 사용자 ID
     //아직 카카오로그인이 안된 상태라 노션에 적혀진 1로 하긴 했는데 나중에 카카오로그인 후에 수정필요
 

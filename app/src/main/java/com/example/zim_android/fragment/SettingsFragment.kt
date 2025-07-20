@@ -1,5 +1,6 @@
 package com.example.zim_android.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,6 +16,7 @@ import com.example.zim_android.data.network.UserSession
 import com.example.zim_android.databinding.DeleteAccountDialogBinding
 import com.example.zim_android.databinding.MypageDialog1Binding
 import com.example.zim_android.databinding.SettingsFragmentBinding
+import com.kakao.sdk.user.UserApiClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -37,8 +39,8 @@ class SettingsFragment: Fragment(R.layout.settings_fragment){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val userId = UserSession.userId ?: 1
-
+        val userId = UserSession.userId ?: 8
+        Log.d("userId", userId.toString())
         binding.commonHeader.tvTitle.text = "설정"
         binding.commonHeader.exitBtn.visibility = View.VISIBLE
 
@@ -93,6 +95,21 @@ class SettingsFragment: Fragment(R.layout.settings_fragment){
                         Log.d("DeleteAccount", "계정 삭제 성공 - response: ${response.body()}")
                         // TODO("Not yet implemented")
                         // 아예 스플래쉬로 이동해야할 것 같음
+
+                        if (response.isSuccessful) {
+                            // ✅ 카카오 연결 끊기 추가
+                            UserApiClient.instance.unlink { error ->
+                                if (error != null) {
+                                    Log.e("카카오 연결 끊기 실패", error.toString())
+                                } else {
+                                    Log.i("카카오 연결 끊기", "성공적으로 연결 해제됨")
+                                    // ✅ 연결 해제 후 앱 초기 화면으로 이동 (예: SplashActivity)
+                                    // val intent = Intent(requireContext(), SplashActivity::class.java)
+                                    // intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                    // startActivity(intent)
+                                }
+                            }
+                        }
                     }
 
                     override fun onFailure(call: Call<String>, t: Throwable) {

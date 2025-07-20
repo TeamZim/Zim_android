@@ -29,7 +29,7 @@ class MypageFragment: Fragment(R.layout.mypage_fragment){
     private var _binding: MypageFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private val userId = UserSession.userId!!
+    private val userId = UserSession.userId ?: 8
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,6 +53,8 @@ class MypageFragment: Fragment(R.layout.mypage_fragment){
         binding.visitedCountryCountLayer.setOnClickListener {
             showCountryListDialog()
         }
+
+        Log.d("마이페이지", userId.toString())
 
 
         api.getMypage(userId).enqueue(object : Callback<MyPageResponse> {
