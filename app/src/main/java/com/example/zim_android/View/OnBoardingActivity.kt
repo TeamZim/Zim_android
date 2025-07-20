@@ -45,9 +45,8 @@ import java.util.Locale
 
 
 class OnBoardingActivity : AppCompatActivity() {
+
     private lateinit var savedBirthForApi: String
-
-
     companion object {
         private const val REQUEST_CODE_PICK_IMAGE = 1001
     }
@@ -81,6 +80,12 @@ class OnBoardingActivity : AppCompatActivity() {
         binding.onboardingViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 setCurrentIndicator(position)
+
+                // ✅ 입력 안 끝났으면 스와이프 막기
+                binding.onboardingViewPager.isUserInputEnabled = when (position) {
+                    4 -> false  // 4번 페이지에서 잠금
+                    else -> true
+                }
 
                 when (position) {
                     in 0..2 -> {
@@ -402,7 +407,7 @@ class OnBoardingActivity : AppCompatActivity() {
         val firstName = currentView.findViewById<EditText>(R.id.firstNameEngEdit).text.toString()
 
         val request = JoinRequest(
-            kakaoId = "1", // 문자열이므로 타입 일치 OK
+            kakaoId= "43177571326", // 실제 카카오 ID로 교체
             profileImageUrl = imageUrl,
             surName = lastName,
             firstName = firstName,
@@ -410,8 +415,7 @@ class OnBoardingActivity : AppCompatActivity() {
             birth = savedBirthForApi,
             nationality = "REPUBLIC OF KOREA"
         )
-
-        Log.d("회원가입", "요청 보냄: $koreanName / $birthday / $imageUrl/ $lastName / $firstName ")
+        Log.d("회원가입", "요청 보냄: $koreanName / $savedBirthForApi / $imageUrl / $lastName / $firstName ")
 
 
         ApiProvider.api.join(request).enqueue(object : Callback<UserResponse> {
@@ -487,8 +491,6 @@ class OnBoardingActivity : AppCompatActivity() {
             })
 
     }
-
-
 
 
 

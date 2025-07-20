@@ -7,8 +7,8 @@ object PreferenceManager {
     private const val ONBOARDING_KEY = "onboarding_shown"
 
     //이건 온보딩 한번 보면 다시 안 뜨는 코드
-    //fun isOnboardingShown(context: Context): Boolean {
-      //  val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+   // fun isOnboardingShown(context: Context): Boolean {
+        //val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         //return prefs.getBoolean(ONBOARDING_KEY, false)
     //}
 
