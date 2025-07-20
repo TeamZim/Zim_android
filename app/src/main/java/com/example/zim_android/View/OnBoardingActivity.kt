@@ -613,8 +613,6 @@ class OnBoardingActivity : AppCompatActivity() {
 
     }
 
-
-
 }
 
 
