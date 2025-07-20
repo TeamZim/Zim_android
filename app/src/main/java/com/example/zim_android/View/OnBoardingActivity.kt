@@ -85,17 +85,17 @@ class OnBoardingActivity : AppCompatActivity() {
         setupIndicator()
         setCurrentIndicator(0)
 
-        UserApiClient.instance.unlink { error ->
-            if (error != null) {
-                Log.e("카카오 연결 끊기 실패", error.toString())
-            } else {
-                Log.i("카카오 연결 끊기", "성공적으로 연결 해제됨")
-                // ✅ 연결 해제 후 앱 초기 화면으로 이동 (예: SplashActivity)
-                // val intent = Intent(requireContext(), SplashActivity::class.java)
-                // intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                // startActivity(intent)
-            }
-        }
+//        UserApiClient.instance.unlink { error ->
+//            if (error != null) {
+//                Log.e("카카오 연결 끊기 실패", error.toString())
+//            } else {
+//                Log.i("카카오 연결 끊기", "성공적으로 연결 해제됨")
+//                // ✅ 연결 해제 후 앱 초기 화면으로 이동 (예: SplashActivity)
+//                // val intent = Intent(requireContext(), SplashActivity::class.java)
+//                // intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//                // startActivity(intent)
+//            }
+//        }
 
         binding.onboardingViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
