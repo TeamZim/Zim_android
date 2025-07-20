@@ -41,6 +41,11 @@ import okhttp3.ResponseBody
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import com.kakao.sdk.auth.model.OAuthToken
+import com.kakao.sdk.user.UserApiClient
+import com.kakao.sdk.common.model.ClientError
+import com.kakao.sdk.common.model.ClientErrorCause
+
 
 
 
@@ -81,9 +86,11 @@ class OnBoardingActivity : AppCompatActivity() {
             override fun onPageSelected(position: Int) {
                 setCurrentIndicator(position)
 
+
+
                 // ✅ 입력 안 끝났으면 스와이프 막기
                 binding.onboardingViewPager.isUserInputEnabled = when (position) {
-                    4 -> false  // 4번 페이지에서 잠금
+                    3,4 -> false  // 3,4번 페이지에서 잠금
                     else -> true
                 }
 
@@ -114,6 +121,13 @@ class OnBoardingActivity : AppCompatActivity() {
 
         binding.nextButton.setOnClickListener {
             val currentPage = binding.onboardingViewPager.currentItem
+
+
+            // 👉 카카오 로그인 페이지일 때
+            if (currentPage == 3) {
+                startKakaoLogin()
+                return@setOnClickListener
+            }
 
             // 4번 페이지일 경우: 필드 입력 안되면 클릭 무시
             if (currentPage == 4) {
@@ -489,6 +503,113 @@ class OnBoardingActivity : AppCompatActivity() {
                     callback(null)
                 }
             })
+
+    }
+
+    private fun startKakaoLogin() {
+        val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
+            if (error != null) {
+                Log.e("카카오 로그인", "카카오계정으로 로그인 실패", error)
+            } else if (token != null) {
+                Log.i("카카오 로그인", "로그인 성공 ${token.accessToken}")
+                // ✅ 카카오 사용자 정보 요청
+                UserApiClient.instance.me { user, meError ->
+                    if (meError != null) {
+                        Log.e("카카오 사용자 정보", "사용자 정보 요청 실패", meError)
+                    } else if (user != null) {
+                        val imageUrl = user.kakaoAccount?.profile?.profileImageUrl
+                        Log.d("카카오 사용자 정보", "프로필 이미지 URL: $imageUrl")
+
+                        if (!imageUrl.isNullOrBlank()) {
+                            showKakaoProfileImageOnPage4(imageUrl)
+                        }
+                    }
+                }
+
+                binding.onboardingViewPager.currentItem = 4
+            }
+        }
+
+        if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
+            // 카카오톡으로 로그인 시도
+            UserApiClient.instance.loginWithKakaoTalk(
+                context = this@OnBoardingActivity,
+                callback = { token, error ->
+                    if (error != null) {
+                        Log.e("카카오 로그인", "카카오톡 로그인 실패", error)
+
+                        if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
+                            // 사용자가 로그인 취소한 경우
+                            return@loginWithKakaoTalk
+                        }
+
+                        // 카카오톡 로그인 실패 → 계정 로그인으로 재시도
+                        UserApiClient.instance.loginWithKakaoAccount(
+                            context = this@OnBoardingActivity,
+                            callback = callback
+                        )
+                    } else if (token != null) {
+                        Log.i("카카오 로그인", "카카오톡 로그인 성공 ${token.accessToken}")
+                        UserApiClient.instance.me { user, meError ->
+                            if (meError != null) {
+                                Log.e("카카오 사용자 정보", "사용자 정보 요청 실패", meError)
+                            } else if (user != null) {
+                                val imageUrl = user.kakaoAccount?.profile?.profileImageUrl
+                                Log.d("카카오 사용자 정보", "프로필 이미지 URL: $imageUrl")
+
+                                if (!imageUrl.isNullOrBlank()) {
+                                    showKakaoProfileImageOnPage4(imageUrl)
+                                }
+                            }
+                        }
+
+                        binding.onboardingViewPager.currentItem = 4
+                    }
+                }
+            )
+        } else {
+            // 카카오톡이 없으면 계정 로그인
+            UserApiClient.instance.loginWithKakaoAccount(
+                context = this@OnBoardingActivity,
+                callback = callback
+            )
+        }
+    }
+
+
+    private fun showKakaoProfileImageOnPage4(imageUrl: String) {
+        val currentView = (binding.onboardingViewPager.getChildAt(0) as? RecyclerView)
+            ?.findViewHolderForAdapterPosition(4)?.itemView ?: return
+
+        val uploadIcon = currentView.findViewById<ImageView>(R.id.uploadIcon)
+        val uploadText = currentView.findViewById<TextView>(R.id.uploadText)
+        val cancelBtn = currentView.findViewById<ImageButton>(R.id.cancelImage)
+        val uploadImage = currentView.findViewById<ImageView>(R.id.photoUploadBackground)
+
+        // 기본 아이콘 숨기고 이미지 표시
+        uploadIcon.visibility = View.GONE
+        uploadText.visibility = View.GONE
+        cancelBtn.visibility = View.VISIBLE
+        uploadImage.visibility = View.VISIBLE
+
+        // Glide로 이미지 표시
+        Glide.with(this)
+            .load(imageUrl)
+            .apply(RequestOptions().centerCrop().transform(RoundedCorners(32)))
+            .into(uploadImage)
+
+        // 업로드 취소 기능
+        cancelBtn.setOnClickListener {
+            uploadImage.setImageDrawable(null)
+            uploadImage.visibility = View.GONE
+            uploadIcon.visibility = View.VISIBLE
+            uploadText.visibility = View.VISIBLE
+            cancelBtn.visibility = View.GONE
+        }
+
+        // tag에도 저장해두기 → 이후 회원가입 시 이미지 업로드 안 하고 바로 URL 쓰기 가능
+        uploadImage.tag = imageUrl
+        Log.d("카카오 사용자 이미지", "imageUrl: $imageUrl")
 
     }
 
