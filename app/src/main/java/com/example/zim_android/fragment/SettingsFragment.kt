@@ -93,34 +93,34 @@ class SettingsFragment: Fragment(R.layout.settings_fragment){
 
             // 확인
             dialogBinding.confirmBtnImg.setOnClickListener {
-                api.deleteAccount(userId).enqueue(object : Callback<String>{
-                    override fun onResponse(call: Call<String?>, response: Response<String?>) {
-                        Log.d("DeleteAccount", "계정 삭제 성공 - response: ${response.body()}")
-                        // TODO("Not yet implemented")
-                        // 아예 스플래쉬로 이동해야할 것 같음
-                        // ✅ 온보딩 첫 화면으로 이동
-
+                api.deleteAccount(userId).enqueue(object : Callback<ResponseBody> {
+                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                         if (response.isSuccessful) {
-                            // ✅ 카카오 연결 끊기 추가
+                            val message = response.body()?.string()
+                            Log.d("DeleteAccount", "계정 삭제 성공 - 응답 메시지: $message")
+
+                            // ✅ 카카오 연결 끊기
                             UserApiClient.instance.unlink { error ->
                                 if (error != null) {
                                     Log.e("카카오 연결 끊기 실패", error.toString())
                                 } else {
                                     Log.i("카카오 연결 끊기", "성공적으로 연결 해제됨")
-
                                 }
                             }
+
+                            val intent = Intent(requireContext(), SplashActivity::class.java)
+                            intent.putExtra("page", 0)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(intent)
+                        } else {
+                            Log.e("DeleteAccount", "계정 삭제 실패 - 응답 코드: ${response.code()}")
+                            val errorBody = response.errorBody()?.string()
+                            Log.e("DeleteAccount", "에러 내용: $errorBody")
                         }
-
-                        val intent = Intent(requireContext(), SplashActivity::class.java)
-                        intent.putExtra("page", 0) // 0번 페이지 = 첫 화면
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        startActivity(intent)
-
                     }
 
-                    override fun onFailure(call: Call<String>, t: Throwable) {
-                        Log.e("Delete", "통신 실패: ${t.message}")
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        Log.e("DeleteAccount", "통신 실패: ${t.message}")
                     }
                 })
             }

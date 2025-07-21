@@ -29,8 +29,7 @@ interface ApiService {
 
     // 회원 탈퇴
     @DELETE("/api/setting/{userId}")
-    fun deleteAccount(@Path("userId") userId: Int): Call<String>
-
+    fun deleteAccount(@Path("userId") userId: Int): Call<ResponseBody>
 
     // 여행 관리 API
     // 여행 생성
