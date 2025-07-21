@@ -59,6 +59,7 @@ class CardAdapter(
     inner class ViewHolder(private val binding: ItemCardBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(trip: TripResponse, position: Int) {
+            applyFlipState(position)
             val isFlipped = isFlippedList[position]
 
             binding.cardFront.visibility = if (isFlipped) View.GONE else View.VISIBLE
@@ -134,6 +135,14 @@ class CardAdapter(
 
             isFlippedList[position] = !isCurrentlyFlipped
         }
+        fun applyFlipState(position: Int) {
+            val isFlipped = isFlippedList[position]
+            binding.cardFront.visibility = if (isFlipped) View.GONE else View.VISIBLE
+            binding.cardBack.visibility = if (isFlipped) View.VISIBLE else View.GONE
+            binding.cardFront.rotationY = 0f
+            binding.cardBack.rotationY = 0f
+        }
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
