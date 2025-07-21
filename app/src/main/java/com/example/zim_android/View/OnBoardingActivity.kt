@@ -553,11 +553,18 @@ class OnBoardingActivity : AppCompatActivity() {
                         if (response.isSuccessful) {
                             val loginResult = response.body()
                             Log.d("서버 로그인 성공", "registered=${loginResult?.registered}, kakaoId=${loginResult?.kakaoId}, profileImageUrl=${loginResult?.profileImageUrl}")
+
                             userKakaoId = loginResult?.kakaoId ?: ""
                             userKakaoImgUrl = loginResult?.profileImageUrl ?: ""
 
                             // 로그인 성공 후 처리
                             if (loginResult?.registered == true) {
+                                // ✅ 로그인한 사용자도 userId 저장
+                                loginResult.userId?.let {
+                                    UserSession.userId = it
+                                    UserSession.saveToPreferences(this@OnBoardingActivity)
+                                }
+
                                 startActivity(Intent(this@OnBoardingActivity, MainActivity::class.java))
                                 finish()
                             } else {
