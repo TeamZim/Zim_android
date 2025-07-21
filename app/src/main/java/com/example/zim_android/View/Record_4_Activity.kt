@@ -44,6 +44,7 @@ import com.example.zim_android.databinding.Record4Binding
 import com.example.zim_android.fragment.Record_4_1
 import com.example.zim_android.util.PreferenceUtil
 import com.google.android.gms.location.LocationServices
+import com.kakao.sdk.user.model.User
 import okhttp3.MultipartBody
 import java.io.File
 import retrofit2.Call
@@ -79,6 +80,7 @@ class Record_4_Activity : AppCompatActivity() {
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
     val dateTime = LocalDateTime.now().format(formatter)
 
+    val userSession_userId = UserSession.userId ?: 1
 
     companion object {
         const val REQUEST_DIARY_INPUT = 1001
@@ -222,7 +224,7 @@ class Record_4_Activity : AppCompatActivity() {
         )
 
         val diaryRequest = DiaryCreateRequest(
-            userId = PreferenceUtil.getUserId(this),
+            userId = userSession_userId,
             tripId = tripId,
             countryCode = "KR",
             city = city,
