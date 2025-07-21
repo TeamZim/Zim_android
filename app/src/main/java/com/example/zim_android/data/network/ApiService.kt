@@ -115,7 +115,6 @@ interface ApiService {
     @GET("/api/countries/search")
     fun searchCountry(@Query("keyword") keyword: String): Call<CountrySearchListResponse>
 
-    // 방문 국가 저장
     @POST("/api/countries/{userId}")
     fun addVisitedCountry(
         @Path("userId") userId: Int,

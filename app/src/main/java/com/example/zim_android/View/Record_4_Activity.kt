@@ -27,15 +27,16 @@ import androidx.core.widget.addTextChangedListener
 import com.example.zim_android.Adapter.DialogEmotionSelectAdapter
 import com.example.zim_android.MainActivity
 import com.example.zim_android.R
+import com.example.zim_android.data.model.AddVisitedCountryRequest
 import com.example.zim_android.data.model.DiaryCreateRequest
 import com.example.zim_android.data.model.DiaryImageRequest
 import com.example.zim_android.data.model.DiaryResponse
 import com.example.zim_android.data.model.Emotion
-import com.example.zim_android.data.model.FileUploadResponse
 import com.example.zim_android.data.network.ApiProvider
+import com.example.zim_android.data.network.ApiProvider.api
 import com.example.zim_android.data.network.DiaryTempStore.city
 import com.example.zim_android.data.network.DiaryTempStore.countryCode
-import com.example.zim_android.data.network.DiaryTempStore.detailedLocation
+import com.example.zim_android.data.network.DiaryTempStore.emotionId
 import com.example.zim_android.data.network.UserSession
 import com.example.zim_android.databinding.DialogSelectEmotionColorBinding
 import com.example.zim_android.databinding.DialogSelectWeatherBinding
@@ -52,7 +53,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import java.util.Locale
 
@@ -240,6 +240,28 @@ class Record_4_Activity : AppCompatActivity() {
         ApiProvider.api.createDiary(diaryRequest).enqueue(object : Callback<DiaryResponse> {
             override fun onResponse(call: Call<DiaryResponse>, response: Response<DiaryResponse>) {
                 if (response.isSuccessful) {
+
+                    if (userId != null) {
+                        val request = AddVisitedCountryRequest(
+                            countryCode = countryCode ?: "KR",
+                            emotionId = selectedEmotionId,
+                        )
+
+                        api.addVisitedCountry(userId, request).enqueue(object : Callback<Void> {
+                            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                                if (response.isSuccessful) {
+                                    Log.d("✅ 국가 저장", "성공")
+                                } else {
+                                    Log.e("❌ 국가 저장 실패", response.errorBody()?.string().toString())
+                                }
+                            }
+
+                            override fun onFailure(call: Call<Void>, t: Throwable) {
+                                Log.e("❌ 국가 저장 에러", t.message.toString())
+                            }
+                        })
+                    }
+
                     val intent = Intent(this@Record_4_Activity, MainActivity::class.java).apply {
                         flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                         putExtra("gotoFragment", "ViewCard")
@@ -262,6 +284,8 @@ class Record_4_Activity : AppCompatActivity() {
                 Log.e("일기 저장 실패", "에러: ${t.message}")
             }
         })
+
+
     }
 
 
@@ -636,6 +660,13 @@ fun getAddressFromLatLon(binding: Record4Binding, context: Context, lat: Double,
 
             val flagEmoji = countryToFlagEmoji(countryCode)
             val displayCountry = "$flagEmoji $countryText"
+
+            val countryCodeVal = address.countryCode ?: "KR"
+
+// 값을 저장
+            com.example.zim_android.data.network.DiaryTempStore.city = cityText
+            com.example.zim_android.data.network.DiaryTempStore.countryCode = countryCodeVal
+
 
             Handler(Looper.getMainLooper()).post {
                 binding.country.text = displayCountry
