@@ -557,7 +557,7 @@ class OnBoardingActivity : AppCompatActivity() {
                             userKakaoImgUrl = loginResult?.profileImageUrl ?: ""
 
                             // 로그인 성공 후 처리
-                            if (loginResult?.registered == false) {
+                            if (loginResult?.registered == true) {
                                 startActivity(Intent(this@OnBoardingActivity, MainActivity::class.java))
                                 finish()
                             } else {

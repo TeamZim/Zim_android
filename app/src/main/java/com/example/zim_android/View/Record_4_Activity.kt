@@ -276,10 +276,15 @@ class Record_4_Activity : AppCompatActivity() {
             override fun onResponse(call: Call<List<Emotion>>, response: Response<List<Emotion>>) {
                 if (response.isSuccessful) {
                     val emotionList = response.body() ?: emptyList()
+                    val slicedEmotionList = if (emotionList.size > 1) {
+                        emotionList.subList(1, minOf(13, emotionList.size)) // index 1 ~ 12
+                    } else {
+                        emptyList()
+                    }
 
                     val adapter = DialogEmotionSelectAdapter(
                         context = context,
-                        items = emotionList,
+                        items = slicedEmotionList,
                         onItemSelected = {
                             // 선택 시 저장 버튼 활성화
                             dialogBinding.dialog2SaveBtn.setImageResource(R.drawable.save_btn_active)
