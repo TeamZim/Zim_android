@@ -7,10 +7,13 @@ import android.os.Looper
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.example.zim_android.View.OnBoardingActivity
+import com.example.zim_android.data.network.UserSession
 
 class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        UserSession.loadFromPreferences(this)
 
         // 전체화면 설정 (상태바 없애기)
         window.setFlags(

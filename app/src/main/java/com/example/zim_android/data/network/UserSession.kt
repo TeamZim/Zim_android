@@ -12,7 +12,17 @@ object UserSession {
         val prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
         prefs.edit().putInt("userId", userId ?: -1).apply()
     }
-
+    fun loadFromPreferences(context: Context) {
+        val prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
+        val savedId = prefs.getInt("userId", -1)
+        userId = if (savedId != -1) savedId else null
+    }
+    fun clear(context: Context) {
+        userId = null
+        currentTripId = null
+        val prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
+        prefs.edit().clear().apply()
+    }
 
 }
 
