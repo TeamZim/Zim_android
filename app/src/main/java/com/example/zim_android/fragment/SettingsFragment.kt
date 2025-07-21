@@ -99,10 +99,6 @@ class SettingsFragment: Fragment(R.layout.settings_fragment){
                         // TODO("Not yet implemented")
                         // 아예 스플래쉬로 이동해야할 것 같음
                         // ✅ 온보딩 첫 화면으로 이동
-                        val intent = Intent(requireContext(), SplashActivity::class.java)
-                        intent.putExtra("page", 0) // 0번 페이지 = 첫 화면
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        startActivity(intent)
 
                         if (response.isSuccessful) {
                             // ✅ 카카오 연결 끊기 추가
@@ -115,6 +111,12 @@ class SettingsFragment: Fragment(R.layout.settings_fragment){
                                 }
                             }
                         }
+
+                        val intent = Intent(requireContext(), SplashActivity::class.java)
+                        intent.putExtra("page", 0) // 0번 페이지 = 첫 화면
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+
                     }
 
                     override fun onFailure(call: Call<String>, t: Throwable) {
@@ -122,6 +124,7 @@ class SettingsFragment: Fragment(R.layout.settings_fragment){
                     }
                 })
             }
+
 
             deleteAccountDialog.show()
         }
