@@ -88,6 +88,9 @@ class Record_2_1_Activity : AppCompatActivity() {
             finish()
         }
 
+        val tripName = intent.getStringExtra("tripName") ?: "제목 없음"
+
+
         // 위치 받아오는 변수 초기화
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -338,11 +341,14 @@ class Record_2_1_Activity : AppCompatActivity() {
                             )
                             DiaryTempStore.images = imageList
 
+                            val tripName = intent.getStringExtra("tripName") ?: "제목 없음"
+
                             val intent = Intent(this@Record_2_1_Activity, Record_3_Activity::class.java)
                             intent.putExtra("tripId", DiaryTempStore.tripId)
-                            //트립 아이디 뒤에 전달
-
+                            intent.putExtra("tripName", tripName)
                             startActivity(intent)
+
+
                             finish()
                         } else {
                             Log.d("intent", "intent error")

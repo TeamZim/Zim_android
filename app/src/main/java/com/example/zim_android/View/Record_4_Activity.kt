@@ -92,6 +92,10 @@ class Record_4_Activity : AppCompatActivity() {
         binding = Record4Binding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val tripName = intent.getStringExtra("tripName")
+        binding.tripTitle.text = tripName ?: "제목 없음"
+
+
 
         //녹음 권한 설정
         if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
