@@ -35,7 +35,6 @@ import android.net.Uri
 import android.util.Log
 import com.example.zim_android.data.model.KakaoLoginRequest
 import com.example.zim_android.data.model.KakaoLoginResponse
-import com.example.zim_android.data.model.User
 import com.example.zim_android.data.network.ApiProvider
 import com.example.zim_android.data.model.UserResponse
 import com.example.zim_android.data.network.ApiProvider.api
@@ -78,6 +77,9 @@ class OnBoardingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityOnboardingBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val page = intent.getIntExtra("page", 0)
+        binding.onboardingViewPager.currentItem = page
 
         adapter = OnBoardingAdapter(pageImages)
         binding.onboardingViewPager.adapter = adapter
@@ -453,11 +455,13 @@ class OnBoardingActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val user = response.body()
 
-                    // userId update하는 부분
-//                    user?.user?.userId?.let {
-//                        UserSession.userId = it
-//                        UserSession.saveToPreferences(this@OnBoardingActivity)
-//                    }
+
+
+                     //userId update하는 부분
+                    user?.userId?.let {
+                        UserSession.userId = it
+                        UserSession.saveToPreferences(this@OnBoardingActivity)
+                    }
 
                     Log.d("response.body().toString()", response.body().toString())
 

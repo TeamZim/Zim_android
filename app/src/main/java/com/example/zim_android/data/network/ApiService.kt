@@ -25,7 +25,7 @@ interface ApiService {
 
     // 로그아웃
     @PATCH("/api/setting/{userId}/logout")
-    fun logout(@Path("userId") userId: Int): Call<String>
+    fun logout(@Path("userId") userId: Int): Call<ResponseBody>
 
     // 회원 탈퇴
     @DELETE("/api/setting/{userId}")

@@ -232,7 +232,7 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
                 api.addVisitedCountry(userId, request).enqueue(object : Callback<Void> {
                     override fun onResponse(call: Call<Void>, response: Response<Void>) {
                         if (response.isSuccessful) {
-                            Log.d("저장 성공", "방문 국가 저장 완료")
+                            Log.d("저장 성공", "방문 국가 저장 완료:${userId}")
                         } else {
                             Log.e("저장 실패", "응답 코드: ${response.code()}")
                         }
