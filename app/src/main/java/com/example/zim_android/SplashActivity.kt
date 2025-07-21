@@ -20,10 +20,15 @@ class SplashActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_splash)
 
-        // 2초 후에 메인으로 이동
         Handler(Looper.getMainLooper()).postDelayed({
-            startActivity(Intent(this, OnBoardingActivity::class.java))
+            if (!PreferenceManager.isOnboardingShown(this)) {
+                startActivity(Intent(this, OnBoardingActivity::class.java))
+            } else {
+                startActivity(Intent(this, MainActivity::class.java))
+
+            }
             finish()
-        }, 2000) // 2초
+        }, 2000)
+
     }
 }

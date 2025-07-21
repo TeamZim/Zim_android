@@ -205,11 +205,13 @@ class OnBoardingActivity : AppCompatActivity() {
                 }
             }
 
+
             // 페이지 이동
             val nextIndex = currentPage + 1
             if (nextIndex < adapter.itemCount) {
                 binding.onboardingViewPager.currentItem = nextIndex
             } else {
+                Log.d("OnBoarding", "온보딩 완료 → 상태 저장됨")
                 PreferenceManager.setOnboardingShown(this)
                 startActivity(Intent(this, MainActivity::class.java))
                 finish()
