@@ -30,6 +30,8 @@ class Record_3_Activity: AppCompatActivity() {
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
         }
 
+        val tripName = intent.getStringExtra("tripName") ?: "제목 없음"
+
 
         val imagePath1 = DiaryTempStore.images.getOrNull(0)?.imageUrl
         val imagePath2 = DiaryTempStore.images.getOrNull(1)?.imageUrl
@@ -69,8 +71,10 @@ class Record_3_Activity: AppCompatActivity() {
         // 다시 촬영 버튼 클릭 시
         binding.retakeBtn.setOnClickListener {
             val tripId = intent.getIntExtra("tripId", 0)
-            val intent = Intent(this@Record_3_Activity, Record_2_1_Activity::class.java)
-            intent.putExtra("tripId", tripId)
+            val tripName = intent.getStringExtra("tripName") // Record_2_1_Activity가 받았을 경우
+            val intent = Intent(this@Record_3_Activity, Record_4_Activity::class.java)
+            intent.putExtra("tripId", DiaryTempStore.tripId)
+            intent.putExtra("tripName", tripName) // null일 경우 대비
             startActivity(intent)
             finish()
 
@@ -81,6 +85,7 @@ class Record_3_Activity: AppCompatActivity() {
             val tripId = intent.getIntExtra("tripId", 0)
             val intent = Intent(this, Record_4_Activity::class.java)
             intent.putExtra("tripId", tripId)
+            intent.putExtra("tripName", tripName)
             intent.putExtra("imagePath1", imagePath1)
             intent.putExtra("imagePath2", imagePath2)
             intent.putExtra("representIndex", selectedRepresentativeIndex)

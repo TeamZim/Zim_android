@@ -232,7 +232,7 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
                 api.addVisitedCountry(userId, request).enqueue(object : Callback<Void> {
                     override fun onResponse(call: Call<Void>, response: Response<Void>) {
                         if (response.isSuccessful) {
-                            Log.d("저장 성공", "방문 국가 저장 완료")
+                            Log.d("저장 성공", "방문 국가 저장 완료:${userId}")
                         } else {
                             Log.e("저장 실패", "응답 코드: ${response.code()}")
                         }
@@ -268,7 +268,7 @@ class ViewMapFragment : Fragment(R.layout.view_map_fragment) {
     // 감정색 선택 다이얼로그 띄우는 부분
     private fun showAddRecordDialog2(dialog1Binding: ViewMapDialog1Binding) {
         // 감정색 다이얼로그 작업
-        dialog1Binding.selectColorBtn.setOnClickListener {
+        dialog1Binding.dialog1EmotionColorSelectLayout.setOnClickListener {
             // 두 번째 다이얼로그 가지고 오기
             val dialog2 = Dialog(requireContext())
             val dialog2Binding = DialogSelectEmotionColorBinding.inflate(layoutInflater)

@@ -42,7 +42,7 @@
         android:id="@+id/color_list_grid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="34dp"
         app:columnCount="4"
         app:layout_constraintEnd_toEndOf="@+id/dialog_1_frame"
         app:layout_constraintStart_toStartOf="@+id/dialog_1_frame"

@@ -59,31 +59,4 @@
         android:layout_marginTop="2dp" />
 
 
-
-    <TextView
-        android:id="@+id/modify_info_btn"
-        android:layout_width="340dp"
-        android:layout_height="44dp"
-        android:layout_marginTop="17dp"
-        android:clickable="true"
-        android:fontFamily="@font/maru"
-        android:gravity="center_vertical"
-        android:text="개인정보 수정하기"
-        android:textColor="@color/primary_700"
-        android:textSize="17sp"
-        app:layout_constraintStart_toStartOf="@+id/logout_text"
-        app:layout_constraintTop_toBottomOf="@+id/delete_account_text" />
-
-    <View
-        android:layout_width="340dp"
-        android:layout_height="1dp"
-        android:background="#23241B"
-        app:layout_constraintTop_toBottomOf="@id/modify_info_btn"
-        app:layout_constraintStart_toStartOf="@id/modify_info_btn"
-        app:layout_constraintEnd_toEndOf="@id/modify_info_btn"
-        android:layout_marginTop="2dp" />
-
-
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -57,7 +57,8 @@ class DiaryAdapter(private val itemList: List<DiaryResponse>) :
             binding.detailedLocation.text = item.detailedLocation
             binding.detailedLocation.setTextColor(ContextCompat.getColor(binding.root.context, R.color.primary_700))
             binding.detailedLocationIcon.clearColorFilter()
-
+        } else {
+            binding.detailedLocation.text = "-"
         }
 
         if (item.content != null) {

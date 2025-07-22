@@ -75,6 +75,7 @@
             android:id="@+id/action_settingsFragment_to_mypageFragment"
             app:destination="@id/mypageFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/diaryFragment"
         android:name="com.example.zim_android.fragment.DiaryFragment"

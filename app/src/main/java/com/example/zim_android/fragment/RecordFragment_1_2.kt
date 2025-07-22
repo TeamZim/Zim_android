@@ -118,7 +118,10 @@ class RecordFragment_1_2: Fragment(R.layout.record_1_2_fragment){
 
                         Log.d("TripCreate", "tripId 생성 성공: $tripId")
 
-                        val intent = Intent(requireContext(), Record_2_1_Activity::class.java)
+                        val intent = Intent(requireContext(), Record_2_1_Activity::class.java).apply {
+                            putExtra("tripId", tripId)
+                            putExtra("tripName", request.tripName)
+                        }
                         startActivity(intent)
                     } else {
                         Log.e("TripCreate", "실패: ${response.code()} / ${response.message()}")
