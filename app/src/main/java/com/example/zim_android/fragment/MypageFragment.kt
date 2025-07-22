@@ -56,9 +56,17 @@ class MypageFragment: Fragment(R.layout.mypage_fragment){
 
         Log.d("마이페이지", userId.toString())
 
+        // 시작 시: 로딩은 보이고, 콘텐츠는 숨김
+        binding.progressBar.visibility = View.VISIBLE
+        binding.contentLayout.visibility = View.GONE
+
 
         api.getMypage(userId).enqueue(object : Callback<MyPageResponse> {
             override fun onResponse(call: Call<MyPageResponse>, response: Response<MyPageResponse>) {
+
+                binding.progressBar.visibility = View.GONE
+                binding.contentLayout.visibility = View.VISIBLE
+
                 if (response.isSuccessful) {
                     val myPageData = response.body()
                     myPageData?.let {

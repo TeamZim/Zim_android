@@ -3,10 +3,14 @@ package com.example.zim_android.fragment
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
@@ -18,6 +22,8 @@ import com.example.zim_android.data.model.TripResponse
 import com.example.zim_android.data.network.ApiProvider.api
 import com.example.zim_android.data.network.UserSession
 import com.example.zim_android.databinding.ViewCardFragmentBinding
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -26,6 +32,15 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
 
     private var _binding: ViewCardFragmentBinding? = null
     private val binding get() = _binding!!
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = ViewCardFragmentBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -158,8 +173,13 @@ class ViewCardFragment : Fragment(R.layout.view_card_fragment) {
         // 카드 뒷면 이미지 클릭 시
         adapter.setOnImageClickListener(object : CardAdapter.OnImageClickListener {
             override fun onImageClicked(diaryId: Int) {
-                val action = ViewCardFragmentDirections.actionViewCardFragmentToDiaryFragment(diaryId)
-                findNavController().navigate(action)
+                val navController = findNavController()
+                if (navController.currentDestination?.id == R.id.viewCardFragment) {
+                    val action = ViewCardFragmentDirections.actionViewCardFragmentToDiaryFragment(diaryId)
+                    navController.navigate(action)
+                } else {
+                    Log.e("Navigation", "현재 destination이 viewCardFragment가 아님: ${navController.currentDestination}")
+                }
             }
         })
 

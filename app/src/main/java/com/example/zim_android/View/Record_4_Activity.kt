@@ -27,15 +27,16 @@ import androidx.core.widget.addTextChangedListener
 import com.example.zim_android.Adapter.DialogEmotionSelectAdapter
 import com.example.zim_android.MainActivity
 import com.example.zim_android.R
+import com.example.zim_android.data.model.AddVisitedCountryRequest
 import com.example.zim_android.data.model.DiaryCreateRequest
 import com.example.zim_android.data.model.DiaryImageRequest
 import com.example.zim_android.data.model.DiaryResponse
 import com.example.zim_android.data.model.Emotion
-import com.example.zim_android.data.model.FileUploadResponse
 import com.example.zim_android.data.network.ApiProvider
+import com.example.zim_android.data.network.ApiProvider.api
 import com.example.zim_android.data.network.DiaryTempStore.city
 import com.example.zim_android.data.network.DiaryTempStore.countryCode
-import com.example.zim_android.data.network.DiaryTempStore.detailedLocation
+import com.example.zim_android.data.network.DiaryTempStore.emotionId
 import com.example.zim_android.data.network.UserSession
 import com.example.zim_android.databinding.DialogSelectEmotionColorBinding
 import com.example.zim_android.databinding.DialogSelectWeatherBinding
@@ -43,6 +44,7 @@ import com.example.zim_android.databinding.Record4Binding
 import com.example.zim_android.fragment.Record_4_1
 import com.example.zim_android.util.PreferenceUtil
 import com.google.android.gms.location.LocationServices
+import com.kakao.sdk.user.model.User
 import okhttp3.MultipartBody
 import java.io.File
 import retrofit2.Call
@@ -52,7 +54,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import java.util.Locale
 
@@ -79,6 +80,7 @@ class Record_4_Activity : AppCompatActivity() {
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
     val dateTime = LocalDateTime.now().format(formatter)
 
+    val userSession_userId = UserSession.userId ?: 1
 
     companion object {
         const val REQUEST_DIARY_INPUT = 1001
@@ -91,6 +93,10 @@ class Record_4_Activity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = Record4Binding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val tripName = intent.getStringExtra("tripName")
+        binding.tripTitle.text = tripName ?: "제목 없음"
+
 
 
         //녹음 권한 설정
@@ -173,6 +179,8 @@ class Record_4_Activity : AppCompatActivity() {
         binding.saveButton.setOnClickListener {
             val detailedLocation = binding.placeInput.text.toString()
             val content = binding.diaryInput.text.toString()
+            binding.saveLoading.visibility = View.VISIBLE
+            binding.saveButton.isEnabled = false
 
             // 감정이 선택되지 않았다면 1로 기본 설정
             if (selectedEmotionId == -1) {
@@ -181,6 +189,8 @@ class Record_4_Activity : AppCompatActivity() {
 
             if (imagePath1.isNullOrEmpty() || imagePath2.isNullOrEmpty()) {
                 Log.e("❌", "이미지 경로 없음")
+                binding.saveButton.isEnabled = true
+                binding.saveLoading.visibility = View.GONE
                 return@setOnClickListener
             }
 
@@ -218,7 +228,7 @@ class Record_4_Activity : AppCompatActivity() {
         )
 
         val diaryRequest = DiaryCreateRequest(
-            userId = PreferenceUtil.getUserId(this),
+            userId = userSession_userId,
             tripId = tripId,
             countryCode = "KR",
             city = city,
@@ -236,6 +246,28 @@ class Record_4_Activity : AppCompatActivity() {
         ApiProvider.api.createDiary(diaryRequest).enqueue(object : Callback<DiaryResponse> {
             override fun onResponse(call: Call<DiaryResponse>, response: Response<DiaryResponse>) {
                 if (response.isSuccessful) {
+
+                    if (userId != null) {
+                        val request = AddVisitedCountryRequest(
+                            countryCode = countryCode ?: "KR",
+                            emotionId = selectedEmotionId,
+                        )
+
+                        api.addVisitedCountry(userId, request).enqueue(object : Callback<Void> {
+                            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                                if (response.isSuccessful) {
+                                    Log.d("✅ 국가 저장", "성공")
+                                } else {
+                                    Log.e("❌ 국가 저장 실패", response.errorBody()?.string().toString())
+                                }
+                            }
+
+                            override fun onFailure(call: Call<Void>, t: Throwable) {
+                                Log.e("❌ 국가 저장 에러", t.message.toString())
+                            }
+                        })
+                    }
+
                     val intent = Intent(this@Record_4_Activity, MainActivity::class.java).apply {
                         flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                         putExtra("gotoFragment", "ViewCard")
@@ -247,6 +279,7 @@ class Record_4_Activity : AppCompatActivity() {
                     Log.e(
                         "일기 저장 실패",
                         "응답 코드: ${response.code()}, 메시지: ${response.errorBody()?.string()}"
+
                     )
                 }
             }
@@ -256,8 +289,13 @@ class Record_4_Activity : AppCompatActivity() {
 
             override fun onFailure(call: Call<DiaryResponse>, t: Throwable) {
                 Log.e("일기 저장 실패", "에러: ${t.message}")
+                binding.saveButton.isEnabled = true
+                binding.saveLoading.visibility = View.GONE
+
             }
         })
+
+
     }
 
 
@@ -276,10 +314,15 @@ class Record_4_Activity : AppCompatActivity() {
             override fun onResponse(call: Call<List<Emotion>>, response: Response<List<Emotion>>) {
                 if (response.isSuccessful) {
                     val emotionList = response.body() ?: emptyList()
+                    val slicedEmotionList = if (emotionList.size > 1) {
+                        emotionList.subList(1, minOf(13, emotionList.size)) // index 1 ~ 12
+                    } else {
+                        emptyList()
+                    }
 
                     val adapter = DialogEmotionSelectAdapter(
                         context = context,
-                        items = emotionList,
+                        items = slicedEmotionList,
                         onItemSelected = {
                             // 선택 시 저장 버튼 활성화
                             dialogBinding.dialog2SaveBtn.setImageResource(R.drawable.save_btn_active)
@@ -627,6 +670,13 @@ fun getAddressFromLatLon(binding: Record4Binding, context: Context, lat: Double,
 
             val flagEmoji = countryToFlagEmoji(countryCode)
             val displayCountry = "$flagEmoji $countryText"
+
+            val countryCodeVal = address.countryCode ?: "KR"
+
+// 값을 저장
+            com.example.zim_android.data.network.DiaryTempStore.city = cityText
+            com.example.zim_android.data.network.DiaryTempStore.countryCode = countryCodeVal
+
 
             Handler(Looper.getMainLooper()).post {
                 binding.country.text = displayCountry

@@ -25,12 +25,11 @@ interface ApiService {
 
     // 로그아웃
     @PATCH("/api/setting/{userId}/logout")
-    fun logout(@Path("userId") userId: Int): Call<String>
+    fun logout(@Path("userId") userId: Int): Call<ResponseBody>
 
     // 회원 탈퇴
     @DELETE("/api/setting/{userId}")
-    fun deleteAccount(@Path("userId") userId: Int): Call<String>
-
+    fun deleteAccount(@Path("userId") userId: Int): Call<ResponseBody>
 
     // 여행 관리 API
     // 여행 생성
@@ -116,7 +115,6 @@ interface ApiService {
     @GET("/api/countries/search")
     fun searchCountry(@Query("keyword") keyword: String): Call<CountrySearchListResponse>
 
-    // 방문 국가 저장
     @POST("/api/countries/{userId}")
     fun addVisitedCountry(
         @Path("userId") userId: Int,

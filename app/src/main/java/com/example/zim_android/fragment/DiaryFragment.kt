@@ -41,8 +41,9 @@ class DiaryFragment : Fragment(R.layout.diary_page) {
 
         binding.backBtnHeader.tvTitle.text = "여행명"
         binding.backBtnHeader.backBtn.setOnClickListener {
-            findNavController().navigate(R.id.action_diaryFragment_to_viewCardFragment)
-            // 그냥 네비게이션으로 넘기는게 아니라,따로 무슨 카드였는지를 같이 보내줘야함.
+            binding.backBtnHeader.backBtn.setOnClickListener {
+                findNavController().popBackStack()
+            }
         }
 
         val userId = UserSession.userId
@@ -57,11 +58,25 @@ class DiaryFragment : Fragment(R.layout.diary_page) {
                     call: Call<List<DiaryResponse>>,
                     response: Response<List<DiaryResponse>>
                 ) {
+                    Log.d("DiaryFragment", "현재 userId: $userId")
+
+                    Log.d("DiaryFragment", "응답 수신 - 성공 여부: ${response.isSuccessful}")
+                    Log.d("DiaryFragment", "응답 바디: ${response.body().toString()}")
+
                     if (response.isSuccessful) {
                         val diaryList = response.body() ?: emptyList()
+
+                        Log.d("DiaryFragment", "다이어리 개수: ${diaryList.size}")
+                        diaryList.forEachIndexed { index, diary ->
+                            Log.d("DiaryFragment", "[$index] Diary ID: ${diary.id}")
+                        }
+
                         val diaryAdapter = DiaryAdapter(diaryList)
+                        Log.d("DiaryFragment", "RecyclerView 어댑터 설정 완료")
                         binding.recyclerView.layoutManager = GridLayoutManager(requireContext(), 1)
                         binding.recyclerView.adapter = diaryAdapter
+                        Log.d("DiaryFragment", "RecyclerView 레이아웃매니저 설정 완료")
+
 
                         val layoutManager = binding.recyclerView.layoutManager as GridLayoutManager
                         binding.recyclerView.post {

@@ -7,8 +7,8 @@
     </style>
 
     <style name="BottomNavigationViewStyle" parent="Widget.MaterialComponents.BottomNavigationView">
-        <item name="android:fontFamily">@font/maru</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/nanum_neuris</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="some_id">
@@ -17,16 +17,16 @@
         <item name="android:textColor">#272727</item>
     </style>
     <style name="BottomNavActiveText" parent="TextAppearance.AppCompat.Caption">
-        <item name="android:fontFamily">@font/maru</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/nanum_neuris</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:textColor">#272727</item>
         <item name="android:lineSpacingExtra">0dp</item> <!-- active 시 색상 -->
     </style>
 
     <style name="BottomNavInactiveText" parent="TextAppearance.AppCompat.Caption">
-        <item name="android:fontFamily">@font/maru</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">@font/nanum_neuris</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:letterSpacing">-0.01</item>
         <item name="android:textColor">#A7A4A0</item>
         <item name="android:lineSpacingExtra">0dp</item> <!-- inactive 시 색상 -->
