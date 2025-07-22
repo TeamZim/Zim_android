@@ -179,6 +179,8 @@ class Record_4_Activity : AppCompatActivity() {
         binding.saveButton.setOnClickListener {
             val detailedLocation = binding.placeInput.text.toString()
             val content = binding.diaryInput.text.toString()
+            binding.saveLoading.visibility = View.VISIBLE
+            binding.saveButton.isEnabled = false
 
             // 감정이 선택되지 않았다면 1로 기본 설정
             if (selectedEmotionId == -1) {
@@ -187,6 +189,8 @@ class Record_4_Activity : AppCompatActivity() {
 
             if (imagePath1.isNullOrEmpty() || imagePath2.isNullOrEmpty()) {
                 Log.e("❌", "이미지 경로 없음")
+                binding.saveButton.isEnabled = true
+                binding.saveLoading.visibility = View.GONE
                 return@setOnClickListener
             }
 
@@ -275,6 +279,7 @@ class Record_4_Activity : AppCompatActivity() {
                     Log.e(
                         "일기 저장 실패",
                         "응답 코드: ${response.code()}, 메시지: ${response.errorBody()?.string()}"
+
                     )
                 }
             }
@@ -284,6 +289,9 @@ class Record_4_Activity : AppCompatActivity() {
 
             override fun onFailure(call: Call<DiaryResponse>, t: Throwable) {
                 Log.e("일기 저장 실패", "에러: ${t.message}")
+                binding.saveButton.isEnabled = true
+                binding.saveLoading.visibility = View.GONE
+
             }
         })
 
