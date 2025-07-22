@@ -129,12 +129,6 @@ class SettingsFragment: Fragment(R.layout.settings_fragment){
             deleteAccountDialog.show()
         }
 
-//        // 개인 정보 수정
-//        binding.modifyInfoBtn.setOnClickListener {
-//            // TODO("나중에 온보딩 완성된 후 해당 페이지로 연결")
-//        }
-
-
     }
     override fun onDestroyView() {
         super.onDestroyView()

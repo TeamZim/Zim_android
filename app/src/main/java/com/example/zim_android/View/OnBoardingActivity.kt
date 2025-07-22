@@ -87,18 +87,6 @@ class OnBoardingActivity : AppCompatActivity() {
         setupIndicator()
         setCurrentIndicator(0)
 
-//        UserApiClient.instance.unlink { error ->
-//            if (error != null) {
-//                Log.e("카카오 연결 끊기 실패", error.toString())
-//            } else {
-//                Log.i("카카오 연결 끊기", "성공적으로 연결 해제됨")
-//                // ✅ 연결 해제 후 앱 초기 화면으로 이동 (예: SplashActivity)
-//                // val intent = Intent(requireContext(), SplashActivity::class.java)
-//                // intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-//                // startActivity(intent)
-//            }
-//        }
-
         binding.onboardingViewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 setCurrentIndicator(position)
@@ -470,10 +458,6 @@ class OnBoardingActivity : AppCompatActivity() {
                     // ✅ ViewPager를 5페이지로 이동
                     binding.onboardingViewPager.currentItem = 5
 
-                    // ✅ 온보딩 표시 여부 저장은 여기서 하지 않음 (사용자가 "시작하기" 눌러야 저장)
-                    // PreferenceManager.setOnboardingShown(this@OnBoardingActivity)
-                    // startActivity(Intent(this@OnBoardingActivity, MainActivity::class.java))
-                    // finish()
                     Log.d("로그/업로드", "응답 코드: ${response.code()}")
 
 
@@ -500,42 +484,6 @@ class OnBoardingActivity : AppCompatActivity() {
         throw IllegalArgumentException("이미지 경로를 가져올 수 없습니다.")
     }
 
-//    private fun uploadProfileImage(imageFile: File, callback: (String?) -> Unit) {
-//        val requestFile = imageFile.asRequestBody("multipart/form-data".toMediaTypeOrNull())
-//        val body = MultipartBody.Part.createFormData("file", imageFile.name, requestFile)
-//
-//        api.uploadFile("profile", body)
-//            .enqueue(object : Callback<ResponseBody> {
-//                override fun onResponse(
-//                    call: Call<ResponseBody>,
-//                    response: Response<ResponseBody>
-//                ) {
-//                    if (response.isSuccessful) {
-//                        val json = response.body()?.string()
-//                        Log.d("프로필 업로드 응답", json ?: "응답 없음")
-//
-//                        try {
-//                            val gson = Gson()
-//                            val userResponse = gson.fromJson(json, User::class.java)
-//                            val imageUrl = userResponse.profileImageUrl
-//                            callback(imageUrl)
-//                        } catch (e: Exception) {
-//                            Log.e("파싱 실패", e.message ?: "unknown error")
-//                            callback(null)
-//                        }
-//                    } else {
-//                        Log.e("프로필 업로드 실패", "응답 코드: ${response.code()}")
-//                        callback(null)
-//                    }
-//                }
-//
-//                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-//                    Log.e("프로필 업로드 오류", t.message ?: "알 수 없음")
-//                    callback(null)
-//                }
-//            })
-//
-//    }
 
     private fun startKakaoLogin() {
         val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
@@ -595,9 +543,11 @@ class OnBoardingActivity : AppCompatActivity() {
                 context = this@OnBoardingActivity,
                 callback = { token, error ->
                     if (error != null) {
+                        Log.d("웹 서버 로그인", error.toString())
                         if (error is ClientError && error.reason == ClientErrorCause.Cancelled) return@loginWithKakaoTalk
                         UserApiClient.instance.loginWithKakaoAccount(context = this@OnBoardingActivity, callback = callback)
                     } else if (token != null) {
+                        Log.d("웹 서버 로그인", "성공인듯.")
                         callback(token, null) // ✅ 토큰 처리 콜백 재사용
                     }
                 }

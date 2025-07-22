@@ -1,14 +1,30 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/onboarding_1_bg"
+    >
 
-    <!-- 배경 이미지 -->
     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:scaleType="centerCrop"
-        android:src="@drawable/onboarding_1" />
+        android:layout_gravity="center"
+        android:layout_marginBottom="50dp"
+        android:src="@drawable/onboarding_1_img_1" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center_horizontal"
+        android:fontFamily="@font/nanum_neuris"
+        android:textColor="@color/primary_700"
+        android:textSize="29sp"
+        android:rotation="-2.26"
+        android:text="그때의 감정과\n나만의 시선으로 담은 순간들\n\n시간이 지나도\n선명하게 기억되고 있도록"
+        android:layout_marginBottom="28dp"/>
+
 
     <!-- 카카오 로그인 버튼 -->
     <ImageButton
