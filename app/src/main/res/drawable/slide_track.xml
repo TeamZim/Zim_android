@@ -1,15 +1,22 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@android:id/background">
+    <item android:id="@android:id/background"
+        android:top="8dp"
+        android:bottom="8dp">
         <shape>
+            <solid android:color="#CECBC6"/>
             <corners android:radius="20dp"/>
-            <solid android:color="#CECBC6"/> <!-- 트랙 기본 색 -->
+            <size android:height="8dp"/>
         </shape>
     </item>
-    <item android:id="@android:id/progress">
+
+    <item android:id="@android:id/progress"
+        android:top="8dp"
+        android:bottom="8dp">
         <clip>
             <shape>
+                <solid android:color="#AFA38F"/>
                 <corners android:radius="20dp"/>
-                <solid android:color="#AFA38F"/> <!-- 진행된 부분 색 -->
+                <size android:height="8dp"/>
             </shape>
         </clip>
     </item>

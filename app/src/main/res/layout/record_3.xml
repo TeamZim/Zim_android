@@ -3,70 +3,83 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <include
         android:id="@+id/back_btn_header"
         layout="@layout/back_btn_header" />
 
-
-
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="347dp"
-        android:layout_height="319dp"
-        android:layout_marginTop="68dp"
-        android:background="@android:color/black"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="347dp"
-        android:layout_height="319dp"
-        android:background="@android:color/darker_gray"
-        app:layout_constraintEnd_toEndOf="@+id/imageView1"
-        app:layout_constraintStart_toStartOf="@+id/imageView1"
-        app:layout_constraintTop_toBottomOf="@+id/imageView1"
-        />
 
-    <ImageButton
-        android:id="@+id/is_represent_btn_1"
-        android:layout_width="56dp"
-        android:layout_height="25dp"
-        android:layout_marginStart="13dp"
-        android:layout_marginTop="15dp"
-        app:layout_constraintStart_toStartOf="@+id/imageView1"
-        app:layout_constraintTop_toTopOf="@+id/imageView1"
-        app:srcCompat="@drawable/unselected_img_btn" />
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imageView1"
+            android:layout_width="347dp"
+            android:layout_height="319dp"
+            android:background="@android:color/black"
+            app:shapeAppearanceOverlay="@style/ImageTopRoundedCornersTop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
-        android:id="@+id/is_represent_btn_2"
-        android:layout_width="56dp"
-        android:layout_height="25dp"
-        android:layout_marginStart="13dp"
-        android:layout_marginTop="15dp"
-        app:layout_constraintStart_toStartOf="@+id/imageView2"
-        app:layout_constraintTop_toBottomOf="@+id/imageView1"
-        app:srcCompat="@drawable/unselected_img_btn" />
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imageView2"
+            android:layout_width="347dp"
+            android:layout_height="319dp"
+            android:background="@android:color/darker_gray"
+            app:shapeAppearanceOverlay="@style/ImageTopRoundedCornersBottom"
+            app:layout_constraintEnd_toEndOf="@+id/imageView1"
+            app:layout_constraintStart_toStartOf="@+id/imageView1"
+            app:layout_constraintTop_toBottomOf="@+id/imageView1"
+            />
 
-    <ImageButton
-        android:id="@+id/retake_btn"
-        android:layout_width="160dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="-3dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintStart_toStartOf="@+id/imageView2"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2"
-        app:srcCompat="@drawable/retake_btn" />
+        <ImageButton
+            android:id="@+id/is_represent_btn_1"
+            android:layout_width="56dp"
+            android:layout_height="25dp"
+            android:layout_marginStart="13dp"
+            android:layout_marginTop="15dp"
+            app:layout_constraintStart_toStartOf="@+id/imageView1"
+            app:layout_constraintTop_toTopOf="@+id/imageView1"
+            app:srcCompat="@drawable/unselected_img_btn" />
 
-    <ImageButton
-        android:id="@+id/next_btn"
-        android:layout_width="160dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="-3dp"
-        app:layout_constraintEnd_toEndOf="@+id/imageView2"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2"
-        app:srcCompat="@drawable/next_btn" />
+        <ImageButton
+            android:id="@+id/is_represent_btn_2"
+            android:layout_width="56dp"
+            android:layout_height="25dp"
+            android:layout_marginStart="13dp"
+            android:layout_marginTop="15dp"
+            app:layout_constraintStart_toStartOf="@+id/imageView2"
+            app:layout_constraintTop_toBottomOf="@+id/imageView1"
+            app:srcCompat="@drawable/unselected_img_btn" />
+
+        <ImageButton
+            android:id="@+id/retake_btn"
+            android:layout_width="160dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="-3dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="@+id/imageView2"
+            app:layout_constraintTop_toBottomOf="@+id/imageView2"
+            app:srcCompat="@drawable/retake_btn" />
+
+        <ImageButton
+            android:id="@+id/next_btn"
+            android:layout_width="160dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="-3dp"
+            app:layout_constraintEnd_toEndOf="@+id/imageView2"
+            app:layout_constraintTop_toBottomOf="@+id/imageView2"
+            app:srcCompat="@drawable/next_btn" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

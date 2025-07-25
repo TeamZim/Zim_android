@@ -4,18 +4,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.zim_android.databinding.OnboardingItemBinding
+import com.example.zim_android.databinding.Onboarding5Binding
 
 
 
 class OnBoardingAdapter(private val items: List<Int>) :
     RecyclerView.Adapter<OnBoardingAdapter.OnBoardingViewHolder>() {
 
-    inner class OnBoardingViewHolder(val binding: OnboardingItemBinding) :
+    inner class OnBoardingViewHolder(val binding: Onboarding5Binding) :
         RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OnBoardingViewHolder {
-        val binding = OnboardingItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = Onboarding5Binding.inflate(LayoutInflater.from(parent.context), parent, false)
         return OnBoardingViewHolder(binding)
     }
 

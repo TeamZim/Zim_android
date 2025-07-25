@@ -11,21 +11,14 @@
         android:id="@+id/imageView4"
         android:layout_width="295dp"
         android:layout_height="242dp"
-        android:background="@android:color/transparent"
+        android:background="@drawable/settings_dialog_frame"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
 
-        <ImageView
-            android:layout_width="295dp"
-            android:layout_height="242dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/settings_dialog_frame" />
+
 
         <TextView
             android:id="@+id/textView5"
