@@ -4,49 +4,54 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.zim_android.R
 import com.example.zim_android.databinding.Onboarding5Binding
 
 
 
-class OnBoardingAdapter(private val items: List<Int>) :
-    RecyclerView.Adapter<OnBoardingAdapter.OnBoardingViewHolder>() {
+class OnBoardingAdapter(private val layoutIds: List<Int>) :
+    RecyclerView.Adapter<OnBoardingAdapter.ViewHolder>() {
 
-    inner class OnBoardingViewHolder(val binding: Onboarding5Binding) :
-        RecyclerView.ViewHolder(binding.root)
+    inner class ViewHolder(val view: View) : RecyclerView.ViewHolder(view)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OnBoardingViewHolder {
-        val binding = Onboarding5Binding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return OnBoardingViewHolder(binding)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(viewType, parent, false)
+        return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: OnBoardingViewHolder, position: Int) {
 
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val view = holder.view
         val isProfilePage = position == 4
-
-        // 입력 필드들
         val isPage5 = position == 4
 
         if (!isProfilePage) {
-            holder.binding.imageView.visibility = View.VISIBLE
-            holder.binding.imageView.setImageResource(items[position]) // ✅ 이게 작동하려면 XML에 src 없어야 함
+            view.findViewById<View>(R.id.imageView)?.visibility = View.VISIBLE
+            // R.drawable.onboarding_1 같은 걸 써야 하지만 현재는 layout을 보여주고 있으므로 이 줄은 의미 없을 수 있음
+            // view.findViewById<ImageView>(R.id.imageView)?.setImageResource(...)
         } else {
-            holder.binding.imageView.visibility = View.GONE
+            view.findViewById<View>(R.id.imageView)?.visibility = View.GONE
         }
 
-        holder.binding.koreanLabel.visibility = if (isPage5) View.VISIBLE else View.GONE
-        holder.binding.birthLabel.visibility = if (isPage5) View.VISIBLE else View.GONE
-        holder.binding.koreanNameEdit.visibility = if (isPage5) View.VISIBLE else View.GONE
-        holder.binding.birthdayEdit.visibility = if (isPage5) View.VISIBLE else View.GONE
-        holder.binding.lastNameLabel.visibility = if (isPage5) View.VISIBLE else View.GONE
-        holder.binding.firstNameLabel.visibility = if (isPage5) View.VISIBLE else View.GONE
-        holder.binding.lastNameEngEdit.visibility = if (isPage5) View.VISIBLE else View.GONE
-        holder.binding.firstNameEngEdit.visibility = if (isPage5) View.VISIBLE else View.GONE
-        holder.binding.profileTitle.visibility = if (isPage5) View.VISIBLE else View.GONE
-        holder.binding.photoUploadBox.visibility = if (isPage5) View.VISIBLE else View.GONE
+        // Page5 전용 입력 필드들
+        view.findViewById<View>(R.id.koreanLabel)?.visibility = if (isPage5) View.VISIBLE else View.GONE
+        view.findViewById<View>(R.id.birthLabel)?.visibility = if (isPage5) View.VISIBLE else View.GONE
+        view.findViewById<View>(R.id.koreanNameEdit)?.visibility = if (isPage5) View.VISIBLE else View.GONE
+        view.findViewById<View>(R.id.birthdayEdit)?.visibility = if (isPage5) View.VISIBLE else View.GONE
+        view.findViewById<View>(R.id.lastNameLabel)?.visibility = if (isPage5) View.VISIBLE else View.GONE
+        view.findViewById<View>(R.id.firstNameLabel)?.visibility = if (isPage5) View.VISIBLE else View.GONE
+        view.findViewById<View>(R.id.lastNameEngEdit)?.visibility = if (isPage5) View.VISIBLE else View.GONE
+        view.findViewById<View>(R.id.firstNameEngEdit)?.visibility = if (isPage5) View.VISIBLE else View.GONE
+        view.findViewById<View>(R.id.profileTitle)?.visibility = if (isPage5) View.VISIBLE else View.GONE
+        view.findViewById<View>(R.id.photoUploadBox)?.visibility = if (isPage5) View.VISIBLE else View.GONE
     }
 
 
 
-    override fun getItemCount(): Int = items.size
-}
 
+    override fun getItemCount(): Int = layoutIds.size
+
+    override fun getItemViewType(position: Int): Int {
+        return layoutIds[position]  // 각 페이지에 해당하는 layout ID를 반환
+    }
+}

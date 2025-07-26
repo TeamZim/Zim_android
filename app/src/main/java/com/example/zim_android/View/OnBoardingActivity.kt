@@ -65,12 +65,12 @@ class OnBoardingActivity : AppCompatActivity() {
     private var selectedImageView: ImageView? = null
 
     private val pageImages = listOf(
-        R.drawable.onboarding_1,
-        R.drawable.onboarding_2,
-        R.drawable.onboarding_3,
-        R.drawable.onboarding_4,
-        R.drawable.onboarding_5,
-        R.drawable.onboarding_6,
+        R.layout.onboarding_1,
+        R.layout.onboarding_2,
+        R.layout.onboarding_3,
+        R.layout.onboarding_4,
+        R.layout.onboarding_5,
+        R.layout.onboarding_6,
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -128,8 +128,9 @@ class OnBoardingActivity : AppCompatActivity() {
 
             // 👉 카카오 로그인 페이지일 때
             if (currentPage == 3) {
-                startKakaoLogin()
-                return@setOnClickListener
+                PreferenceManager.setOnboardingShown(this)
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
             }
 
             // 4번 페이지일 경우: 필드 입력 안되면 클릭 무시
@@ -447,11 +448,11 @@ class OnBoardingActivity : AppCompatActivity() {
 
 
 
-                     //userId update하는 부분
-                    user?.userId?.let {
-                        UserSession.userId = it
-                        UserSession.saveToPreferences(this@OnBoardingActivity)
-                    }
+//                     //userId update하는 부분
+//                    user?.userId?.let {
+//                        UserSession.userId = it
+//                        UserSession.saveToPreferences(this@OnBoardingActivity)
+//                    }
 
                     Log.d("response.body().toString()", response.body().toString())
 
@@ -510,10 +511,10 @@ class OnBoardingActivity : AppCompatActivity() {
                             // 로그인 성공 후 처리
                             if (loginResult?.registered == true) {
                                 // ✅ 로그인한 사용자도 userId 저장
-                                loginResult.userId?.let {
-                                    UserSession.userId = it
-                                    UserSession.saveToPreferences(this@OnBoardingActivity)
-                                }
+//                                loginResult.userId?.let {
+//                                    UserSession.userId = it
+//                                    UserSession.saveToPreferences(this@OnBoardingActivity)
+//                                }
 
                                 startActivity(Intent(this@OnBoardingActivity, MainActivity::class.java))
                                 finish()

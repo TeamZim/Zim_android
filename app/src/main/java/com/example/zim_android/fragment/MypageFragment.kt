@@ -71,6 +71,7 @@ class MypageFragment: Fragment(R.layout.mypage_fragment){
                     val myPageData = response.body()
                     myPageData?.let {
                         Glide.with(requireContext()).load(it.user.profileImageUrl).centerCrop().into(binding.mypageProfileImage)
+                        Log.d("이미지 URL", it.user.profileImageUrl)
 
                         Log.d("myPageData", it.user.surName)
 
@@ -113,6 +114,7 @@ class MypageFragment: Fragment(R.layout.mypage_fragment){
                     Log.e(
                         "MYPAGE",
                         "응답 실패 - code: ${response.code()}, errorBody: ${response.errorBody()?.string()}"
+
                     )
                     // Log.e("MYPAGE", "응답 실패: ${response.code()}")
                 }
@@ -120,6 +122,7 @@ class MypageFragment: Fragment(R.layout.mypage_fragment){
 
             override fun onFailure(call: Call<MyPageResponse>, t: Throwable) {
                 Log.e("MYPAGE", "통신 실패: ${t.message}")
+
             }
         })
     }
