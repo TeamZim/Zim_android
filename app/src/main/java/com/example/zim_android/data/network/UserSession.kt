@@ -14,6 +14,7 @@ object UserSession {
     }
     fun loadFromPreferences(context: Context) {
         val prefs = context.getSharedPreferences("prefs", Context.MODE_PRIVATE)
+
         val savedId = prefs.getInt("userId", 3)
     }
 //    fun clear(context: Context) {

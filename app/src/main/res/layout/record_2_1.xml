@@ -18,35 +18,8 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
 
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            >
-
-            <!-- PreviewView: 정사각형 뷰 -->
-            <androidx.camera.view.PreviewView
-                android:id="@+id/preview_1"
-                android:layout_width="347dp"
-                android:layout_height="319dp"
-                android:scaleX="-1"
-                />
-
-            <!-- 마스킹: ShapeableImageView (투명 배경, 코너만 둥글게) -->
-            <com.google.android.material.imageview.ShapeableImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@android:color/transparent"
-                android:clickable="false"
-                android:focusable="false"
-                app:shapeAppearanceOverlay="@style/ImageTopRoundedCornersTop" />
-        </FrameLayout>
-
-
         <androidx.camera.view.PreviewView
-            android:id="@+id/preview_1123"
+            android:id="@+id/preview_1"
             android:layout_width="347dp"
             android:layout_height="319dp"
             android:scaleX="-1"
@@ -70,7 +43,7 @@
             android:id="@+id/overlay_img"
             android:layout_width="347dp"
             android:layout_height="319dp"
-            android:background="@android:color/holo_red_light"
+            android:background="@android:color/transparent"
             android:scaleType="centerCrop"
             app:shapeAppearanceOverlay="@style/ImageTopRoundedCornersTop"
             app:layout_constraintEnd_toEndOf="parent"
@@ -108,7 +81,7 @@
             android:layout_width="347dp"
             android:layout_height="319dp"
             app:shapeAppearanceOverlay="@style/ImageTopRoundedCornersBottom"
-            android:background="@android:color/holo_red_light"
+            android:background="@android:color/transparent"
             app:layout_constraintEnd_toEndOf="@+id/imageView1"
             app:layout_constraintStart_toStartOf="@+id/imageView1"
             app:layout_constraintTop_toBottomOf="@+id/imageView1"
