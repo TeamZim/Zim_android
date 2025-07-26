@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <ImageView
         android:id="@+id/dialog_1_frame"
         android:layout_width="295dp"
@@ -13,8 +12,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.498"
         app:srcCompat="@drawable/view_map_dialog_1_frame" />
+
 
     <TextView
         android:id="@+id/dialog_1_title"
@@ -41,8 +40,8 @@
 
     <androidx.gridlayout.widget.GridLayout
         android:id="@+id/color_list_grid"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         app:columnCount="4"
         app:layout_constraintEnd_toEndOf="@+id/dialog_1_frame"
